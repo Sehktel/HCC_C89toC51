@@ -14,14 +14,14 @@ data Ast
 parseTokens :: [Token] -> Ast
 parseTokens tokens =
   case tokens of
-    [ TokKeyword "int",
-      TokIdentifier fnName,
-      TokSymbol '(',
-      TokSymbol ')',
-      TokSymbol '{',
-      TokKeyword "return",
-      TokNumber n,
-      TokSymbol ';',
-      TokSymbol '}'
+    [ TokenInt,
+      TokenIdentifier fnName,
+      TokenLeftParen,
+      TokenRightParen,
+      TokenLeftBrace,
+      TokenReturn,
+      TokenNumber n,
+      TokenSemicolon,
+      TokenRightBrace
       ] -> AstProgram [AstFunction fnName, AstReturn n]
     _ -> AstUnknown tokens

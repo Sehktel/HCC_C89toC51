@@ -1,0 +1,35 @@
+cabal-version:      2.4
+name:               hcc-c89toc51
+version:            0.1.0.0
+build-type:         Simple
+
+executable hcc-c89toc51
+  main-is:          Main.hs
+  hs-source-dirs:   app, src
+  other-modules:
+      Lexer
+      Parser
+      Preprocessor
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5
+
+test-suite hcc-c89toc51-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST_test
+      IR_test
+      Lexer
+      Lexer_test
+      Parser
+      Parser_test
+      Preprocessor
+      Preprocessor_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3

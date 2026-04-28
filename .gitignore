@@ -1,0 +1,13 @@
+# Cabal build artifacts
+dist-newstyle/
+cabal.project.local
+cabal.project.local~
+
+# GHC artifacts in source directories
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
+
+# Binaries
+*.exe
