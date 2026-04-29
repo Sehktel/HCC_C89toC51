@@ -10,6 +10,23 @@ preprocess =
     . filter (not . null)
     . map trim
     . lines
+    . replaceTrigraphs
+
+-- Замена C89 trigraph-последовательностей до этапа лексического анализа.
+-- Это соответствует ранним фазам трансляции C, где триграфы заменяются
+-- на базовые символы ещё до токенизации.
+replaceTrigraphs :: String -> String
+replaceTrigraphs [] = []
+replaceTrigraphs ('?' : '?' : '=' : rest) = '#' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '(' : rest) = '[' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '/' : rest) = '\\' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : ')' : rest) = ']' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '\'' : rest) = '^' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '<' : rest) = '{' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '!' : rest) = '|' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '>' : rest) = '}' : replaceTrigraphs rest
+replaceTrigraphs ('?' : '?' : '-' : rest) = '~' : replaceTrigraphs rest
+replaceTrigraphs (ch : rest) = ch : replaceTrigraphs rest
 
 trim :: String -> String
 trim = dropWhileEndSafe isSpace . dropWhile isSpace

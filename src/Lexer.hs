@@ -1,121 +1,124 @@
+{-|
+Модуль лексического анализа для подмножества C89/C51.
+
+Модуль переводит входной текст в последовательность токенов:
+
+- ключевые слова;
+- операторы и разделители;
+- идентификаторы;
+- числовые, строковые и символьные литералы;
+- токены ошибок лексического анализа.
+-}
 module Lexer (IntSuffix (..), Token (..), lexer) where
 
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
 
+-- | Токены лексического анализа.
 data Token
-  = TokenOne -- "one"
-  | TokenOf -- "of"
-  | TokenAuto -- "auto"
-  | TokenDouble -- "double"
-  | TokenInt -- "int"
-  | TokenStruct -- "struct"
-  | TokenBreak -- "break"
-  | TokenElse -- "else"
-  | TokenLong -- "long"
-  | TokenSwitch -- "switch"
-  | TokenCase -- "case"
-  | TokenEnum -- "enum"
-  | TokenRegister -- "register"
-  | TokenTypedef -- "typedef"
-  | TokenChar -- "char"
-  | TokenExtern -- "extern"
-  | TokenReturn -- "return"
-  | TokenUnion -- "union"
-  | TokenConst -- "const"
-  | TokenFloat -- "float"
-  | TokenShort -- "short"
-  | TokenUnsigned -- "unsigned"
-  | TokenContinue -- "continue"
-  | TokenFor    -- "for"
-  | TokenSigned -- "signed"
-  | TokenVoid -- "void"
-  | TokenDefault -- "default"
-  | TokenGoto -- "goto"
-  | TokenSizeof -- "sizeof"
-  | TokenVolatile -- "volatile"
-  | TokenDo -- "do"
-  | TokenIf -- "if"
-  | TokenStatic -- "static"
-  | TokenWhile -- "while" 
-  | TokenSfr -- "sfr"
-  | TokenSfr16 -- "sfr16"
-  | TokenSbit -- "sbit"
-  | TokenSft -- "sft"
-  | TokenBit -- "bit"
-  | TokenData -- "data"
-  | TokenIdata -- "idata"
-  | TokenPdata -- "pdata"
-  | TokenXdata -- "xdata"
-  | TokenCode -- "code"
-  | TokenInterrupt -- "interrupt"
-  | TokenUsing -- "using"
-  | TokenReentrant -- "reentrant"
+   = TokenOne -- | Зарезервированное слово @one@ (служебный токен Frontend-а).
+  | TokenOf -- | Зарезервированное слово @of@ (служебный токен Frontend-а).
+  | TokenAuto -- | Ключевое слово C @auto@.
+  | TokenDouble -- | Ключевое слово C @double@.
+  | TokenInt -- | Ключевое слово C @int@.
+  | TokenStruct -- | Ключевое слово C @struct@.
+  | TokenBreak -- | Ключевое слово C @break@.
+  | TokenElse -- | Ключевое слово C @else@.
+  | TokenLong -- | Ключевое слово C @long@.
+  | TokenSwitch -- | Ключевое слово C @switch@.
+  | TokenCase -- | Ключевое слово C @case@.
+  | TokenEnum -- | Ключевое слово C @enum@.
+  | TokenRegister -- | Ключевое слово C @register@.
+  | TokenTypedef -- | Ключевое слово C @typedef@.
+  | TokenChar -- | Ключевое слово C @char@.
+  | TokenExtern -- | Ключевое слово C @extern@.
+  | TokenReturn -- | Ключевое слово C @return@.
+  | TokenUnion -- | Ключевое слово C @union@.
+  | TokenConst -- | Ключевое слово C @const@.
+  | TokenFloat -- | Ключевое слово C @float@.
+  | TokenShort -- | Ключевое слово C @short@.
+  | TokenUnsigned -- | Ключевое слово C @unsigned@.
+  | TokenContinue -- | Ключевое слово C @continue@.
+  | TokenFor    -- | Ключевое слово C @for@.
+  | TokenSigned -- | Ключевое слово C @signed@.
+  | TokenVoid -- | Ключевое слово C @void@.
+  | TokenDefault -- | Ключевое слово C @default@.
+  | TokenGoto -- | Ключевое слово C @goto@.
+  | TokenSizeof -- | Ключевое слово C @sizeof@.
+  | TokenVolatile -- | Ключевое слово C @volatile@.
+  | TokenDo -- | Ключевое слово C @do@.
+  | TokenIf -- | Ключевое слово C @if@.
+  | TokenStatic -- | Ключевое слово C @static@.
+  | TokenWhile -- | Ключевое слово C @while@.
+  | TokenSfr -- | Ключевое слово C51 архитектуры @sfr@.
+  | TokenSfr16 -- | Ключевое слово C51 архитектуры @sfr16@.
+  | TokenSbit -- | Ключевое слово C51 архитектуры @sbit@.
+  | TokenSft -- | Ключевое слово C51 архитектуры @sft@.
+  | TokenBit -- | Ключевое слово C51 архитектуры @bit@.
+  | TokenData -- | Ключевое слово C51 архитектуры @data@.
+  | TokenIdata -- | Ключевое слово C51 архитектуры @idata@.
+  | TokenPdata -- | Ключевое слово C51 архитектуры @pdata@.
+  | TokenXdata -- | Ключевое слово C51 архитектуры @xdata@.
+  | TokenCode -- | Ключевое слово C51 архитектуры @code@.
+  | TokenInterrupt -- | Ключевое слово C51 архитектуры @interrupt@.
+  | TokenUsing -- | Ключевое слово C51 архитектуры @using@.
+  | TokenReentrant -- | Ключевое слово C51 архитектуры @reentrant@.
   | TokenAt -- "_at_"
-  | TokenAssign -- "="
+  | TokenAssign -- | Оператор присваивания @=@.
   | TokenEqual -- "=="
-  | TokenPlus -- "+"
-  | TokenPlusAssign -- "+="
-  | TokenMinus -- "-"
-  | TokenMinusAssign -- "-="
-  | TokenMultiply -- "*"
-  | TokenDivide -- "/"
-  | TokenSemicolon -- ";"
-  | TokenComma -- ","
-  | TokenDot -- "."
-  | TokenColon -- ":"
-  | TokenQuestion -- "?"
-  | TokenBang -- "!"
-  | TokenHash -- "#"
-  | TokenPercent -- "%"
-  | TokenAmpersand -- "&"
-  | TokenPipe -- "|"
-  | TokenTilde -- "~"
-  | TokenCaret -- "^"
-  | TokenBackslash -- "\\"
-  | TokenLeftParen -- "("
-  | TokenRightParen -- ")"
-  | TokenLeftBrace -- "{"
-  | TokenRightBrace -- "}"
-  | TokenLeftBracket -- "["
-  | TokenRightBracket -- "]"
-  | TokenLeftAngle -- "<"
-  | TokenRightAngle -- ">"
-  | TokenPipePipe -- "||"
-  | TokenAmpersandAmpersand -- "&&"
-  | TokenPlusPlus -- "++"
-  | TokenMinusMinus -- "--"
-  | TokenLessLess -- "<<"
-  | TokenGreaterGreater -- ">>"
-  | TokenLessLessEqual -- "<<="
-  | TokenGreaterGreaterEqual -- ">>="
-  | TokenBangEqual -- "!="
-  | TokenGreaterEqual -- ">="
-  | TokenLessEqual -- "<="
-  | TokenAmpersandEqual -- "&="
-  | TokenPipeEqual -- "|="
-  | TokenCaretEqual -- "^="
-  | TokenPercentEqual -- "%="
-  | TokenMultiplyEqual -- "*="
-  | TokenDivideEqual -- "/="
-  | TokenIdentifier String -- identifier
-  | TokenNumber Int -- number
-  | TokenNumberWithSuffix Int IntSuffix -- integer with C suffix
-  | TokenStringLiteral String -- string literal
-  | TokenCharLiteral Char -- character literal
-  | TokenLexError String -- lexer error
-  | TokenSymbol Char -- symbol
--- 2.2.1.1 Trigraph Sequences
-  | TokenQQEqual -- ??= #
-  | TokenQQLeftParen -- ??( [
-  | TokenQQSlash -- ??/ \
-  | TokenQQRightParen -- ??) ]
-  | TokenQQQuestion -- ??' ^
-  | TokenQQLeftAngle -- ??< {
-  | TokenQQBang -- ??! |
-  | TokenQQRightAngle -- ??> }
-  | TokenQQMinus -- ??- ~
+  | TokenPlus -- | Оператор сложения @+@.
+  | TokenPlusAssign -- | Оператор сложения с присваиванием @+=@.
+  | TokenMinus -- | Оператор вычитания @-@.
+  | TokenMinusAssign -- | Оператор вычитания с присваиванием @-=@.
+  | TokenMultiply -- | Оператор умножения @*@.
+  | TokenDivide -- | Оператор деления @/@.
+  | TokenSemicolon -- | Оператор semicolon @;@.
+  | TokenComma -- | Оператор comma @,@.
+  | TokenDot -- | Оператор dot @.@.
+  | TokenColon -- | Оператор colon @:@.
+  | TokenQuestion -- | Оператор question @?@.
+  | TokenBang -- | Оператор bang (not) @!@.
+  | TokenHash -- | Оператор hash @#@.
+  | TokenPercent -- | Оператор percent (modulo) @%@.
+  | TokenAmpersand -- | Оператор ampersand (and) @&@.
+  | TokenPipe -- | Оператор pipe (or) @|@.
+  | TokenTilde -- | Оператор tilde (not) @~@.
+  | TokenCaret -- | Оператор caret (xor) @^@.
+  | TokenBackslash -- | Оператор backslash (escape) @\@.
+  | TokenLeftParen -- | Оператор left parenthesis (круглая открывающаяся скобка) @(@.
+  | TokenRightParen -- | Оператор right parenthesis (круглая закрывающаяся скобка) @)@.
+  | TokenLeftBrace -- | Оператор left brace (фигурная открывающаяся скобка) @{@.
+  | TokenRightBrace -- | Оператор right brace (фигурная закрывающаяся скобка) @}@.
+  | TokenLeftBracket -- | Оператор left bracket (квадратная открывающаяся скобка) @[@.
+  | TokenRightBracket -- | Оператор right bracket (квадратная закрывающаяся скобка) @]@.
+  | TokenLeftAngle -- | Оператор left angle (угловая открывающаяся скобка) @<@.
+  | TokenRightAngle -- | Оператор right angle (угловая закрывающаяся скобка) @>@.
+  | TokenPipePipe -- | Оператор pipe pipe (логическое или) @||@.
+  | TokenAmpersandAmpersand -- | Оператор ampersand ampersand (логическое и) @&&@.
+  | TokenPlusPlus -- | Оператор plus plus (инкремент) @++@.
+  | TokenMinusMinus -- | Оператор minus minus (декремент) @--@.
+  | TokenLessLess -- | Оператор less less (сдвиг влево) @<<@.
+  | TokenGreaterGreater -- | Оператор greater greater (сдвиг вправо) @>>@.
+  | TokenLessLessEqual -- | Оператор less less equal (сдвиг влево с присваиванием) @<<=@.
+  | TokenGreaterGreaterEqual -- | Оператор greater greater equal (сдвиг вправо с присваиванием) @>>=@.
+  | TokenBangEqual -- | Оператор bang equal (не равно) @!=@.
+  | TokenGreaterEqual -- | Оператор greater equal (больше или равно) @>=@.
+  | TokenLessEqual -- | Оператор less equal (меньше или равно) @<=@.
+  | TokenAmpersandEqual -- | Оператор ampersand equal (и с присваиванием) @&=@.
+  | TokenPipeEqual -- | Оператор pipe equal (или с присваиванием) @|=@.
+  | TokenCaretEqual -- | Оператор caret equal (xor с присваиванием) @^=@.
+  | TokenPercentEqual -- | Оператор percent equal (modulo с присваиванием) @%=@.
+  | TokenMultiplyEqual -- | Оператор multiply equal (умножение с присваиванием) @*=@.
+  | TokenDivideEqual -- | Оператор divide equal (деление с присваиванием) @/=@.
+  | TokenIdentifier String -- идентификатор
+  | TokenNumber Int -- число
+  | TokenNumberWithSuffix Int IntSuffix -- целое число с суффиксом C
+  | TokenStringLiteral String -- строковый литерал
+  | TokenCharLiteral Char -- символьный литерал
+  | TokenLexError String -- ошибка лексического анализа
+  | TokenSymbol Char -- символ
   deriving (Eq, Show)
 
+-- | Суффикс целочисленного литерала в стиле C89.
 data IntSuffix
   = SufU
   | SufL
@@ -176,7 +179,10 @@ keywordToToken _ = Nothing
 
 
 
--- Минимальный лексер: разбирает идентификаторы, ключевые слова, числа и символы.
+-- | Основная функция лексического анализа.
+--
+-- Принимает исходный текст и возвращает список токенов.
+-- Для некорректных фрагментов формирует 'TokenLexError' и продолжает разбор.
 lexer :: String -> [Token]
 lexer [] = []
 lexer (c : cs)
