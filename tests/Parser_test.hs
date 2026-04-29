@@ -1,9 +1,15 @@
-module Parser_test (parserTodoSpec) where
+module Parser_test (parserSpec) where
 
-import Test.Hspec (Spec, describe, it, pendingWith)
+import Lexer (Token (..), lexer)
+import Parser (Ast (..), parseTokens)
+import Test.Hspec (Spec, describe, it, shouldBe)
 
-parserTodoSpec :: Spec
-parserTodoSpec =
-  describe "Parser TODO" $ do
-    it "TODO: добавить разбор if/else, do/while и блоков" $ do
-      pendingWith "TODO: реализовать расширенный парсер и покрыть его тестами."
+parserSpec :: Spec
+parserSpec = do
+  describe "Parser.parseTokens" $ do
+    it "строит AST для шаблона int main() { return 0; }" $ do
+      parseTokens (lexer "int main() { return 0; }")
+        `shouldBe` AstProgram [AstFunction "main", AstReturn 0]
+
+    it "возвращает AstUnknown для неподдерживаемого паттерна" $ do
+      parseTokens [TokenInt, TokenIdentifier "x"] `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x"]

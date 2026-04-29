@@ -27,9 +27,13 @@ lexerMinimalSpec =
                      TokenRightBrace
                    ]
     it "токенизирует базовые операторы" $ do
-      lexer "a==b; a+=1; a-=2; a+b-c*d;"
+      lexer "a==b; a!=b; a+=1; a-=2; a+b-c*d;"
         `shouldBe` [ TokenIdentifier "a",
                      TokenEqual,
+                     TokenIdentifier "b",
+                     TokenSemicolon,
+                     TokenIdentifier "a",
+                     TokenBangEqual,
                      TokenIdentifier "b",
                      TokenSemicolon,
                      TokenIdentifier "a",
@@ -121,7 +125,7 @@ lexerAllTokensSpec =
 
   where
     -- Одна большая строка: ключевые слова, идентификатор/число, операторы и разделители.
-    input = "one of auto double int struct break else long switch case enum register typedef char extern return union const float short unsigned continue for signed void default goto sizeof volatile do if static while sfr sfr16 sbit sft bit data idata pdata xdata code interrupt using reentrant _at_ ident 42 = == + += ++ - -= -- * *= / /= ; , . : ? ! # % %= & && &= | || |= ~ ^ ^= \\ \"s\" 'x' ( ) { } [ ] < <= << <<= > >= >> >>="
+    input = "one of auto double int struct break else long switch case enum register typedef char extern return union const float short unsigned continue for signed void default goto sizeof volatile do if static while sfr sfr16 sbit sft bit data idata pdata xdata code interrupt using reentrant _at_ ident 42 = == != + += ++ - -= -- * *= / /= ; , . : ? ! # % %= & && &= | || |= ~ ^ ^= \\ \"s\" 'x' ( ) { } [ ] < <= << <<= > >= >> >>="
     expected =
       [ TokenOne, TokenOf, TokenAuto, TokenDouble, TokenInt, TokenStruct, TokenBreak, TokenElse, TokenLong
       , TokenSwitch, TokenCase, TokenEnum, TokenRegister, TokenTypedef, TokenChar, TokenExtern, TokenReturn
@@ -129,7 +133,7 @@ lexerAllTokensSpec =
       , TokenVoid, TokenDefault, TokenGoto, TokenSizeof, TokenVolatile, TokenDo, TokenIf, TokenStatic
       , TokenWhile, TokenSfr, TokenSfr16, TokenSbit, TokenSft, TokenBit, TokenData, TokenIdata, TokenPdata
       , TokenXdata, TokenCode, TokenInterrupt, TokenUsing, TokenReentrant, TokenAt, TokenIdentifier "ident"
-      , TokenNumber 42, TokenAssign, TokenEqual, TokenPlus, TokenPlusAssign, TokenPlusPlus, TokenMinus
+      , TokenNumber 42, TokenAssign, TokenEqual, TokenBangEqual, TokenPlus, TokenPlusAssign, TokenPlusPlus, TokenMinus
       , TokenMinusAssign, TokenMinusMinus, TokenMultiply, TokenMultiplyEqual, TokenDivide, TokenDivideEqual
       , TokenSemicolon, TokenComma, TokenDot, TokenColon, TokenQuestion, TokenBang, TokenHash, TokenPercent
       , TokenPercentEqual, TokenAmpersand, TokenAmpersandAmpersand, TokenAmpersandEqual, TokenPipe

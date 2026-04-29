@@ -1,10 +1,6 @@
 module Main (main) where
 
 import Lexer_test (lexerABSpec, lexerAllTokensSpec, lexerMinimalSpec, lexerTodoSpec)
-import Parser_test (parserSpec)
-import AST_test (astSpec)
-import IR_test (irSpec)
-import Preprocessor_test (preprocessorSpec)
 import Test.Hspec (hspec)
 
 main :: IO ()
@@ -13,7 +9,3 @@ main = hspec $ do
   lexerAllTokensSpec
   lexerABSpec
   lexerTodoSpec
-  parserSpec
-  preprocessorSpec
-  astSpec
-  irSpec

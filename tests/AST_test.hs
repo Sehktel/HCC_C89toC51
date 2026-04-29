@@ -1,9 +1,20 @@
-module AST_test (astTodoSpec) where
+module AST_test (astSpec) where
 
-import Test.Hspec (Spec, describe, it, pendingWith)
+import Lexer (Token (..), lexer)
+import Parser (Ast (..), parseTokens)
+import Preprocessor (preprocess)
+import Test.Hspec (Spec, describe, it, shouldBe)
 
-astTodoSpec :: Spec
-astTodoSpec =
-  describe "AST TODO" $ do
-    it "TODO: проверить корректность построения AST для операторов и выражений" $ do
-      pendingWith "TODO: определить структуру AST и покрыть золотыми тестами."
+astSpec :: Spec
+astSpec =
+  describe "Pipeline -> AST" $ do
+    it "строит AST после этапа preprocess + lexer + parser" $ do
+      let src = "  int main() {  \n return 7; \n}\n"
+          normalized = preprocess src
+      parseTokens (lexer normalized)
+        `shouldBe` AstProgram [AstFunction "main", AstReturn 7]
+
+    it "на неподдерживаемом коде возвращает AstUnknown как промежуточный результат" $ do
+      let src = "int x;"
+      parseTokens (lexer (preprocess src))
+        `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x", TokenSemicolon]

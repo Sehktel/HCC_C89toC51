@@ -1,9 +1,14 @@
-module Preprocessor_test (preprocessorTodoSpec) where
+module Preprocessor_test (preprocessorSpec) where
 
-import Test.Hspec (Spec, describe, it, pendingWith)
+import Preprocessor (preprocess)
+import Test.Hspec (Spec, describe, it, shouldBe)
 
-preprocessorTodoSpec :: Spec
-preprocessorTodoSpec =
-  describe "Preprocessor TODO" $ do
-    it "TODO: добавить тесты на #define/#include и условную компиляцию" $ do
-      pendingWith "TODO: реализовать полноценный препроцессор C и добавить кейсы."
+preprocessorSpec :: Spec
+preprocessorSpec =
+  describe "Preprocessor.preprocess" $ do
+    it "убирает пустые строки и пробелы по краям" $ do
+      preprocess "  int main() {  \n\n return 0; \n}\n"
+        `shouldBe` "int main() {\nreturn 0;\n}\n"
+
+    it "сохраняет порядок непустых строк" $ do
+      preprocess "  a  \n  b\t\n\n c \n" `shouldBe` "a\nb\nc\n"

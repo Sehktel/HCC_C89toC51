@@ -33,3 +33,93 @@ test-suite hcc-c89toc51-test
   build-depends:
       base >=4.14 && <5,
       hspec >=2.11 && <3
+
+test-suite test-lexer
+  type:             exitcode-stdio-1.0
+  main-is:          SpecLexer.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      Lexer
+      Lexer_test
+      Preprocessor
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
+
+test-suite test-parser
+  type:             exitcode-stdio-1.0
+  main-is:          SpecParser.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      Lexer
+      Parser
+      Parser_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
+
+test-suite test-preprocessor
+  type:             exitcode-stdio-1.0
+  main-is:          SpecPreprocessor.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      Preprocessor
+      Preprocessor_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
+
+test-suite test-ast
+  type:             exitcode-stdio-1.0
+  main-is:          SpecAST.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST_test
+      Lexer
+      Parser
+      Preprocessor
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
+
+test-suite test-ir
+  type:             exitcode-stdio-1.0
+  main-is:          SpecIR.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      IR_test
+      Lexer
+      Parser
+      Preprocessor
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
+
+test-suite test-pipeline
+  type:             exitcode-stdio-1.0
+  main-is:          SpecPipeline.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST_test
+      IR_test
+      Lexer
+      Lexer_test
+      Parser
+      Parser_test
+      Preprocessor
+      Preprocessor_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      hspec >=2.11 && <3
