@@ -26,7 +26,7 @@ data Token
   | TokenShort -- "short"
   | TokenUnsigned -- "unsigned"
   | TokenContinue -- "continue"
-  | TokenFor -- "for"
+  | TokenFor    -- "for"
   | TokenSigned -- "signed"
   | TokenVoid -- "void"
   | TokenDefault -- "default"
@@ -104,6 +104,16 @@ data Token
   | TokenCharLiteral Char -- character literal
   | TokenLexError String -- lexer error
   | TokenSymbol Char -- symbol
+-- 2.2.1.1 Trigraph Sequences
+  | TokenQQEqual -- ??= #
+  | TokenQQLeftParen -- ??( [
+  | TokenQQSlash -- ??/ \
+  | TokenQQRightParen -- ??) ]
+  | TokenQQQuestion -- ??' ^
+  | TokenQQLeftAngle -- ??< {
+  | TokenQQBang -- ??! |
+  | TokenQQRightAngle -- ??> }
+  | TokenQQMinus -- ??- ~
   deriving (Eq, Show)
 
 data IntSuffix
@@ -313,15 +323,21 @@ parseQuotedContent delimiter = go []
 
 decodeEscape :: String -> Either String (Char, String)
 decodeEscape [] = Left "Invalid escape sequence: trailing backslash"
+
+-- 2.2.2 Character Display Semantics
 decodeEscape (ch : rest) =
   case ch of
-    '\\' -> Right ('\\', rest)
-    '"' -> Right ('"', rest)
-    '\'' -> Right ('\'', rest)
-    'n' -> Right ('\n', rest)
-    't' -> Right ('\t', rest)
-    'r' -> Right ('\r', rest)
-    '0' -> Right ('\0', rest)
+    '\\' -> Right ('\\', rest) -- backslash
+    '"' -> Right ('"', rest) -- double quote
+    '\'' -> Right ('\'', rest) -- single quote
+    'a' -> Right ('\a', rest) -- alert -- Produces an audible or visible alert. The active position shall not be changed.
+    'b' -> Right ('\b', rest) -- backspace -- Moves the active position to the previous position on the current line. If the active position is at the initial position of a line, the behavior is unspecified.
+    'f' -> Right ('\f', rest) -- form feed -- Moves the active position to the initial position at the start of the next logical page.
+    'n' -> Right ('\n', rest) -- newline -- Moves the active position to the initial position of the next line.
+    't' -> Right ('\t', rest) -- horizontal tab -- Moves the active position to the next horizontal tabulation position on the current line. If the active position is at or past the last defined horizontal tabulation position, the behavior is unspecified.
+    'r' -> Right ('\r', rest) -- carriage return -- Moves the active position to the initial position of the current line.
+    '0' -> Right ('\0', rest) -- null character -- The null character has no graphical representation.
+    'v' -> Right ('\v', rest) -- vertical tab -- Moves the active position to the initial position of the next vertical tabulation position. If the active position is at or past the last defined vertical tabulation position, the behavior is unspecified.
     _ -> Left ("Invalid escape sequence: \\" ++ [ch])
 
 -- Разбор операторов: сначала проверяем двухсимвольные, затем односимвольные.

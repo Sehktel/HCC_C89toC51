@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lexer (Token, lexC)
+import Lexer (Token, lexer)
 import Parser (parseTokens)
 import Preprocessor (preprocess)
 
@@ -9,7 +9,7 @@ main = do
   -- Минимальный демонстрационный вход для пайплайна C89 -> C51.
   let sourceCode = "int main() { return 0; }"
       preprocessedCode = preprocess sourceCode
-      tokens = lexC preprocessedCode
+      tokens = lexer preprocessedCode
       ast = parseTokens tokens
   putStrLn "=== PREPROCESSED ==="
   putStrLn preprocessedCode
