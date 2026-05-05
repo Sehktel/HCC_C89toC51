@@ -1,5 +1,6 @@
 module Lexer_test (lexerAllTokensSpec, lexerABSpec, lexerTodoSpec, lexerMinimalSpec) where
 
+import Control.Monad (forM_)
 import Lexer (IntSuffix (..), Token (..), lexer)
 import Preprocessor (preprocess)
 
@@ -80,6 +81,17 @@ lexerMinimalSpec =
                      TokenNumberWithSuffix 255 SufU,
                      TokenNumberWithSuffix 63 SufL
                    ]
+    it "разбирает согласованный набор числовых литералов" $ do
+      lexer "0 00 075 09 0x1F 0X1f 123u 077L"
+        `shouldBe` [ TokenNumber 0,
+                     TokenNumber 0,
+                     TokenNumber 61,
+                     TokenLexError "Invalid octal literal: 09",
+                     TokenNumber 31,
+                     TokenNumber 31,
+                     TokenNumberWithSuffix 123 SufU,
+                     TokenNumberWithSuffix 63 SufL
+                   ]
     it "возвращает ошибку на невалидный суффикс числа" $ do
       lexer "10UU" `shouldBe` [TokenLexError "Invalid integer suffix: UU"]
     it "корректно токенизирует переносы строк" $ do
@@ -148,11 +160,17 @@ lexerAllTokensSpec =
 
 lexerABSpec :: Spec
 lexerABSpec =
-  describe "Lexer.lexer (короткие идентификаторы)" $ do
-    it "разбирает a/b/ab" $ do
-      lexer "a" `shouldBe` [TokenIdentifier "a"]
-      lexer "b" `shouldBe` [TokenIdentifier "b"]
-      lexer "ab" `shouldBe` [TokenIdentifier "ab"]
+  describe "Lexer.lexer (короткие идентификаторы)" $
+    forM_ cases $ \(input, expected) ->
+      it ("разбирает " ++ show input) $
+--        lexer input `shouldBe` [TokenIdentifier expected]
+        shouldBe (lexer input) [TokenIdentifier expected]
+  where
+    cases =
+      [ ("a", "a"),
+        ("b", "b"),
+        ("ab", "ab")
+      ]
 
 lexerTodoSpec :: Spec
 lexerTodoSpec =

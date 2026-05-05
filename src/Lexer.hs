@@ -125,6 +125,12 @@ data IntSuffix
   | SufUL
   deriving (Eq, Show)
 
+-- Псевдонимы типов для улучшения читаемости сигнатур лексера.
+type InputRest = String
+type LexStepResult = (Token, InputRest)
+type SuffixError = (String, InputRest)
+type SuffixParseResult = (Maybe IntSuffix, InputRest)
+
 -- Явные токены для ключевых слов, которые критичны для синтаксиса.
 keywordToToken :: String -> Maybe Token
 keywordToToken "one" = Just TokenOne
@@ -204,7 +210,7 @@ lexer (c : cs)
        in token : lexer rest
 
 -- Разбор чисел: поддержка десятичных, шестнадцатеричных (0x) и восьмеричных (0...).
-lexNumber :: String -> (Token, String)
+lexNumber :: String -> LexStepResult
 lexNumber ('0' : 'x' : rest) = lexHexNumber rest
 lexNumber ('0' : 'X' : rest) = lexHexNumber rest
 lexNumber ('0' : rest@(d : _))
@@ -219,7 +225,7 @@ lexNumber input =
   let (digits, rest) = span isDigit input
    in attachIntegerSuffix (read digits) rest
 
-lexHexNumber :: String -> (Token, String)
+lexHexNumber :: String -> LexStepResult
 lexHexNumber input =
   let (hexDigits, rest) = span isHexDigit input
    in if null hexDigits
@@ -257,14 +263,14 @@ hasInvalidOctalDigit :: String -> Bool
 hasInvalidOctalDigit = any (\ch -> ch == '8' || ch == '9')
 
 -- Суффиксы целочисленных литералов C89: U, L, UL, LU (в любом регистре).
-attachIntegerSuffix :: Int -> String -> (Token, String)
+attachIntegerSuffix :: Int -> InputRest -> LexStepResult
 attachIntegerSuffix value rest =
   case parseIntegerSuffix rest of
     Left (err, tailRest) -> (TokenLexError err, tailRest)
     Right (Nothing, tailRest) -> (TokenNumber value, tailRest)
     Right (Just suffix, tailRest) -> (TokenNumberWithSuffix value suffix, tailRest)
 
-parseIntegerSuffix :: String -> Either (String, String) (Maybe IntSuffix, String)
+parseIntegerSuffix :: InputRest -> Either SuffixError SuffixParseResult
 parseIntegerSuffix [] = Right (Nothing, [])
 parseIntegerSuffix input@(c : _)
   | not (isSuffixChar c) = Right (Nothing, input)
