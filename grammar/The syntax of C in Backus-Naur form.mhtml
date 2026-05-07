@@ -1,0 +1,333 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://cs.wmich.edu/~gupta/teaching/cs4850/sumII06/The%20syntax%20of%20C%20in%20Backus-Naur%20form.htm
+Subject: The syntax of C in Backus-Naur form
+Date: Tue, 5 May 2026 12:01:51 +0300
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--7qHy9k1mb4F1iua3O5eQX9W3xj9NKIuTal7VjxzqRi----"
+
+
+------MultipartBoundary--7qHy9k1mb4F1iua3O5eQX9W3xj9NKIuTal7VjxzqRi----
+Content-Type: text/html
+Content-ID: <frame-75D52FB054555216D06E31AC384370BB@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://cs.wmich.edu/~gupta/teaching/cs4850/sumII06/The%20syntax%20of%20C%20in%20Backus-Naur%20form.htm
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><!-- saved fr=
+om url=3D(0055)http://www.cs.wmich.edu/~yang/teach/cs485/C-syntax.html --><=
+html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dwindows-1252"><link rel=3D"stylesheet" type=3D"text/css" href=3D"cid:css=
+-39179b76-be3b-466e-bee8-b6f9a751ebdc@mhtml.blink" /><link rel=3D"styleshee=
+t" type=3D"text/css" href=3D"cid:css-d1efd405-428f-478c-9a0c-549b3c311838@m=
+html.blink" /><title>The syntax of C in Backus-Naur form</title>
+
+
+
+<meta content=3D"MSHTML 6.00.2900.2668" name=3D"GENERATOR"></head>
+<body>
+<h1>The syntax of C in Backus-Naur Form</h1><pre>&lt;translation-unit&gt; :=
+:=3D {&lt;external-declaration&gt;}*
+
+&lt;external-declaration&gt; ::=3D &lt;function-definition&gt;
+                         | &lt;declaration&gt;
+
+&lt;function-definition&gt; ::=3D {&lt;declaration-specifier&gt;}* &lt;decl=
+arator&gt; {&lt;declaration&gt;}* &lt;compound-statement&gt;
+
+&lt;declaration-specifier&gt; ::=3D &lt;storage-class-specifier&gt;
+                          | &lt;type-specifier&gt;
+                          | &lt;type-qualifier&gt;
+
+&lt;storage-class-specifier&gt; ::=3D auto
+                            | register
+                            | static
+                            | extern
+                            | typedef
+
+&lt;type-specifier&gt; ::=3D void
+                   | char
+                   | short
+                   | int
+                   | long
+                   | float
+                   | double
+                   | signed
+                   | unsigned
+                   | &lt;struct-or-union-specifier&gt;
+                   | &lt;enum-specifier&gt;
+                   | &lt;typedef-name&gt;
+
+&lt;struct-or-union-specifier&gt; ::=3D &lt;struct-or-union&gt; &lt;identif=
+ier&gt; { {&lt;struct-declaration&gt;}+ }
+                              | &lt;struct-or-union&gt; { {&lt;struct-decla=
+ration&gt;}+ }
+                              | &lt;struct-or-union&gt; &lt;identifier&gt;
+
+&lt;struct-or-union&gt; ::=3D struct
+                    | union
+
+&lt;struct-declaration&gt; ::=3D {&lt;specifier-qualifier&gt;}* &lt;struct-=
+declarator-list&gt;
+
+&lt;specifier-qualifier&gt; ::=3D &lt;type-specifier&gt;
+                        | &lt;type-qualifier&gt;
+
+&lt;struct-declarator-list&gt; ::=3D &lt;struct-declarator&gt;
+                           | &lt;struct-declarator-list&gt; , &lt;struct-de=
+clarator&gt;
+
+&lt;struct-declarator&gt; ::=3D &lt;declarator&gt;
+                      | &lt;declarator&gt; : &lt;constant-expression&gt;
+                      | : &lt;constant-expression&gt;
+
+&lt;declarator&gt; ::=3D {&lt;pointer&gt;}? &lt;direct-declarator&gt;
+
+&lt;pointer&gt; ::=3D * {&lt;type-qualifier&gt;}* {&lt;pointer&gt;}?
+
+&lt;type-qualifier&gt; ::=3D const
+                   | volatile
+
+&lt;direct-declarator&gt; ::=3D &lt;identifier&gt;
+                      | ( &lt;declarator&gt; )
+                      | &lt;direct-declarator&gt; [ {&lt;constant-expressio=
+n&gt;}? ]
+                      | &lt;direct-declarator&gt; ( &lt;parameter-type-list=
+&gt; )
+                      | &lt;direct-declarator&gt; ( {&lt;identifier&gt;}* )
+
+&lt;constant-expression&gt; ::=3D &lt;conditional-expression&gt;
+
+&lt;conditional-expression&gt; ::=3D &lt;logical-or-expression&gt;
+                           | &lt;logical-or-expression&gt; ? &lt;expression=
+&gt; : &lt;conditional-expression&gt;
+
+&lt;logical-or-expression&gt; ::=3D &lt;logical-and-expression&gt;
+                          | &lt;logical-or-expression&gt; || &lt;logical-an=
+d-expression&gt;
+
+&lt;logical-and-expression&gt; ::=3D &lt;inclusive-or-expression&gt;
+                           | &lt;logical-and-expression&gt; &amp;&amp; &lt;=
+inclusive-or-expression&gt;
+
+&lt;inclusive-or-expression&gt; ::=3D &lt;exclusive-or-expression&gt;
+                            | &lt;inclusive-or-expression&gt; | &lt;exclusi=
+ve-or-expression&gt;
+
+&lt;exclusive-or-expression&gt; ::=3D &lt;and-expression&gt;
+                            | &lt;exclusive-or-expression&gt; ^ &lt;and-exp=
+ression&gt;
+
+&lt;and-expression&gt; ::=3D &lt;equality-expression&gt;
+                   | &lt;and-expression&gt; &amp; &lt;equality-expression&g=
+t;
+
+&lt;equality-expression&gt; ::=3D &lt;relational-expression&gt;
+                        | &lt;equality-expression&gt; =3D=3D &lt;relational=
+-expression&gt;
+                        | &lt;equality-expression&gt; !=3D &lt;relational-e=
+xpression&gt;
+
+&lt;relational-expression&gt; ::=3D &lt;shift-expression&gt;
+                          | &lt;relational-expression&gt; &lt; &lt;shift-ex=
+pression&gt;
+                          | &lt;relational-expression&gt; &gt; &lt;shift-ex=
+pression&gt;
+                          | &lt;relational-expression&gt; &lt;=3D &lt;shift=
+-expression&gt;
+                          | &lt;relational-expression&gt; &gt;=3D &lt;shift=
+-expression&gt;
+
+&lt;shift-expression&gt; ::=3D &lt;additive-expression&gt;
+                     | &lt;shift-expression&gt; &lt;&lt; &lt;additive-expre=
+ssion&gt;
+                     | &lt;shift-expression&gt; &gt;&gt; &lt;additive-expre=
+ssion&gt;
+
+&lt;additive-expression&gt; ::=3D &lt;multiplicative-expression&gt;
+                        | &lt;additive-expression&gt; + &lt;multiplicative-=
+expression&gt;
+                        | &lt;additive-expression&gt; - &lt;multiplicative-=
+expression&gt;
+
+&lt;multiplicative-expression&gt; ::=3D &lt;cast-expression&gt;
+                              | &lt;multiplicative-expression&gt; * &lt;cas=
+t-expression&gt;
+                              | &lt;multiplicative-expression&gt; / &lt;cas=
+t-expression&gt;
+                              | &lt;multiplicative-expression&gt; % &lt;cas=
+t-expression&gt;
+
+&lt;cast-expression&gt; ::=3D &lt;unary-expression&gt;
+                    | ( &lt;type-name&gt; ) &lt;cast-expression&gt;
+
+&lt;unary-expression&gt; ::=3D &lt;postfix-expression&gt;
+                     | ++ &lt;unary-expression&gt;
+                     | -- &lt;unary-expression&gt;
+                     | &lt;unary-operator&gt; &lt;cast-expression&gt;
+                     | sizeof &lt;unary-expression&gt;
+                     | sizeof &lt;type-name&gt;
+
+&lt;postfix-expression&gt; ::=3D &lt;primary-expression&gt;
+                       | &lt;postfix-expression&gt; [ &lt;expression&gt; ]
+                       | &lt;postfix-expression&gt; ( {&lt;assignment-expre=
+ssion&gt;}* )
+                       | &lt;postfix-expression&gt; . &lt;identifier&gt;
+                       | &lt;postfix-expression&gt; -&gt; &lt;identifier&gt=
+;
+                       | &lt;postfix-expression&gt; ++
+                       | &lt;postfix-expression&gt; --
+
+&lt;primary-expression&gt; ::=3D &lt;identifier&gt;
+                       | &lt;constant&gt;
+                       | &lt;string&gt;
+                       | ( &lt;expression&gt; )
+
+&lt;constant&gt; ::=3D &lt;integer-constant&gt;
+             | &lt;character-constant&gt;
+             | &lt;floating-constant&gt;
+             | &lt;enumeration-constant&gt;
+
+&lt;expression&gt; ::=3D &lt;assignment-expression&gt;
+               | &lt;expression&gt; , &lt;assignment-expression&gt;
+
+&lt;assignment-expression&gt; ::=3D &lt;conditional-expression&gt;
+                          | &lt;unary-expression&gt; &lt;assignment-operato=
+r&gt; &lt;assignment-expression&gt;
+
+&lt;assignment-operator&gt; ::=3D =3D
+                        | *=3D
+                        | /=3D
+                        | %=3D
+                        | +=3D
+                        | -=3D
+                        | &lt;&lt;=3D
+                        | &gt;&gt;=3D
+                        | &amp;=3D
+                        | ^=3D
+                        | |=3D
+
+&lt;unary-operator&gt; ::=3D &amp;
+                   | *
+                   | +
+                   | -
+                   | ~
+                   | !
+
+&lt;type-name&gt; ::=3D {&lt;specifier-qualifier&gt;}+ {&lt;abstract-declar=
+ator&gt;}?
+
+&lt;parameter-type-list&gt; ::=3D &lt;parameter-list&gt;
+                        | &lt;parameter-list&gt; , ...
+
+&lt;parameter-list&gt; ::=3D &lt;parameter-declaration&gt;
+                   | &lt;parameter-list&gt; , &lt;parameter-declaration&gt;
+
+&lt;parameter-declaration&gt; ::=3D {&lt;declaration-specifier&gt;}+ &lt;de=
+clarator&gt;
+                          | {&lt;declaration-specifier&gt;}+ &lt;abstract-d=
+eclarator&gt;
+                          | {&lt;declaration-specifier&gt;}+
+
+&lt;abstract-declarator&gt; ::=3D &lt;pointer&gt;
+                        | &lt;pointer&gt; &lt;direct-abstract-declarator&gt=
+;
+                        | &lt;direct-abstract-declarator&gt;
+
+&lt;direct-abstract-declarator&gt; ::=3D  ( &lt;abstract-declarator&gt; )
+                               | {&lt;direct-abstract-declarator&gt;}? [ {&=
+lt;constant-expression&gt;}? ]
+                               | {&lt;direct-abstract-declarator&gt;}? ( {&=
+lt;parameter-type-list&gt;}? )
+
+&lt;enum-specifier&gt; ::=3D enum &lt;identifier&gt; { &lt;enumerator-list&=
+gt; }
+                   | enum { &lt;enumerator-list&gt; }
+                   | enum &lt;identifier&gt;
+
+&lt;enumerator-list&gt; ::=3D &lt;enumerator&gt;
+                    | &lt;enumerator-list&gt; , &lt;enumerator&gt;
+
+&lt;enumerator&gt; ::=3D &lt;identifier&gt;
+               | &lt;identifier&gt; =3D &lt;constant-expression&gt;
+
+&lt;typedef-name&gt; ::=3D &lt;identifier&gt;
+
+&lt;declaration&gt; ::=3D  {&lt;declaration-specifier&gt;}+ {&lt;init-decla=
+rator&gt;}* ;
+
+&lt;init-declarator&gt; ::=3D &lt;declarator&gt;
+                    | &lt;declarator&gt; =3D &lt;initializer&gt;
+
+&lt;initializer&gt; ::=3D &lt;assignment-expression&gt;
+                | { &lt;initializer-list&gt; }
+                | { &lt;initializer-list&gt; , }
+
+&lt;initializer-list&gt; ::=3D &lt;initializer&gt;
+                     | &lt;initializer-list&gt; , &lt;initializer&gt;
+
+&lt;compound-statement&gt; ::=3D { {&lt;declaration&gt;}* {&lt;statement&gt=
+;}* }
+
+&lt;statement&gt; ::=3D &lt;labeled-statement&gt;
+              | &lt;expression-statement&gt;
+              | &lt;compound-statement&gt;
+              | &lt;selection-statement&gt;
+              | &lt;iteration-statement&gt;
+              | &lt;jump-statement&gt;
+
+&lt;labeled-statement&gt; ::=3D &lt;identifier&gt; : &lt;statement&gt;
+                      | case &lt;constant-expression&gt; : &lt;statement&gt=
+;
+                      | default : &lt;statement&gt;
+
+&lt;expression-statement&gt; ::=3D {&lt;expression&gt;}? ;
+
+&lt;selection-statement&gt; ::=3D if ( &lt;expression&gt; ) &lt;statement&g=
+t;
+                        | if ( &lt;expression&gt; ) &lt;statement&gt; else =
+&lt;statement&gt;
+                        | switch ( &lt;expression&gt; ) &lt;statement&gt;
+
+&lt;iteration-statement&gt; ::=3D while ( &lt;expression&gt; ) &lt;statemen=
+t&gt;
+                        | do &lt;statement&gt; while ( &lt;expression&gt; )=
+ ;
+                        | for ( {&lt;expression&gt;}? ; {&lt;expression&gt;=
+}? ; {&lt;expression&gt;}? ) &lt;statement&gt;
+
+&lt;jump-statement&gt; ::=3D goto &lt;identifier&gt; ;
+                   | continue ;
+                   | break ;
+                   | return {&lt;expression&gt;}? ;
+</pre>
+<p>This grammar was adapted from Section A13 of <i>The C programming=20
+language</i>, 2nd edition, by Brian W. Kernighan and Dennis M. Ritchie,Pren=
+tice=20
+Hall, 1988. </p>
+
+
+<veepn-lock-screen><template shadowmode=3D"open"></template></veepn-lock-sc=
+reen></body></html>
+------MultipartBoundary--7qHy9k1mb4F1iua3O5eQX9W3xj9NKIuTal7VjxzqRi----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-d1efd405-428f-478c-9a0c-549b3c311838@mhtml.blink
+
+@charset "windows-1252";
+
+@font-face { font-family: FigtreeVF; src: url("chrome-extension://majdfhpai=
+honcoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2") format("woff2-variations");=
+ font-weight: 100 1000; font-display: swap; }
+------MultipartBoundary--7qHy9k1mb4F1iua3O5eQX9W3xj9NKIuTal7VjxzqRi----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-39179b76-be3b-466e-bee8-b6f9a751ebdc@mhtml.blink
+
+@charset "windows-1252";
+
+body { transition: opacity 0.2s ease-in; }
+
+body[unresolved] { opacity: 0; display: block; overflow: hidden; position: =
+relative; }
+------MultipartBoundary--7qHy9k1mb4F1iua3O5eQX9W3xj9NKIuTal7VjxzqRi------

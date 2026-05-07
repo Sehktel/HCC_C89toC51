@@ -1,0 +1,94 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    05/26/2025  16:54:06  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+D:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\int0.obj TO .\Objects\int0 PRINT (.\Listings\int0.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\int0.obj (INT0)
+  D:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  .\Objects\int0 (INT0)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         _DATA_GROUP_
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+                    0006H     07FAH                  *** GAP ***
+            CODE    0800H     0011H     UNIT         ?PR?MAIN?INT0
+            CODE    0811H     000CH     UNIT         ?C_C51STARTUP
+            CODE    081DH     0005H     UNIT         ?PR?P14?INT0
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\int0 (INT0)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?INT0
+
+?PR?MAIN?INT0                  0008H    0002H
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\int0 (INT0)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        INT0
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  B:00A8H.7       PUBLIC        EA
+  C:0800H         PUBLIC        main
+  C:081DH         PUBLIC        P14
+  B:00A8H.0       PUBLIC        EX0
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  05/26/2025  16:54:06  PAGE 2
+
+
+  B:0088H.0       PUBLIC        IT0
+  -------         PROC          P14
+  C:081DH         LINE#         3
+  C:081DH         LINE#         4
+  C:081DH         LINE#         5
+  C:0820H         LINE#         6
+  -------         ENDPROC       P14
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        a
+  D:0009H         SYMBOL        b
+  -------         ENDDO         
+  C:0800H         LINE#         9
+  C:0800H         LINE#         11
+  C:0803H         LINE#         12
+  C:0806H         LINE#         13
+  C:0808H         LINE#         14
+  C:080AH         LINE#         15
+  C:080CH         LINE#         16
+  C:080CH         LINE#         17
+  C:080FH         LINE#         18
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        INT0
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0019H BYTE ( 1%) *
+******************************************************************************
+
+Program Size: data=11.0 xdata=0 code=40
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

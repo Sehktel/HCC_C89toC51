@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\int_f.obj" 
+TO ".\Objects\int_f" 
+PRINT(".\Listings\int_f.m51") RAMSIZE(256) 

@@ -1,0 +1,150 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    05/04/2026  18:24:12  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+D:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\blink.obj TO .\Objects\blink PRINT (.\Listings\blink.m51) RAMSIZE (256) CODE (0X00
+>> 00-0X0FFF)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\blink.obj (BLINK)
+  D:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  .\Objects\blink (BLINK)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            REG     0008H     0008H     ABSOLUTE     "REG BANK 1"
+            REG     0010H     0008H     ABSOLUTE     "REG BANK 2"
+            DATA    0018H     0004H     UNIT         _DATA_GROUP_
+            IDATA   001CH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+                    0006H     000DH                  *** GAP ***
+            CODE    0013H     0003H     ABSOLUTE     
+                    0016H     07EAH                  *** GAP ***
+            CODE    0800H     0037H     UNIT         ?PR?INT0?BLINK
+            CODE    0837H     0037H     UNIT         ?PR?INT1?BLINK
+            CODE    086EH     0017H     UNIT         ?PR?MAIN?BLINK
+            CODE    0885H     0016H     UNIT         ?PR?WAIT?BLINK
+            CODE    089BH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\blink (BLINK)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?PR?INT0?BLINK                 0018H    0002H
+  +--> ?PR?WAIT?BLINK
+
+*** NEW ROOT ***************************************************
+
+?PR?INT1?BLINK                 001AH    0002H
+  +--> ?PR?WAIT?BLINK
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?BLINK
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  05/04/2026  18:24:12  PAGE 2
+
+
+
+?PR?MAIN?BLINK                 -----    -----
+  +--> ?PR?WAIT?BLINK
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\blink (BLINK)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        BLINK
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  B:00A8H.7       PUBLIC        EA
+  B:0090H.2       PUBLIC        P1_2
+  B:0090H.3       PUBLIC        P1_3
+  B:0090H.4       PUBLIC        P1_4
+  C:086EH         PUBLIC        main
+  C:0885H         PUBLIC        wait
+  B:00A8H.0       PUBLIC        EX0
+  B:0088H.0       PUBLIC        IT0
+  B:00A8H.2       PUBLIC        EX1
+  B:0088H.2       PUBLIC        IT1
+  C:0800H         SYMBOL        int0
+  C:0837H         SYMBOL        int1
+  -------         PROC          INT0
+  -------         DO            
+  D:0018H         SYMBOL        count
+  D:0019H         SYMBOL        i
+  -------         ENDDO         
+  C:0800H         LINE#         6
+  C:080DH         LINE#         8
+  C:0810H         LINE#         10
+  C:0820H         LINE#         11
+  C:0825H         LINE#         12
+  C:0828H         LINE#         13
+  C:082CH         LINE#         14
+  -------         ENDPROC       INT0
+  -------         PROC          INT1
+  -------         DO            
+  D:001AH         SYMBOL        count
+  D:001BH         SYMBOL        i
+  -------         ENDDO         
+  C:0837H         LINE#         16
+  C:0844H         LINE#         18
+  C:0847H         LINE#         20
+  C:0857H         LINE#         21
+  C:085CH         LINE#         22
+  C:085FH         LINE#         23
+  C:0863H         LINE#         24
+  -------         ENDPROC       INT1
+  -------         PROC          WAIT
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  05/04/2026  18:24:12  PAGE 3
+
+
+  C:0885H         LINE#         26
+  C:0885H         LINE#         27
+  C:0889H         LINE#         30
+  C:089AH         LINE#         31
+  -------         ENDPROC       WAIT
+  -------         PROC          MAIN
+  C:086EH         LINE#         33
+  C:086EH         LINE#         35
+  C:0870H         LINE#         36
+  C:0872H         LINE#         37
+  C:0874H         LINE#         38
+  C:0876H         LINE#         39
+  C:0878H         LINE#         40
+  C:087BH         LINE#         41
+  C:087BH         LINE#         42
+  C:0880H         LINE#         43
+  C:0883H         LINE#         44
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        BLINK
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 00A1H BYTE ( 7%) *
+******************************************************************************
+
+Program Size: data=29.0 xdata=0 code=176
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

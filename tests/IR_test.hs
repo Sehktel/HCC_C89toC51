@@ -15,7 +15,8 @@ data Ir
 toIr :: Ast -> [Ir]
 toIr ast =
   case ast of
-    AstProgram [AstFunction fnName, AstReturn value] -> [IrFunction fnName, IrReturnConst value]
+    AstProgram [AstFunctionDef fnName _ _ (AstCompound [AstReturn value])] ->
+      [IrFunction fnName, IrReturnConst value]
     _ -> [IrUnknown]
 
 irSpec :: Spec

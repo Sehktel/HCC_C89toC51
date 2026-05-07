@@ -1,0 +1,267 @@
+C51 COMPILER V9.60.0.0   BLINK                                                             03/25/2026 13:40:07 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE BLINK
+OBJECT MODULE PLACED IN .\Objects\blink.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE blink.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SYM
+                    -BOLS PRINT(.\Listings\blink.lst) PREPRINT(.\Listings\blink.i) OBJECT(.\Objects\blink.obj)
+
+line level    source
+
+   1          #include <reg2051.h>
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  AT892051.H
+   3      =1  
+   4      =1  Header file for the Atmel AT89C2051.
+   5      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =1  All rights reserved.
+   7      =1  --------------------------------------------------------------------------*/
+   8      =1  
+   9      =1  #ifndef __AT892051_H__
+  10      =1  #define __AT892051_H__
+  11      =1  
+  12      =1  /*------------------------------------------------
+  13      =1  Byte Registers
+  14      =1  ------------------------------------------------*/
+  15      =1  sfr SP      = 0x81;
+  16      =1  sfr DPL     = 0x82;
+  17      =1  sfr DPH     = 0x83;
+  18      =1  sfr PCON    = 0x87;
+  19      =1  sfr TCON    = 0x88;
+  20      =1  sfr TMOD    = 0x89;
+  21      =1  sfr TL0     = 0x8A;
+  22      =1  sfr TL1     = 0x8B;
+  23      =1  sfr TH0     = 0x8C;
+  24      =1  sfr TH1     = 0x8D;
+  25      =1  sfr P1      = 0x90;
+  26      =1  sfr SCON    = 0x98;
+  27      =1  sfr SBUF    = 0x99;
+  28      =1  sfr IE      = 0xA8;
+  29      =1  sfr P3      = 0xB0;
+  30      =1  sfr IP      = 0xB8;
+  31      =1  sfr PSW     = 0xD0;
+  32      =1  sfr ACC     = 0xE0;
+  33      =1  sfr B       = 0xF0;
+  34      =1  
+  35      =1  /*------------------------------------------------
+  36      =1  PCON Bit Values
+  37      =1  ------------------------------------------------*/
+  38      =1  #define IDL_    0x01
+  39      =1  #define STOP_   0x02
+  40      =1  #define EWT_    0x04
+  41      =1  #define EPFW_   0x08
+  42      =1  #define WTR_    0x10
+  43      =1  #define PFW_    0x20
+  44      =1  #define POR_    0x40
+  45      =1  #define SMOD_   0x80
+  46      =1  
+  47      =1  /*------------------------------------------------
+  48      =1  TCON Bit Registers
+  49      =1  ------------------------------------------------*/
+  50      =1  sbit IT0  = 0x88;
+  51      =1  sbit IE0  = 0x89;
+  52      =1  sbit IT1  = 0x8A;
+  53      =1  sbit IE1  = 0x8B;
+C51 COMPILER V9.60.0.0   BLINK                                                             03/25/2026 13:40:07 PAGE 2   
+
+  54      =1  sbit TR0  = 0x8C;
+  55      =1  sbit TF0  = 0x8D;
+  56      =1  sbit TR1  = 0x8E;
+  57      =1  sbit TF1  = 0x8F;
+  58      =1  
+  59      =1  /*------------------------------------------------
+  60      =1  TMOD Bit Values
+  61      =1  ------------------------------------------------*/
+  62      =1  #define T0_M0_   0x01
+  63      =1  #define T0_M1_   0x02
+  64      =1  #define T0_CT_   0x04
+  65      =1  #define T0_GATE_ 0x08
+  66      =1  #define T1_M0_   0x10
+  67      =1  #define T1_M1_   0x20
+  68      =1  #define T1_CT_   0x40
+  69      =1  #define T1_GATE_ 0x80
+  70      =1  
+  71      =1  #define T1_MASK_ 0xF0
+  72      =1  #define T0_MASK_ 0x0F
+  73      =1  
+  74      =1  /*------------------------------------------------
+  75      =1  P1 Bit Registers
+  76      =1  ------------------------------------------------*/
+  77      =1  sbit P1_0 = 0x90;
+  78      =1  sbit P1_1 = 0x91;
+  79      =1  sbit P1_2 = 0x92;
+  80      =1  sbit P1_3 = 0x93;
+  81      =1  sbit P1_4 = 0x94;
+  82      =1  sbit P1_5 = 0x95;
+  83      =1  sbit P1_6 = 0x96;
+  84      =1  sbit P1_7 = 0x97;
+  85      =1  
+  86      =1  sbit AIN0 = 0x90;       /* + Analog comparator input */
+  87      =1  sbit AIN1 = 0x91;       /* - Analog comparator input */
+  88      =1  
+  89      =1  /*------------------------------------------------
+  90      =1  SCON Bit Registers
+  91      =1  ------------------------------------------------*/
+  92      =1  sbit RI   = 0x98;
+  93      =1  sbit TI   = 0x99;
+  94      =1  sbit RB8  = 0x9A;
+  95      =1  sbit TB8  = 0x9B;
+  96      =1  sbit REN  = 0x9C;
+  97      =1  sbit SM2  = 0x9D;
+  98      =1  sbit SM1  = 0x9E;
+  99      =1  sbit SM0  = 0x9F;
+ 100      =1  
+ 101      =1  /*------------------------------------------------
+ 102      =1  IE Bit Registers
+ 103      =1  ------------------------------------------------*/
+ 104      =1  sbit EX0  = 0xA8;       /* 1=Enable External interrupt 0 */
+ 105      =1  sbit ET0  = 0xA9;       /* 1=Enable Timer 0 interrupt */
+ 106      =1  sbit EX1  = 0xAA;       /* 1=Enable External interrupt 1 */
+ 107      =1  sbit ET1  = 0xAB;       /* 1=Enable Timer 1 interrupt */
+ 108      =1  sbit ES   = 0xAC;       /* 1=Enable Serial port interrupt */
+ 109      =1  sbit ET2  = 0xAD;       /* 1=Enable Timer 2 interrupt */
+ 110      =1  
+ 111      =1  sbit EA   = 0xAF;       /* 0=Disable all interrupts */
+ 112      =1  
+ 113      =1  /*------------------------------------------------
+ 114      =1  P3 Bit Registers (Mnemonics & Ports)
+ 115      =1  ------------------------------------------------*/
+C51 COMPILER V9.60.0.0   BLINK                                                             03/25/2026 13:40:07 PAGE 3   
+
+ 116      =1  sbit P3_0 = 0xB0;
+ 117      =1  sbit P3_1 = 0xB1;
+ 118      =1  sbit P3_2 = 0xB2;
+ 119      =1  sbit P3_3 = 0xB3;
+ 120      =1  sbit P3_4 = 0xB4;
+ 121      =1  sbit P3_5 = 0xB5;
+ 122      =1  /* P3_6 Hardwired as AOUT */
+ 123      =1  sbit P3_7 = 0xB7;
+ 124      =1  
+ 125      =1  sbit RXD  = 0xB0;       /* Serial data input */
+ 126      =1  sbit TXD  = 0xB1;       /* Serial data output */
+ 127      =1  sbit INT0 = 0xB2;       /* External interrupt 0 */
+ 128      =1  sbit INT1 = 0xB3;       /* External interrupt 1 */
+ 129      =1  sbit T0   = 0xB4;       /* Timer 0 external input */
+ 130      =1  sbit T1   = 0xB5;       /* Timer 1 external input */
+ 131      =1  sbit AOUT = 0xB6;       /* Analog comparator output */
+ 132      =1  
+ 133      =1  /*------------------------------------------------
+ 134      =1  IP Bit Registers
+ 135      =1  ------------------------------------------------*/
+ 136      =1  sbit PX0  = 0xB8;
+ 137      =1  sbit PT0  = 0xB9;
+ 138      =1  sbit PX1  = 0xBA;
+ 139      =1  sbit PT1  = 0xBB;
+ 140      =1  sbit PS   = 0xBC;
+ 141      =1  
+ 142      =1  /*------------------------------------------------
+ 143      =1  PSW Bit Registers
+ 144      =1  ------------------------------------------------*/
+ 145      =1  sbit P    = 0xD0;
+ 146      =1  sbit F1   = 0xD1;
+ 147      =1  sbit OV   = 0xD2;
+ 148      =1  sbit RS0  = 0xD3;
+ 149      =1  sbit RS1  = 0xD4;
+ 150      =1  sbit F0   = 0xD5;
+ 151      =1  sbit AC   = 0xD6;
+ 152      =1  sbit CY   = 0xD7;
+ 153      =1  
+ 154      =1  /*------------------------------------------------
+ 155      =1  Interrupt Vectors:
+ 156      =1  Interrupt Address = (Number * 8) + 3
+ 157      =1  ------------------------------------------------*/
+ 158      =1  #define IE0_VECTOR      0  /* 0x03 External interrupt 0 */
+ 159      =1  #define TF0_VECTOR      1  /* 0x0B Timer 0 */
+ 160      =1  #define IE1_VECTOR      2  /* 0x13 External interrupt 1 */
+ 161      =1  #define TF1_VECTOR      3  /* 0x1B Timer 1 */
+ 162      =1  #define SIO_VECTOR      4  /* 0x23 Serial port */
+ 163      =1  
+ 164      =1  #endif
+ 165      =1  
+ 166      =1  
+   2          
+   3          void main(void){
+   4   1              unsigned int i;
+   5   1              for(;;){ // while(1) 1 -- magic number
+   6   2                      P3_7 = 0;
+   7   2                      for(i = 0; i < 65535; i++) { ; } // wait
+   8   2                      P3_7 = 1;
+   9   2                      for(i = 0; i < 65535; i++) { ; } // wait
+  10   2              }
+  11   1      }
+C51 COMPILER V9.60.0.0   BLINK                                                             03/25/2026 13:40:07 PAGE 4   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 3
+                                           ; SOURCE LINE # 5
+0000         ?C0001:
+                                           ; SOURCE LINE # 6
+0000 C2B7              CLR     P3_7
+                                           ; SOURCE LINE # 7
+;---- Variable 'i' assigned to Register 'DPTR' ----
+0002 900000            MOV     DPTR,#00H
+0005         ?C0003:
+0005 AF82              MOV     R7,DPL
+0007 AE83              MOV     R6,DPH
+0009 E4                CLR     A
+000A FC                MOV     R4,A
+000B FD                MOV     R5,A
+000C 7BFF              MOV     R3,#0FFH
+000E 7AFF              MOV     R2,#0FFH
+0010 F9                MOV     R1,A
+0011 F8                MOV     R0,A
+0012 D3                SETB    C
+0013 120000      E     LCALL   ?C?SLCMP
+0016 4003              JC      ?C0004
+0018 A3                INC     DPTR
+0019 80EA              SJMP    ?C0003
+001B         ?C0004:
+                                           ; SOURCE LINE # 8
+001B D2B7              SETB    P3_7
+                                           ; SOURCE LINE # 9
+001D E4                CLR     A
+001E F583              MOV     DPH,A
+0020 F582              MOV     DPL,A
+0022         ?C0006:
+0022 AF82              MOV     R7,DPL
+0024 AE83              MOV     R6,DPH
+0026 E4                CLR     A
+0027 FC                MOV     R4,A
+0028 FD                MOV     R5,A
+0029 7BFF              MOV     R3,#0FFH
+002B 7AFF              MOV     R2,#0FFH
+002D F9                MOV     R1,A
+002E F8                MOV     R0,A
+002F D3                SETB    C
+0030 120000      E     LCALL   ?C?SLCMP
+0033 40CB              JC      ?C0001
+0035 A3                INC     DPTR
+0036 80EA              SJMP    ?C0006
+             ; FUNCTION main (END)
+
+C51 COMPILER V9.60.0.0   BLINK                                                             03/25/2026 13:40:07 PAGE 5   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+P3_7 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B7H  1
+main . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  * REG *  DATA   U_INT    0082H  2
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     56    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

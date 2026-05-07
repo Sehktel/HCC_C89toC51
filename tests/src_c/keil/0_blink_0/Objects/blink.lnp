@@ -1,0 +1,4 @@
+".\Objects\blink.obj" 
+TO ".\Objects\blink" 
+PRINT(".\Listings\blink.m51") IXREF 
+RAMSIZE(256) 

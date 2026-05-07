@@ -1,0 +1,121 @@
+C51 COMPILER V9.60.0.0   0_INTERRUPT_0                                                     03/01/2026 14:21:25 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE 0_INTERRUPT_0
+OBJECT MODULE PLACED IN .\Objects\0_interrupt_0.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE 0_interrupt_0.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\List
+                    -ings\0_interrupt_0.lst) OBJECT(.\Objects\0_interrupt_0.obj)
+
+line level    source
+
+   1          //Osnovnoy tsikl -- budet morgat' odin svetodiod v beskonechnom tsikle. 
+   2          //Po INT0 -- budet morgat' drugoy svetodiod 4 raza 
+   3          //Po INT1 -- budet morgat' tretiy svetodiod 6 raz
+   4          
+   5          //The main loop will blink one LED in an infinite loop.
+   6          //INT0 will blink another LED 4 times.
+   7          //INT1 will blink a third LED 6 times.
+   8          
+   9          
+  10          #include <reg2051.h>
+  11          
+  12          void wait(void){
+  13   1              unsigned char i; // 1 - byte, positive ( 0 -- 255 )
+  14   1              for (i = 0; i < 255; i++){ ; }
+  15   1      }
+  16          
+  17          
+  18          // P1.4 -- main
+  19          // P1.3 -- int0
+  20          // P1.2 -- int1
+  21          
+  22          void f_int0(void) interrupt 0 // Instruction Pointer --> 0x0003h
+  23          { 
+  24   1              unsigned char i;
+  25   1              P1 = 0x00;
+  26   1              for(i = 0; i < 4; i++){
+  27   2                      P1_3 ^= 1; // toggle  --> 1
+  28   2                      wait();
+  29   2                      P1_3 ^= 1; // toggle  --> 0
+  30   2                      wait();
+  31   2              }
+  32   1              IE1 = 1;
+  33   1      }
+  34          
+  35          
+  36          void f_int1(void) interrupt 2 // Instruction Pointer --> 0x0013h
+  37          {
+  38   1              unsigned char i;
+  39   1              P1 = 0x00;
+  40   1              for(i = 0; i < 5; i++){
+  41   2                      P1_2 ^= 1; // toggle  --> 1
+  42   2                      wait();
+  43   2                      P1_2 ^= 1; // toggle  --> 0
+  44   2                      wait();
+  45   2              }
+  46   1      }
+  47          
+  48          // sbit P1_0 = 0x90;
+  49          // sbit P1_1 = 0x91;
+  50          // sbit P1_2 = 0x92;
+  51          // sbit P1_3 = 0x93;
+  52          // sbit P1_4 = 0x94;
+  53          // sbit P1_5 = 0x95;
+  54          // sbit P1_6 = 0x96;
+C51 COMPILER V9.60.0.0   0_INTERRUPT_0                                                     03/01/2026 14:21:25 PAGE 2   
+
+  55          // sbit P1_7 = 0x97;
+  56          
+  57          void main(void){
+  58   1              P1 = 0x00;
+  59   1              /*------------------------------------------------
+  60   1      IE Bit Registers
+  61   1      ------------------------------------------------*/
+  62   1      //sbit EX0  = 0xA8;       /* 1=Enable External interrupt 0 */
+  63   1      //sbit ET0  = 0xA9;       /* 1=Enable Timer 0 interrupt */
+  64   1      //sbit EX1  = 0xAA;       /* 1=Enable External interrupt 1 */
+  65   1      //sbit ET1  = 0xAB;       /* 1=Enable Timer 1 interrupt */
+  66   1      //sbit ES   = 0xAC;       /* 1=Enable Serial port interrupt */
+  67   1      //sbit ET2  = 0xAD;       /* 1=Enable Timer 2 interrupt */
+  68   1      
+  69   1      //sbit EA   = 0xAF;       /* 0=Disable all interrupts */
+  70   1      
+  71   1              EA = 1; // Enable Interrupts
+  72   1              EX0 = 1; // Enable INT0
+  73   1              EX1 = 1; // Enbale INT1
+  74   1              
+  75   1              /*------------------------------------------------
+  76   1      TCON Bit Registers
+  77   1      ------------------------------------------------*/
+  78   1      //sbit IT0  = 0x88;
+  79   1      //sbit IE0  = 0x89;
+  80   1      //sbit IT1  = 0x8A;
+  81   1      //sbit IE1  = 0x8B;
+  82   1      //sbit TR0  = 0x8C;
+  83   1      //sbit TF0  = 0x8D;
+  84   1      //sbit TR1  = 0x8E;
+  85   1      //sbit TF1  = 0x8F;
+  86   1      
+  87   1              IT0 = 1; // fall - triggered on INT0
+  88   1              IT1 = 1; // fall - triggered on INT1
+  89   1      
+  90   1              
+  91   1              while(1){
+  92   2                      P1_4 ^= 1; // toggle 
+  93   2                      wait();
+  94   2              }
+  95   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    149    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

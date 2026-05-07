@@ -1,7 +1,6 @@
 module Main (main) where
 
 import AST_test (astSpec)
-import IR_test (irSpec)
 import Lexer_test (lexerMinimalSpec)
 import Parser_test (parserSpec)
 import Preprocessor_test (preprocessorSpec)
@@ -13,4 +12,3 @@ main = hspec $ do
   preprocessorSpec
   parserSpec
   astSpec
-  irSpec

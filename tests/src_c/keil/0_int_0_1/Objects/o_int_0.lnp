@@ -1,0 +1,3 @@
+".\Objects\0_int_0.obj" 
+TO ".\Objects\o_int_0" 
+PRINT(".\Listings\o_int_0.m51") RAMSIZE(256) 

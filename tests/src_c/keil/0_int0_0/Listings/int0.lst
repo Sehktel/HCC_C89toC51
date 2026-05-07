@@ -1,0 +1,92 @@
+C51 COMPILER V9.60.0.0   INT0                                                              05/26/2025 16:54:06 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE INT0
+OBJECT MODULE PLACED IN .\Objects\int0.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE int0.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE SYMBOLS PRINT(.\
+                    -Listings\int0.lst) PREPRINT(.\Listings\int0.i) OBJECT(.\Objects\int0.obj)
+
+line level    source
+
+   1          #include <reg2051.h>
+   2          
+   3          void P14 (void) interrupt 0 using 2 {
+   4   1              while(1){
+   5   2                      P1 = 0x04;
+   6   2              }
+   7   1      }
+   8          
+   9          void main(void){
+  10   1              char a, b;
+  11   1              a = 5;
+  12   1              b = 15;
+  13   1              EA = 1;
+  14   1              EX0 = 1;
+  15   1              IT0 = 1;
+  16   1              while(1){
+  17   2                      P1 = 0x08;
+  18   2              }
+  19   1      }
+C51 COMPILER V9.60.0.0   INT0                                                              05/26/2025 16:54:06 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION P14 (BEGIN)
+                                           ; SOURCE LINE # 3
+0000         ?C0001:
+                                           ; SOURCE LINE # 4
+                                           ; SOURCE LINE # 5
+0000 759004            MOV     P1,#04H
+                                           ; SOURCE LINE # 6
+0003 80FB              SJMP    ?C0001
+             ; FUNCTION P14 (END)
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 9
+                                           ; SOURCE LINE # 11
+0000 750005      R     MOV     a,#05H
+                                           ; SOURCE LINE # 12
+0003 75000F      R     MOV     b,#0FH
+                                           ; SOURCE LINE # 13
+0006 D2AF              SETB    EA
+                                           ; SOURCE LINE # 14
+0008 D2A8              SETB    EX0
+                                           ; SOURCE LINE # 15
+000A D288              SETB    IT0
+000C         ?C0004:
+                                           ; SOURCE LINE # 16
+                                           ; SOURCE LINE # 17
+000C 759008            MOV     P1,#08H
+                                           ; SOURCE LINE # 18
+000F 80FB              SJMP    ?C0004
+             ; FUNCTION main (END)
+
+C51 COMPILER V9.60.0.0   INT0                                                              05/26/2025 16:54:06 PAGE 3   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+P1 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0090H  1
+EA . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AFH  1
+main . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  a. . . . . . . . . . . . . . . . . .  AUTO     DATA   CHAR     0000H  1
+  b. . . . . . . . . . . . . . . . . .  AUTO     DATA   CHAR     0001H  1
+P14. . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+EX0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A8H  1
+IT0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0088H  1
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     22    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

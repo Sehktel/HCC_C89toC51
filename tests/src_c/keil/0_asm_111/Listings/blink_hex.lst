@@ -1,0 +1,62 @@
+A51 MACRO ASSEMBLER  BLINK_HEX                                                            02/25/2026 13:47:34 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\blink_hex.obj
+ASSEMBLER INVOKED BY: D:\Keil_v5\C51\BIN\A51.EXE blink_hex.a51 SET(SMALL) DEBUG PRINT(.\Listings\blink_hex.lst) OBJECT(.
+                      \Objects\blink_hex.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     NAME    BLINK_PROG
+                       2     
+0000                   3     ORG     0000H           ; ????? ?????? ????????? (Reset Vector)
+0000 802E              4             JMP START
+                       5     
+0030                   6     ORG     0030H           ; ????????, ????? ?? ???????????? ? ???????? ??????????
+0030                   7     START:
+                       8         ; --- ????????? (P3.7 = 1) ---
+0030 75B080            9         MOV P3, #080H       ; 0x75, 0xB0, 0x80: ?????? 1000 0000b ? ???? P3
+                      10     
+0033                  11     DELAY_ON:
+0033 78FF             12         MOV R0, #0FFH       ; 0x78, 0xFF
+0035 79FF             13         MOV R1, #0FFH       ; 0x79, 0xFF
+0037                  14     LOOP1:
+0037 D9FE             15         DJNZ R1, LOOP1      ; 0xD9, 0xFE: ????????? R1, ???? ?? 0 - ?????? ?? 2 ????? ?????
+0039 D8FC             16         DJNZ R0, LOOP1      ; 0xD8, 0xFC: ????????? R0, ???? ?? 0 - ?????? ?? 4 ????? ?????
+                      17     
+                      18         ; --- ?????????? (P3.7 = 0) ---
+003B 75B000           19         MOV P3, #000H       ; 0x75, 0xB0, 0x00: ?????? 0000 0000b ? ???? P3
+                      20     
+003E                  21     DELAY_OFF:
+003E 78FF             22         MOV R0, #0FFH       ; 0x78, 0xFF
+0040 79FF             23         MOV R1, #0FFH       ; 0x79, 0xFF
+0042                  24     LOOP2:
+0042 D9FE             25         DJNZ R1, LOOP2      ; 0xD9, 0xFE
+0044 D8FC             26         DJNZ R0, LOOP2      ; 0xD8, 0xFC
+                      27     
+                      28         ; --- ???? ---
+0046 80E8             29         SJMP START          ; 0x80, 0xDC: ?????? ????? ?? ????? START (-24 ?????)
+                      30     
+                      31     END
+A51 MACRO ASSEMBLER  BLINK_HEX                                                            02/25/2026 13:47:34 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BLINK_PROG . . . .  N NUMB   -----       
+DELAY_OFF. . . . .  C ADDR   003EH   A   
+DELAY_ON . . . . .  C ADDR   0033H   A   
+LOOP1. . . . . . .  C ADDR   0037H   A   
+LOOP2. . . . . . .  C ADDR   0042H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+START. . . . . . .  C ADDR   0030H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

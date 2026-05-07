@@ -1,10 +1,14 @@
-module Lexer_test (lexerAllTokensSpec, lexerABSpec, lexerTodoSpec, lexerMinimalSpec) where
+module Lexer_test (lexerAllTokensSpec, lexerABSpec, lexerTodoSpec, lexerMinimalSpec, lexerFixtureSpec) where
 
-import Control.Monad (forM_)
+import Control.Monad (filterM, forM, forM_)
+import Data.Char (isSpace)
+import Data.List (nub, sort)
 import Lexer (IntSuffix (..), Token (..), lexer)
 import Preprocessor (preprocess)
-
-import Test.Hspec (Spec, describe, it, shouldBe)
+import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
+import System.FilePath ((</>), replaceExtension, takeExtension)
+import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
+import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
 
 lexerMinimalSpec :: Spec
 lexerMinimalSpec = 
@@ -137,13 +141,13 @@ lexerAllTokensSpec =
 
   where
     -- Одна большая строка: ключевые слова, идентификатор/число, операторы и разделители.
-    input = "one of auto double int struct break else long switch case enum register typedef char extern return union const float short unsigned continue for signed void default goto sizeof volatile do if static while sfr sfr16 sbit sft bit data idata pdata xdata code interrupt using reentrant _at_ ident 42 = == != + += ++ - -= -- * *= / /= ; , . : ? ! # % %= & && &= | || |= ~ ^ ^= \\ \"s\" 'x' ( ) { } [ ] < <= << <<= > >= >> >>="
+    input = "one of auto double int struct break else long switch case enum register typedef char extern return union const float short unsigned continue for signed void default goto sizeof volatile do if static while sfr sfr16 sbit sft bit data idata bdata pdata xdata code interrupt using reentrant _at_ ident 42 = == != + += ++ - -= -- * *= / /= ; , . : ? ! # % %= & && &= | || |= ~ ^ ^= \\ \"s\" 'x' ( ) { } [ ] < <= << <<= > >= >> >>="
     expected =
       [ TokenOne, TokenOf, TokenAuto, TokenDouble, TokenInt, TokenStruct, TokenBreak, TokenElse, TokenLong
       , TokenSwitch, TokenCase, TokenEnum, TokenRegister, TokenTypedef, TokenChar, TokenExtern, TokenReturn
       , TokenUnion, TokenConst, TokenFloat, TokenShort, TokenUnsigned, TokenContinue, TokenFor, TokenSigned
       , TokenVoid, TokenDefault, TokenGoto, TokenSizeof, TokenVolatile, TokenDo, TokenIf, TokenStatic
-      , TokenWhile, TokenSfr, TokenSfr16, TokenSbit, TokenSft, TokenBit, TokenData, TokenIdata, TokenPdata
+      , TokenWhile, TokenSfr, TokenSfr16, TokenSbit, TokenSft, TokenBit, TokenData, TokenIdata, TokenBdata, TokenPdata
       , TokenXdata, TokenCode, TokenInterrupt, TokenUsing, TokenReentrant, TokenAt, TokenIdentifier "ident"
       , TokenNumber 42, TokenAssign, TokenEqual, TokenBangEqual, TokenPlus, TokenPlusAssign, TokenPlusPlus, TokenMinus
       , TokenMinusAssign, TokenMinusMinus, TokenMultiply, TokenMultiplyEqual, TokenDivide, TokenDivideEqual
@@ -177,3 +181,56 @@ lexerTodoSpec =
   describe "Lexer TODO" $ do
     it "строковые и символьные литералы покрыты тестами" $ do
       lexer "\"ok\" 'a'" `shouldBe` [TokenStringLiteral "ok", TokenCharLiteral 'a']
+
+lexerFixtureSpec :: Spec
+lexerFixtureSpec = do
+  fixtures <- runIO discoverLexerFixtures
+  manifestCases <- runIO (loadCasesByPackage "tests/test-manifest.json" "Lexer")
+  describe "Lexer fixtures (.l)" $ do
+    forM_ fixtures $ \cFile ->
+      it ("токенизирует fixture " ++ cFile) $ do
+        source <- readFile cFile
+        expected <- readFile (replaceExtension cFile ".l")
+        show (lexer source) `shouldBe` trim expected
+    forM_ manifestCases assertLexerManifestCase
+
+discoverLexerFixtures :: IO [FilePath]
+discoverLexerFixtures = do
+  cFiles <- findFilesByExtension "tests/src_c" ".c"
+  paired <- filterM hasLexerExpectation cFiles
+  pure (sort (nub paired))
+  where
+    hasLexerExpectation cFile = doesFileExist (replaceExtension cFile ".l")
+
+findFilesByExtension :: FilePath -> String -> IO [FilePath]
+findFilesByExtension root extension = do
+  exists <- doesDirectoryExist root
+  if not exists
+    then pure []
+    else go root
+  where
+    go dir = do
+      names <- listDirectory dir
+      nested <- forM names $ \name -> do
+        let path = dir </> name
+        isDir <- doesDirectoryExist path
+        if isDir
+          then go path
+          else pure [path | takeExtension path == extension]
+      pure (concat nested)
+
+trim :: String -> String
+trim = dropWhileEnd isSpace . dropWhile isSpace
+
+dropWhileEnd :: (Char -> Bool) -> String -> String
+dropWhileEnd predicate = reverse . dropWhile predicate . reverse
+
+assertLexerManifestCase :: ManifestCase -> Spec
+assertLexerManifestCase mc =
+  it ("manifest: " ++ mcName mc) $ do
+    source <- readFile (mcInputFile mc)
+    expected <- readFile (mcOutputFile mc)
+    let actual = show (lexer source)
+    case matchTextExpectation (mcExpectation mc) actual (trim expected) of
+      Right matched -> matched `shouldBe` True
+      Left err -> expectationFailure err

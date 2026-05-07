@@ -1,0 +1,1382 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://katef.github.io/kgt/doc/gallery/c89-ebnf.html
+Subject: 
+Date: Tue, 5 May 2026 13:30:56 +0300
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc----"
+
+
+------MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc----
+Content-Type: text/html
+Content-ID: <frame-234EAE117C364DD92A7D25EDC323DEF3@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://katef.github.io/kgt/doc/gallery/c89-ebnf.html
+
+<!DOCTYPE html><html><head><meta http-equiv=3D"Content-Type" content=3D"tex=
+t/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/css" href=3D=
+"cid:css-d62f2728-2c10-4a36-9b12-ef4d2e7fa04f@mhtml.blink" /><link rel=3D"s=
+tylesheet" type=3D"text/css" href=3D"cid:css-b7185a5f-eb12-45f9-b9a6-47cd36=
+f32a66@mhtml.blink" /><link rel=3D"stylesheet" type=3D"text/css" href=3D"ci=
+d:css-7c611de1-95b8-4c5c-a6cd-0395b0758745@mhtml.blink" />
+ =20
+ </head>
+ <body>
+  <dl class=3D"bnf">
+    <dt><a name=3D"translation_unit">translation_unit</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#translatio=
+n_unit" class=3D"rule" data-min=3D"1" data-max=3D"1">translation_unit</a></=
+span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#external_decl" class=3D"rule" data-mi=
+n=3D"1" data-max=3D"1">external_decl</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"external_decl">external_decl</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#function_definition" class=3D"rule" data-min=3D"1" data-max=
+=3D"1">function_definition</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"token">decl</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"function_definition">function_definition</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#decl_specs=
+" class=3D"rule" data-min=3D"1" data-max=3D"1">decl_specs</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#declarator" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#decl_list" class=3D"rule" data-min=3D"1" data-max=3D"1">decl_li=
+st</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#compound_stat" class=3D"rule" data-mi=
+n=3D"1" data-max=3D"1">compound_stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"decl_list">decl_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#decl_list"=
+ class=3D"rule" data-min=3D"1" data-max=3D"1">decl_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#decl_specs" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">decl_specs</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#init_declarator_list" class=3D"rule" data-min=3D"1" data-max=3D=
+"1">init_declarator_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"decl_specs">decl_specs</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">(</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#storage_cl=
+ass_spec" class=3D"rule" data-min=3D"1" data-max=3D"1">storage_class_spec</=
+a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><a href=3D"https://katef=
+.github.io/kgt/doc/gallery/c89-ebnf.html#type_spec" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">type_spec</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><a href=3D"https://katef=
+.github.io/kgt/doc/gallery/c89-ebnf.html#type_qualifier" class=3D"rule" dat=
+a-min=3D"1" data-max=3D"1">type_qualifier</a></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#decl_specs" class=3D"rule" data-min=3D"1" data-max=3D"1">decl_s=
+pecs</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"storage_class_spec">storage_class_spec</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"auto"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"register"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"static"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"extern"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"typedef"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"type_spec">type_spec</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"void"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"char"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"short"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"int"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"long"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"float"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"double"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"signed"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"unsigned"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#struct_or_union_spec" class=3D"rule" data-min=3D"1" data-ma=
+x=3D"1">struct_or_union_spec</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#enum_spec" class=3D"rule" data-min=3D"1" data-max=3D"1">enu=
+m_spec</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#typedef_name" class=3D"rule" data-min=3D"1" data-max=3D"1">=
+typedef_name</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"type_qualifier">type_qualifier</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"const"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"volatile"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"struct_or_union_spec">struct_or_union_spec</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">(</span> <span class=3D"alt">=
+<tt class=3D"literal cs">"struct"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"union"</tt></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#id" class=3D"rule" data-min=3D"1" data-max=3D"1">id</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><span class=3D"rep">[</s=
+pan> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery=
+/c89-ebnf.html#id" class=3D"rule" data-min=3D"1" data-max=3D"1">id</a></spa=
+n>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"{=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#struct_decl_list" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">struct_decl_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"}=
+"</tt></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"struct_decl_list">struct_decl_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#struct_dec=
+l_list" class=3D"rule" data-min=3D"1" data-max=3D"1">struct_decl_list</a></=
+span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#spec_qualifier_list" class=3D"rule" d=
+ata-min=3D"1" data-max=3D"1">spec_qualifier_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#struct_declarator_list" class=3D"rule=
+" data-min=3D"1" data-max=3D"1">struct_declarator_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"init_declarator_list">init_declarator_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#init_decla=
+rator_list" class=3D"rule" data-min=3D"1" data-max=3D"1">init_declarator_li=
+st</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#declarator" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"=3D"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#initializer" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">initializer</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"spec_qualifier_list">spec_qualifier_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">(</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#type_spec"=
+ class=3D"rule" data-min=3D"1" data-max=3D"1">type_spec</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><a href=3D"https://katef=
+.github.io/kgt/doc/gallery/c89-ebnf.html#type_qualifier" class=3D"rule" dat=
+a-min=3D"1" data-max=3D"1">type_qualifier</a></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#spec_qualifier_list" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">spec_qualifier_list</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"struct_declarator_list">struct_declarator_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#struct_dec=
+larator_list" class=3D"rule" data-min=3D"1" data-max=3D"1">struct_declarato=
+r_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#declarator" class=3D"rule" data-min=3D"1" data-max=3D"1">declar=
+ator</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><span class=3D"rep">[</s=
+pan> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery=
+/c89-ebnf.html#declarator" class=3D"rule" data-min=3D"1" data-max=3D"1">dec=
+larator</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">":=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#const_exp" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">const_exp</a></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"enum_spec">enum_spec</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"enum"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#id" class=3D"rule" data-min=3D"1" data-max=3D"1">id</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><span class=3D"rep">[</s=
+pan> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery=
+/c89-ebnf.html#id" class=3D"rule" data-min=3D"1" data-max=3D"1">id</a></spa=
+n>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"{=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#enumerator_list" class=3D"rule" data-=
+min=3D"1" data-max=3D"1">enumerator_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"}=
+"</tt></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"enumerator_list">enumerator_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#enumerator=
+_list" class=3D"rule" data-min=3D"1" data-max=3D"1">enumerator_list</a></sp=
+an>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"token">id</s=
+pan></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"=3D"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#const_exp" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">const_exp</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"declarator">declarator</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#pointer" c=
+lass=3D"rule" data-min=3D"1" data-max=3D"1">pointer</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#direct_declarator" class=3D"rule" dat=
+a-min=3D"1" data-max=3D"1">direct_declarator</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"direct_declarator">direct_declarator</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"token">id</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#declarator" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#direct_declarator" class=3D"rule" data-min=3D"1" data-max=
+=3D"1">direct_declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"[=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#const_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">const_e=
+xp</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"]=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#direct_declarator" class=3D"rule" data-min=3D"1" data-max=
+=3D"1">direct_declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#param_type_list" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+aram_type_list</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><a href=3D"https://katef=
+.github.io/kgt/doc/gallery/c89-ebnf.html#id_list" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">id_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"pointer">pointer</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"*"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#type_qualifier_list" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">type_qualifier_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#pointer" class=3D"rule" data-min=3D"1" data-max=3D"1">pointer</=
+a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"type_qualifier_list">type_qualifier_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#type_quali=
+fier_list" class=3D"rule" data-min=3D"1" data-max=3D"1">type_qualifier_list=
+</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#type_qualifier" class=3D"rule" data-m=
+in=3D"1" data-max=3D"1">type_qualifier</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"param_type_list">param_type_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#param_list" class=3D"rule" data-min=3D"1" data-max=3D"1">pa=
+ram_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">","</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">".=
+.."</tt></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"param_list">param_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">{</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#param_decl=
+" class=3D"rule" data-min=3D"1" data-max=3D"1">param_decl</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">}</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#param_decl" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">param_decl</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"param_decl">param_decl</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#decl_specs" class=3D"rule" data-min=3D"1" data-max=3D"1">de=
+cl_specs</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#declarator" class=3D"rule" data-min=3D"1" data-max=3D"1">declar=
+ator</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><a href=3D"https://katef=
+.github.io/kgt/doc/gallery/c89-ebnf.html#abstract_declarator" class=3D"rule=
+" data-min=3D"1" data-max=3D"1">abstract_declarator</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"id_list">id_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">{</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#id" class=
+=3D"rule" data-min=3D"1" data-max=3D"1">id</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">}</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"token">id</s=
+pan></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"initializer">initializer</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#assignment_exp" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">assignment_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"{"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#initializer_list" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">initializer_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"}=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"{"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#initializer_list" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">initializer_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"}=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"initializer_list">initializer_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">{</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#initialize=
+r" class=3D"rule" data-min=3D"1" data-max=3D"1">initializer</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">}</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#initializer" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">initializer</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"type_name">type_name</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#spec_qualifier_list" class=3D"rule" data-min=3D"1" data-max=
+=3D"1">spec_qualifier_list</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#abstract_declarator" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">abstract_declarator</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"abstract_declarator">abstract_declarator</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#pointer" class=3D"rule" data-min=3D"1" data-max=3D"1">point=
+er</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#pointer" class=3D"rule" data-min=3D"1" data-max=3D"1">point=
+er</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#direct_abstract_declarator" class=3D"=
+rule" data-min=3D"1" data-max=3D"1">direct_abstract_declarator</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#direct_abstract_declarator" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">direct_abstract_declarator</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"direct_abstract_declarator">direct_abstract_declarator</=
+a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#abstract_declarator" class=3D"rule" d=
+ata-min=3D"1" data-max=3D"1">abstract_declarator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#direct_abs=
+tract_declarator" class=3D"rule" data-min=3D"1" data-max=3D"1">direct_abstr=
+act_declarator</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"["</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#const_exp" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">const_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"]=
+"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"["</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"]=
+"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#param_type_list" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+aram_type_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"typedef_name">typedef_name</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"token">id</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"stat">stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#labeled_stat" class=3D"rule" data-min=3D"1" data-max=3D"1">=
+labeled_stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#exp_stat" class=3D"rule" data-min=3D"1" data-max=3D"1">exp_=
+stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#compound_stat" class=3D"rule" data-min=3D"1" data-max=3D"1"=
+>compound_stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#selection_stat" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">selection_stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#iteration_stat" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">iteration_stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#jump_stat" class=3D"rule" data-min=3D"1" data-max=3D"1">jum=
+p_stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"labeled_stat">labeled_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">(</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#id" class=
+=3D"rule" data-min=3D"1" data-max=3D"1">id</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"case"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"default"</tt></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">":=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"exp_stat">exp_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#exp" class=
+=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"compound_stat">compound_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"{"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#decl_list" class=3D"rule" data-min=3D"1" data-max=3D"1">decl_li=
+st</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#stat_list" class=3D"rule" data-min=3D"1" data-max=3D"1">stat_li=
+st</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"}=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"stat_list">stat_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">{</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#stat" clas=
+s=3D"rule" data-min=3D"1" data-max=3D"1">stat</a></span>
+ <span class=3D"rep">}</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"selection_stat">selection_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"if"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"else"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+ <span class=3D"rep">]</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"switch"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"iteration_stat">iteration_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"while"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"do"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"w=
+hile"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"for"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#exp" class=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span=
+>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#exp" class=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span=
+>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#exp" class=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span=
+>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#stat" class=3D"rule" data-min=3D"1" d=
+ata-max=3D"1">stat</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"jump_stat">jump_stat</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"goto"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"token">id</s=
+pan></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"continue"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"break"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"return"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#exp" class=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span=
+>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">";=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"exp">exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#exp" class=
+=3D"rule" data-min=3D"1" data-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#assignment_exp" class=3D"rule" data-m=
+in=3D"1" data-max=3D"1">assignment_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"assignment_exp">assignment_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#conditional_exp" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">conditional_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#unary_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">una=
+ry_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#assignment_operator" class=3D"rule" d=
+ata-min=3D"1" data-max=3D"1">assignment_operator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#assignment_exp" class=3D"rule" data-m=
+in=3D"1" data-max=3D"1">assignment_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"assignment_operator">assignment_operator</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"*=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"/=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"%=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"+=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"-=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"&lt;&lt;=3D"</tt></span=
+>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"&gt;&gt;=3D"</tt></span=
+>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"&amp;=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"^=3D"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"|=3D"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"conditional_exp">conditional_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#logical_or_exp" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">logical_or_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"?"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">":=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#conditional_exp" class=3D"rule" data-=
+min=3D"1" data-max=3D"1">conditional_exp</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"const_exp">const_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#conditional_exp" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">conditional_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"logical_or_exp">logical_or_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#logical_and_exp" class=3D"rule" data-min=3D"1" data-max=3D"=
+1">logical_and_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#logical_or_exp" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">logical_or_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"||"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#logical_and_exp" class=3D"rule" data-=
+min=3D"1" data-max=3D"1">logical_and_exp</a></span>
+ <span class=3D"rep">]</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"logical_and_exp">logical_and_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#logical_an=
+d_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">logical_and_exp</a></sp=
+an>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"&=
+amp;&amp;"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#inclusive_or_exp" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">inclusive_or_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"inclusive_or_exp">inclusive_or_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#inclusive_=
+or_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">inclusive_or_exp</a></=
+span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"|=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exclusive_or_exp" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">exclusive_or_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"exclusive_or_exp">exclusive_or_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#exclusive_=
+or_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">exclusive_or_exp</a></=
+span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"^=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#and_exp" class=3D"rule" data-min=3D"1=
+" data-max=3D"1">and_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"and_exp">and_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#and_exp" c=
+lass=3D"rule" data-min=3D"1" data-max=3D"1">and_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"&=
+amp;"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#equality_exp" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">equality_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"equality_exp">equality_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#equality_e=
+xp" class=3D"rule" data-min=3D"1" data-max=3D"1">equality_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"=3D=3D"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"!=3D"</tt></span>
+ <span class=3D"rep">)</span></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#relational_exp" class=3D"rule" data-m=
+in=3D"1" data-max=3D"1">relational_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"relational_exp">relational_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#relational=
+_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">relational_exp</a></span=
+>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"&lt;"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"&gt;"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"&lt;=3D"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"&gt;=3D"</tt></span>
+ <span class=3D"rep">)</span></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#shift_expression" class=3D"rule" data=
+-min=3D"1" data-max=3D"1">shift_expression</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"shift_expression">shift_expression</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#shift_expr=
+ession" class=3D"rule" data-min=3D"1" data-max=3D"1">shift_expression</a></=
+span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"&lt;&lt;"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"&gt;&gt;"</tt></span>
+ <span class=3D"rep">)</span></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#additive_exp" class=3D"rule" data-min=
+=3D"1" data-max=3D"1">additive_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"additive_exp">additive_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#additive_e=
+xp" class=3D"rule" data-min=3D"1" data-max=3D"1">additive_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"+"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"-"</tt></span>
+ <span class=3D"rep">)</span></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#mult_exp" class=3D"rule" data-min=3D"=
+1" data-max=3D"1">mult_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"mult_exp">mult_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#mult_exp" =
+class=3D"rule" data-min=3D"1" data-max=3D"1">mult_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"*"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"/"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"%"</tt></span>
+ <span class=3D"rep">)</span></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#cast_exp" class=3D"rule" data-min=3D"=
+1" data-max=3D"1">cast_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"cast_exp">cast_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#unary_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">una=
+ry_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#type_name" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">type_name</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#cast_exp" class=3D"rule" data-min=3D"=
+1" data-max=3D"1">cast_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"unary_exp">unary_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#postfix_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+ostfix_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"rep">(</span> <span class=3D"alt">=
+<tt class=3D"literal cs">"++"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"--"</tt></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#unary_exp" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">unary_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#unary_operator" class=3D"rule" data-min=3D"1" data-max=3D"1=
+">unary_operator</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#cast_exp" class=3D"rule" data-min=3D"=
+1" data-max=3D"1">cast_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"sizeof"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#unary_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">unary_e=
+xp</a></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#type_name" class=3D"rule" data-min=3D=
+"1" data-max=3D"1">type_name</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"unary_operator">unary_operator</a>:</dt>
+    <dd>
+      <span class=3D"alt"><tt class=3D"literal cs">"&amp;"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"*"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"-"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"~"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"!"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"postfix_exp">postfix_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#primary_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+rimary_exp</a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#postfix_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+ostfix_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"[=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"]=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#postfix_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+ostfix_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">"(=
+"</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">[</span=
+> <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/gallery/c8=
+9-ebnf.html#argument_exp_list" class=3D"rule" data-min=3D"1" data-max=3D"1"=
+>argument_exp_list</a></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#postfix_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+ostfix_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"."</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"-&gt;"</tt></span>
+ <span class=3D"rep">)</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"token">id</s=
+pan></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#postfix_exp" class=3D"rule" data-min=3D"1" data-max=3D"1">p=
+ostfix_exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><span class=3D"rep">(</span=
+> <span class=3D"alt"><tt class=3D"literal cs">"++"</tt></span>
+<span class=3D"pipe"> | </span><span class=3D"alt"><tt class=3D"literal cs"=
+>"--"</tt></span>
+ <span class=3D"rep">)</span></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"primary_exp">primary_exp</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"token">id</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><a href=3D"https://katef.github.io/kgt/doc/galler=
+y/c89-ebnf.html#const" class=3D"rule" data-min=3D"1" data-max=3D"1">const</=
+a></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"token">string</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><tt class=3D"literal cs">"("</tt></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#exp" class=3D"rule" data-min=3D"1" da=
+ta-max=3D"1">exp</a></span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">")=
+"</tt></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"argument_exp_list">argument_exp_list</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"rep">[</span> <span class=3D"alt">=
+<a href=3D"https://katef.github.io/kgt/doc/gallery/c89-ebnf.html#argument_e=
+xp_list" class=3D"rule" data-min=3D"1" data-max=3D"1">argument_exp_list</a>=
+</span>
+<span class=3D"cat"> </span><span class=3D"alt"><tt class=3D"literal cs">",=
+"</tt></span>
+ <span class=3D"rep">]</span></span>
+<span class=3D"cat"> </span><span class=3D"alt"><a href=3D"https://katef.gi=
+thub.io/kgt/doc/gallery/c89-ebnf.html#assignment_exp" class=3D"rule" data-m=
+in=3D"1" data-max=3D"1">assignment_exp</a></span>
+    </dd>
+  </dl>
+
+  <dl class=3D"bnf">
+    <dt><a name=3D"const">const</a>:</dt>
+    <dd>
+      <span class=3D"alt"><span class=3D"token">int_const</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"token">char_const</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"token">float_const</span></span>
+<br>
+      <span class=3D"pipe"> | </span>
+      <span class=3D"alt"><span class=3D"token">enumeration_const</span></s=
+pan>
+    </dd>
+  </dl>
+
+=20
+
+<veepn-lock-screen><template shadowmode=3D"open"></template></veepn-lock-sc=
+reen></body></html>
+------MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-7c611de1-95b8-4c5c-a6cd-0395b0758745@mhtml.blink
+
+@charset "utf-8";
+
+@font-face { font-family: FigtreeVF; src: url("chrome-extension://majdfhpai=
+honcoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2") format("woff2-variations");=
+ font-weight: 100 1000; font-display: swap; }
+------MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-b7185a5f-eb12-45f9-b9a6-47cd36f32a66@mhtml.blink
+
+@charset "utf-8";
+
+dl.bnf span.token { text-transform: uppercase; }
+
+dl.bnf span.cat { margin-right: 0.5ex; }
+
+dl.bnf dd > span.pipe { float: left; width: 1ex; margin-left: -1.8ex; text-=
+align: right; padding-right: 0.8ex; }
+
+dl.bnf dt { display: block; min-width: 8em; padding-right: 1em; }
+
+dl.bnf a.rule { text-decoration: none; }
+
+dl.bnf a.rule:hover { text-decoration: underline; }
+
+dl.bnf { margin: 2em 4em; }
+
+dl.bnf dt { margin: 0.25em 0px; }
+
+dl.bnf dd { margin-left: 2em; }
+------MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-d62f2728-2c10-4a36-9b12-ef4d2e7fa04f@mhtml.blink
+
+@charset "utf-8";
+
+body { transition: opacity 0.2s ease-in; }
+
+body[unresolved] { opacity: 0; display: block; overflow: hidden; position: =
+relative; }
+------MultipartBoundary--lTyuo3NMiW0nErvRlMKyUalakup2CdF7CfF1dWZJAc------

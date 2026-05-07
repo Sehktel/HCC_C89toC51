@@ -1,0 +1,95 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    03/25/2026  13:40:07  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+D:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\blink.obj TO .\Objects\blink PRINT (.\Listings\blink.m51) IXREF RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\blink.obj (BLINK)
+  D:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL_V5\C51\LIB\C51S.LIB (?C?SLCMP)
+
+
+LINK MAP OF MODULE:  .\Objects\blink (BLINK)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0038H     UNIT         ?PR?MAIN?BLINK
+            CODE    0838H     0016H     UNIT         ?C?LIB_CODE
+            CODE    084EH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\blink (BLINK)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?BLINK
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\blink (BLINK)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        BLINK
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00B0H.7       PUBLIC        P3_7
+  C:0800H         PUBLIC        main
+  -------         PROC          MAIN
+  -------         DO            
+  D:0082H         SYMBOL        i
+  -------         ENDDO         
+  C:0800H         LINE#         3
+  C:0800H         LINE#         5
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/25/2026  13:40:07  PAGE 2
+
+
+  C:0800H         LINE#         6
+  C:0802H         LINE#         7
+  C:081BH         LINE#         8
+  C:081DH         LINE#         9
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        BLINK
+
+  -------         MODULE        ?C?SLCMP
+  C:0838H         PUBLIC        ?C?SLCMP
+  -------         ENDMOD        ?C?SLCMP
+
+
+
+INTER-MODULE CROSS-REFERENCE LISTING
+------------------------------------
+
+
+NAME . . . . USAGE    MODULE NAMES
+----------------------------------
+
+?C?SLCMP . . CODE;    ?C?SLCMP  BLINK  
+?C_START . . CODE;    ** L51 GENERATED **  ?C_STARTUP  
+?C_STARTUP . CODE;    ?C_STARTUP  BLINK  
+MAIN . . . . CODE;    BLINK  
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0038H BYTE ( 2%) *
+******************************************************************************
+
+Program Size: data=9.0 xdata=0 code=93
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,82 @@
+C51 COMPILER V9.60.0.0   TEST                                                              04/30/2025 12:25:49 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE TEST
+OBJECT MODULE PLACED IN .\Objects\test.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE test.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\test
+                    -.lst) OBJECT(.\Objects\test.obj)
+
+line level    source
+
+   1          # include <reg51.h>
+   2          // # include <abc.h>
+   3          
+   4          void light(char s, char d){
+   5   1      //      if (s & 0x01){ P1 = 0;} 
+   6   1      //      if (s & 0x02){ P1 = 4;}
+   7   1      //      if (s & 0x04){ P1 = 8;}
+   8   1      //      if (s & 0x08){ P1 = 12;}
+   9   1      //      if (s & 0x10){ P1 = 16;}
+  10   1      //      if (s & 0x20){ P1 = 20;}
+  11   1      //      if (s & 0x40){ P1 = 24;}
+  12   1      //      if (s & 0x80){ P1 = 28;}
+  13   1      
+  14   1              if (s == 1){ P1 = 0;} 
+  15   1              if (s == 2){ P1 = 4;}
+  16   1              if (s == 3){ P1 = 8;}
+  17   1              if (s == 4){ P1 = 12;}
+  18   1              if (s == 5){ P1 = 16;}
+  19   1              if (s == 6){ P1 = 20;}
+  20   1              if (s == 7){ P1 = 24;}
+  21   1              if (s == 8){ P1 = 28;}
+  22   1      
+  23   1              if (d == 1){P3 = 62;} //50;}
+  24   1              if (d == 2){P3 = 61;} //49;}
+  25   1              if (d == 3){P3 = 47;} //35;}
+  26   1              if (d == 4){P3 = 31;} //19;}
+  27   1      }
+  28          
+  29          void wait(){
+  30   1              int w = 0;
+  31   1              int ww = 0;
+  32   1      //      for (w = 0; w < 1024; w++){
+  33   1      //      for (w = 0; w < 2048; w++){
+  34   1      //      for (w = 0; w < 4096; w++){
+  35   1      //      for (w = 0; w < 8192; w++){
+  36   1              for (w = 0; w < 16384; w++){
+  37   2      //      for (w = 0; w < 32768; w++){
+  38   2      
+  39   2      //      for (w = 0; w < 256; w++){
+  40   2                      for (ww = 0; ww < 4; ww++){
+  41   3                              ;
+  42   3                      }
+  43   2              }
+  44   1      }
+  45          
+  46          void main(void){
+  47   1              char d;
+  48   1              char s;
+  49   1      
+  50   1              for (d = 1; d <=4; d++){
+  51   2                      for (s = 1; s <= 8; s ++){
+  52   3                              light(s, d);
+  53   3                              wait();
+  54   3                      }
+C51 COMPILER V9.60.0.0   TEST                                                              04/30/2025 12:25:49 PAGE 2   
+
+  55   2              }
+  56   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    207    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

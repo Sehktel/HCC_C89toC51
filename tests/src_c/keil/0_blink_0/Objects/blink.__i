@@ -1,0 +1,1 @@
+"blink.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.\Listings\blink.lst) PREPRINT(.\Listings\blink.i) OBJECT(.\Objects\blink.obj)

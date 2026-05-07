@@ -6,9 +6,15 @@ build-type:         Simple
 library
   hs-source-dirs:   src
   exposed-modules:
+      AST
+      HighIR
       Lexer
+      LowIR
+      MediumIR
       Parser
+      Peephole
       Preprocessor
+      TreeDestroyer
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
@@ -18,9 +24,15 @@ executable hcc-c89toc51
   main-is:          Main.hs
   hs-source-dirs:   app, src
   other-modules:
+      AST
+      HighIR
       Lexer
+      LowIR
+      MediumIR
       Parser
+      Peephole
       Preprocessor
+      TreeDestroyer
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
@@ -31,51 +43,76 @@ test-suite hcc-c89toc51-test
   main-is:          Spec.hs
   hs-source-dirs:   tests, src
   other-modules:
+      AST
       AST_test
-      IR_test
+      HighIR
+      HighIR_test
       Lexer
       Lexer_test
+      LowIR
+      LowIR_test
+      MediumIR
+      MediumIR_test
       Parser
       Parser_test
+      Peephole
+      Peephole_test
       Preprocessor
       Preprocessor_test
+      IR_test
+      SystemPipeline_test
+      TestManifest
+      TreeDestroyer
+      TreeDestroyer_test
+
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-lexer
   type:             exitcode-stdio-1.0
-  main-is:          SpecLexer.hs
+  main-is:          Lexer_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       Lexer
       Lexer_test
       Preprocessor
+      TestManifest
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-parser
   type:             exitcode-stdio-1.0
-  main-is:          SpecParser.hs
+  main-is:          Parser_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       Lexer
       Parser
       Parser_test
+      TestManifest
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-preprocessor
   type:             exitcode-stdio-1.0
-  main-is:          SpecPreprocessor.hs
+  main-is:          Preprocessor_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       Preprocessor
@@ -84,11 +121,13 @@ test-suite test-preprocessor
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-ast
   type:             exitcode-stdio-1.0
-  main-is:          SpecAST.hs
+  main-is:          AST_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       AST_test
@@ -99,38 +138,229 @@ test-suite test-ast
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-ir
+  buildable:        True
   type:             exitcode-stdio-1.0
-  main-is:          SpecIR.hs
+  main-is:          IR_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       IR_test
       Lexer
       Parser
       Preprocessor
+      AST
+      
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
 
 test-suite test-pipeline
   type:             exitcode-stdio-1.0
-  main-is:          SpecPipeline.hs
+  main-is:          Pipeline_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
       AST_test
-      IR_test
       Lexer
       Lexer_test
       Parser
       Parser_test
       Preprocessor
       Preprocessor_test
+      TestManifest
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      aeson >=2.2 && <3,
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-high-ir
+  type:             exitcode-stdio-1.0
+  main-is:          HighIR_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      Parser
+      HighIR_test
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      directory,
+      filepath,
       hspec >=2.11 && <3
+
+test-suite test-medium-ir
+  type:             exitcode-stdio-1.0
+  main-is:          MediumIR_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      MediumIR
+      Parser
+      MediumIR_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-low-ir
+  type:             exitcode-stdio-1.0
+  main-is:          LowIR_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      LowIR
+      LowIR_test
+      MediumIR
+      Parser
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-tree-destroyer
+  type:             exitcode-stdio-1.0
+  main-is:          TreeDestroyer_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      LowIR
+      MediumIR
+      Parser
+      TreeDestroyer
+      TreeDestroyer_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-peephole
+  type:             exitcode-stdio-1.0
+  main-is:          Peephole_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      LowIR
+      MediumIR
+      Parser
+      Peephole
+      Peephole_test
+      TreeDestroyer
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-system-pipeline
+  type:             exitcode-stdio-1.0
+  main-is:          SystemPipeline_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      HighIR
+      Lexer
+      LowIR
+      MediumIR
+      Parser
+      Peephole
+      Preprocessor
+      SystemPipeline_test
+      TreeDestroyer
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3
+
+test-suite test-web-report
+  type:             exitcode-stdio-1.0
+  main-is:          WebReport_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      AST
+      AST_test
+      HighIR
+      HighIR_test
+      IR_test
+      Lexer
+      Lexer_test
+      LowIR
+      LowIR_test
+      ManifestRunner_test
+      MediumIR
+      MediumIR_test
+      Parser
+      Parser_test
+      Peephole
+      Peephole_test
+      Preprocessor
+      Preprocessor_test
+      SystemPipeline_test
+      TestManifest
+      TreeDestroyer
+      TreeDestroyer_test
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      aeson >=2.2 && <3,
+      base >=4.14 && <5,
+      directory,
+      filepath,
+      hspec >=2.11 && <3,
+      process,
+      tasty >=1.5 && <2,
+      tasty-hspec >=1.2 && <2,
+      tasty-html >=0.4 && <1
+
+test-suite test-manifest-runner
+  type:             exitcode-stdio-1.0
+  main-is:          ManifestRunner_spec.hs
+  hs-source-dirs:   tests, src
+  other-modules:
+      Lexer
+      ManifestRunner_test
+      Parser
+      TestManifest
+  default-language: Haskell2010
+  ghc-options:      -Wall
+  build-depends:
+      aeson >=2.2 && <3,
+      base >=4.14 && <5,
+      hspec >=2.11 && <3,
+      process
+

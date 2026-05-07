@@ -1,0 +1,353 @@
+Configuration is affected by the following files:
+- cabal.project
+Warning: Unknown/unsupported 'ghc' version detected (Cabal 3.14.2.0 supports
+'ghc' version < 9.14): D:\ghcup\ghc\9.14.1\bin\ghc.exe is version 9.14.1
+Build profile: -w ghc-9.14.1 -O1
+In order, the following will be built (use -v for more details):
+ - hcc-c89toc51-0.1.0.0 (test:hcc-c89toc51-test) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-ast) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-high-ir) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-ir) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-lexer) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-low-ir) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-medium-ir) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-parser) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-peephole) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-pipeline) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-preprocessor) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-system-pipeline) (ephemeral targets)
+ - hcc-c89toc51-0.1.0.0 (test:test-tree-destroyer) (ephemeral targets)
+Preprocessing test suite 'hcc-c89toc51-test' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-ast' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-ast' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-high-ir' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-ir' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-high-ir' for hcc-c89toc51-0.1.0.0...
+Building test suite 'hcc-c89toc51-test' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-ir' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-medium-ir' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-low-ir' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-peephole' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-parser' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-medium-ir' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-parser' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-low-ir' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-peephole' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-pipeline' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-pipeline' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-lexer' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-system-pipeline' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-preprocessor' for hcc-c89toc51-0.1.0.0...
+Preprocessing test suite 'test-tree-destroyer' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-preprocessor' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-lexer' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-tree-destroyer' for hcc-c89toc51-0.1.0.0...
+Building test suite 'test-system-pipeline' for hcc-c89toc51-0.1.0.0...
+Running 1 test suites...
+Test suite test-ast: RUNNING...
+
+Pipeline -> AST
+  строит AST после этапа preprocess + lexer + parser [✔]
+  на неподдерживаемом коде возвращает AstUnknown как промежуточный результат [✔]
+
+Finished in 0.0007 seconds
+2 examples, 0 failures
+Test suite test-ast: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-ast\test\hcc-c89toc51-0.1.0.0-test-ast.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Running 1 test suites...
+Test suite test-ir: RUNNING...
+Running 1 test suites...
+Running 1 test suites...
+Test suite test-medium-ir: RUNNING...
+Test suite test-high-ir: RUNNING...
+
+
+
+Pipeline AST -> IR
+High IR stage
+Medium IR stage
+  buildHighIR: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии трансформации AST -> HighIR
+  lowerToMediumIR: каркас теста готов [‐]
+
+  строит минимальный IR из AST шаблона main/return [✔]
+    # PENDING: TODO: добавить сценарии трансформации HighIR -> MediumIR
+  на неподдерживаемой AST возвращает IrUnknown [✔]
+
+
+Finished in 0.0008 seconds
+1 example, 0 failures, 1 pending
+Finished in 0.0010 seconds
+Finished in 0.0008 seconds
+2 examples, 0 failures
+1 example, 0 failures, 1 pending
+Test suite test-ir: PASS
+Test suite test-medium-ir: PASS
+Test suite logged to:
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-ir\test\hcc-c89toc51-0.1.0.0-test-ir.log
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-medium-ir\test\hcc-c89toc51-0.1.0.0-test-medium-ir.log
+1 of 1 test suites (1 of 1 test cases) passed.
+1 of 1 test suites (1 of 1 test cases) passed.
+Test suite test-high-ir: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-high-ir\test\hcc-c89toc51-0.1.0.0-test-high-ir.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Running 1 test suites...
+Test suite test-preprocessor: RUNNING...
+
+Preprocessor.preprocess
+  убирает пустые строки и пробелы по краям [✔]
+  сохраняет порядок непустых строк [✔]
+  заменяет trigraph-последовательности до лексера [✔]
+
+Finished in 0.0010 seconds
+3 examples, 0 failures
+Test suite test-preprocessor: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-preprocessor\test\hcc-c89toc51-0.1.0.0-test-preprocessor.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Running 1 test suites...
+Running 1 test suites...
+Test suite test-lexer: RUNNING...
+Test suite test-pipeline: RUNNING...
+Running 1 test suites...
+Running 1 test suites...
+Test suite test-low-ir: RUNNING...
+Test suite test-peephole: RUNNING...
+Running 1 test suites...
+Test suite test-parser: RUNNING...
+
+Peephole stage
+  peepholeOptimize: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии точечной оптимизации TDResult -> PeepholeResult
+
+Finished in 0.0008 seconds
+1 example, 0 failures, 1 pending
+
+Low IR stage
+  lowerToLowIR: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии трансформации MediumIR -> LowIR
+
+Finished in 0.0012 seconds
+1 example, 0 failures, 1 pending
+Running 1 test suites...
+Test suite test-tree-destroyer: RUNNING...
+Running 1 test suites...
+Test suite test-system-pipeline: RUNNING...
+
+Preprocessor.preprocess
+  удаляет пустые строки и обрезает края [✔]
+Lexer.lexer (базовая функция main)
+  токенизирует базовую функцию main [✔]
+  токенизирует базовые операторы [✔]
+Lexer.lexer (минимальный идентификатор)
+  разбирает один идентификатор [✔]
+  разбирает одно число [✔]
+  разбирает 0x и 0-формы чисел [✔]
+  разбирает 010 как восьмеричное число 8 [✔]
+  возвращает ошибку на невалидное восьмеричное число 08 [✔]
+  возвращает ошибку на пустой шестнадцатеричный литерал 0x [✔]
+  поддерживает суффиксы U/L/UL у целочисленных литералов [✔]
+  разбирает согласованный набор числовых литералов [✔]
+  возвращает ошибку на невалидный суффикс числа [✔]
+  корректно токенизирует переносы строк [✔]
+  разбирает строковый литерал с escape-последовательностями [✔]
+  разбирает символьный литерал с escape-последовательностью [✔]
+  возвращает ошибку на незакрытый строковый литерал [✔]
+  возвращает ошибку на пустой символьный литерал [✔]
+  в strict C89 проекта запрещает многосимвольные char-константы [✔]
+  возвращает ошибку на невалидный escape в строке [✔]
+Lexer.lexer (одна большая строка со всеми токенами)
+Test suite test-peephole: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-peephole\test\hcc-c89toc51-0.1.0.0-test-peephole.log
+1 of 1 test suites (1 of 1 test cases) passed.
+  разбирает большую строку в ожидаемую последовательность токенов [✔]
+Lexer.lexer (минимальный идентификатор)
+  разбирает один идентификатор [✔]
+Lexer.lexer (минимальное число)
+  разбирает одно число [✔]
+Lexer.lexer (короткие идентификаторы)
+  разбирает "a" [✔]
+  разбирает "b" [✔]
+  разбирает "ab" [✔]
+Lexer TODO
+  строковые и символьные литералы покрыты тестами [✔]
+Lexer fixtures (.l)
+Test suite test-low-ir: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-low-ir\test\hcc-c89toc51-0.1.0.0-test-low-ir.log
+1 of 1 test suites (1 of 1 test cases) passed.
+  токенизирует fixture tests/src_c\100_ast\test1.c [✔]
+
+Finished in 0.0036 seconds
+27 examples, 0 failures
+
+Preprocessor.preprocess
+  удаляет пустые строки и обрезает края [✔]
+Lexer.lexer (базовая функция main)
+  токенизирует базовую функцию main [✔]
+  токенизирует базовые операторы [✔]
+Lexer.lexer (минимальный идентификатор)
+  разбирает один идентификатор [✔]
+  разбирает одно число [✔]
+  разбирает 0x и 0-формы чисел [✔]
+  разбирает 010 как восьмеричное число 8 [✔]
+  возвращает ошибку на невалидное восьмеричное число 08 [✔]
+  возвращает ошибку на пустой шестнадцатеричный литерал 0x [✔]
+  поддерживает суффиксы U/L/UL у целочисленных литералов [✔]
+  разбирает согласованный набор числовых литералов [✔]
+  возвращает ошибку на невалидный суффикс числа [✔]
+  корректно токенизирует переносы строк [✔]
+  разбирает строковый литерал с escape-последовательностями [✔]
+  разбирает символьный литерал с escape-последовательностью [✔]
+  возвращает ошибку на незакрытый строковый литерал [✔]
+  возвращает ошибку на пустой символьный литерал [✔]
+  в strict C89 проекта запрещает многосимвольные char-константы [✔]
+  возвращает ошибку на невалидный escape в строке [✔]
+Preprocessor.preprocess
+  убирает пустые строки и пробелы по краям [✔]
+  сохраняет порядок непустых строк [✔]
+  заменяет trigraph-последовательности до лексера [✔]
+Parser.parseTokens
+  парсит fixture tests/src_c\100_ast\test1.c [✔]
+  парсит fixture tests/src_c\100_ast\test2.c [✔]
+  парсит fixture tests/src_c\100_ast\test3.c [✔]
+  парсит fixture tests/src_c\100_ast\test4.c [✔]
+  парсит fixture tests/src_c\100_ast\test5.c [✔]
+  парсит fixture tests/src_c\100_ast\test6.c [✔]
+  возвращает AstUnknown для неподдерживаемого паттерна токенов [✔]
+Pipeline -> AST
+  строит AST после этапа preprocess + lexer + parser [✔]
+  на неподдерживаемом коде возвращает AstUnknown как промежуточный результат [✔]
+
+Finished in 0.0072 seconds
+31 examples, 0 failures
+
+Parser.parseTokens
+Test suite test-lexer: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-lexer\test\hcc-c89toc51-0.1.0.0-test-lexer.log
+Running 1 test suites...
+1 of 1 test suites (1 of 1 test cases) passed.
+Test suite hcc-c89toc51-test: RUNNING...
+  парсит fixture tests/src_c\100_ast\test1.c [✔]
+  парсит fixture tests/src_c\100_ast\test2.c [✔]
+
+Tree Destroyer stage
+  парсит fixture tests/src_c\100_ast\test3.c [✔]
+  destroyTree: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии разрушения дерева LowIR -> TDResult
+
+Test suite test-pipeline: PASS
+Test suite logged to:
+Finished in 0.0006 seconds
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-pipeline\test\hcc-c89toc51-0.1.0.0-test-pipeline.log
+1 example, 0 failures, 1 pending
+1 of 1 test suites (1 of 1 test cases) passed.
+  парсит fixture tests/src_c\100_ast\test4.c [✔]
+  парсит fixture tests/src_c\100_ast\test5.c [✔]
+  парсит fixture tests/src_c\100_ast\test6.c [✔]
+  возвращает AstUnknown для неподдерживаемого паттерна токенов [✔]
+
+Finished in 0.0060 seconds
+7 examples, 0 failures
+
+System pipeline
+  preprocessor -> lexer -> parser -> AST -> IR -> TD -> Peephole [‐]
+    # PENDING: TODO: добавить интеграционные smoke/e2e сценарии полного конвейера
+
+Finished in 0.0009 seconds
+1 example, 0 failures, 1 pending
+Test suite test-tree-destroyer: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-tree-destroyer\test\hcc-c89toc51-0.1.0.0-test-tree-destroyer.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Test suite test-parser: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-parser\test\hcc-c89toc51-0.1.0.0-test-parser.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Test suite test-system-pipeline: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\test-system-pipeline\test\hcc-c89toc51-0.1.0.0-test-system-pipeline.log
+1 of 1 test suites (1 of 1 test cases) passed.
+
+Preprocessor.preprocess
+  удаляет пустые строки и обрезает края [✔]
+Lexer.lexer (базовая функция main)
+  токенизирует базовую функцию main [✔]
+  токенизирует базовые операторы [✔]
+Lexer.lexer (минимальный идентификатор)
+  разбирает один идентификатор [✔]
+  разбирает одно число [✔]
+  разбирает 0x и 0-формы чисел [✔]
+  разбирает 010 как восьмеричное число 8 [✔]
+  возвращает ошибку на невалидное восьмеричное число 08 [✔]
+  возвращает ошибку на пустой шестнадцатеричный литерал 0x [✔]
+  поддерживает суффиксы U/L/UL у целочисленных литералов [✔]
+  разбирает согласованный набор числовых литералов [✔]
+  возвращает ошибку на невалидный суффикс числа [✔]
+  корректно токенизирует переносы строк [✔]
+  разбирает строковый литерал с escape-последовательностями [✔]
+  разбирает символьный литерал с escape-последовательностью [✔]
+  возвращает ошибку на незакрытый строковый литерал [✔]
+  возвращает ошибку на пустой символьный литерал [✔]
+  в strict C89 проекта запрещает многосимвольные char-константы [✔]
+  возвращает ошибку на невалидный escape в строке [✔]
+Lexer.lexer (одна большая строка со всеми токенами)
+  разбирает большую строку в ожидаемую последовательность токенов [✔]
+Lexer.lexer (минимальный идентификатор)
+  разбирает один идентификатор [✔]
+Lexer.lexer (минимальное число)
+  разбирает одно число [✔]
+Lexer.lexer (короткие идентификаторы)
+  разбирает "a" [✔]
+  разбирает "b" [✔]
+  разбирает "ab" [✔]
+Lexer TODO
+  строковые и символьные литералы покрыты тестами [✔]
+Lexer fixtures (.l)
+  токенизирует fixture tests/src_c\100_ast\test1.c [✔]
+Parser.parseTokens
+  парсит fixture tests/src_c\100_ast\test1.c [✔]
+  парсит fixture tests/src_c\100_ast\test2.c [✔]
+  парсит fixture tests/src_c\100_ast\test3.c [✔]
+  парсит fixture tests/src_c\100_ast\test4.c [✔]
+  парсит fixture tests/src_c\100_ast\test5.c [✔]
+  парсит fixture tests/src_c\100_ast\test6.c [✔]
+  возвращает AstUnknown для неподдерживаемого паттерна токенов [✔]
+Preprocessor.preprocess
+  убирает пустые строки и пробелы по краям [✔]
+  сохраняет порядок непустых строк [✔]
+  заменяет trigraph-последовательности до лексера [✔]
+Pipeline -> AST
+  строит AST после этапа preprocess + lexer + parser [✔]
+  на неподдерживаемом коде возвращает AstUnknown как промежуточный результат [✔]
+High IR stage
+  buildHighIR: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии трансформации AST -> HighIR
+Medium IR stage
+  lowerToMediumIR: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии трансформации HighIR -> MediumIR
+Low IR stage
+  lowerToLowIR: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии трансформации MediumIR -> LowIR
+Tree Destroyer stage
+  destroyTree: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии разрушения дерева LowIR -> TDResult
+Peephole stage
+  peepholeOptimize: каркас теста готов [‐]
+    # PENDING: TODO: добавить сценарии точечной оптимизации TDResult -> PeepholeResult
+System pipeline
+  preprocessor -> lexer -> parser -> AST -> IR -> TD -> Peephole [‐]
+    # PENDING: TODO: добавить интеграционные smoke/e2e сценарии полного конвейера
+
+Finished in 0.0059 seconds
+45 examples, 0 failures, 6 pending
+Test suite hcc-c89toc51-test: PASS
+Test suite logged to:
+D:\Work\2026\HCC_C89toC51\.\dist-newstyle\build\x86_64-windows\ghc-9.14.1\hcc-c89toc51-0.1.0.0\t\hcc-c89toc51-test\test\hcc-c89toc51-0.1.0.0-hcc-c89toc51-test.log
+1 of 1 test suites (1 of 1 test cases) passed.

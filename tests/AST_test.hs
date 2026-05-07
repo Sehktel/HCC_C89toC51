@@ -12,7 +12,13 @@ astSpec =
       let src = "  int main() {  \n return 7; \n}\n"
           normalized = preprocess src
       parseTokens (lexer normalized)
-        `shouldBe` AstProgram [AstFunction "main", AstReturn 7]
+        `shouldBe` AstProgram
+          [ AstFunctionDef
+              "main"
+              [TokenInt]
+              []
+              (AstCompound [AstReturn 7])
+          ]
 
     it "на неподдерживаемом коде возвращает AstUnknown как промежуточный результат" $ do
       let src = "int x;"

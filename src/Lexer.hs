@@ -56,6 +56,7 @@ data Token
   | TokenBit -- | Ключевое слово C51 архитектуры @bit@.
   | TokenData -- | Ключевое слово C51 архитектуры @data@.
   | TokenIdata -- | Ключевое слово C51 архитектуры @idata@.
+  | TokenBdata -- | Ключевое слово C51 архитектуры @bdata@.
   | TokenPdata -- | Ключевое слово C51 архитектуры @pdata@.
   | TokenXdata -- | Ключевое слово C51 архитектуры @xdata@.
   | TokenCode -- | Ключевое слово C51 архитектуры @code@.
@@ -174,6 +175,7 @@ keywordToToken "sft" = Just TokenSft
 keywordToToken "bit" = Just TokenBit
 keywordToToken "data" = Just TokenData
 keywordToToken "idata" = Just TokenIdata
+keywordToToken "bdata" = Just TokenBdata
 keywordToToken "pdata" = Just TokenPdata
 keywordToToken "xdata" = Just TokenXdata
 keywordToToken "code" = Just TokenCode

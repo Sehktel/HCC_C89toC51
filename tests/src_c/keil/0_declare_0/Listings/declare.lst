@@ -1,0 +1,40 @@
+C51 COMPILER V9.60.0.0   DECLARE                                                           05/07/2025 17:50:56 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DECLARE
+OBJECT MODULE PLACED IN .\Objects\declare.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE declare.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\d
+                    -eclare.lst) OBJECT(.\Objects\declare.obj)
+
+line level    source
+
+   1          #include <reg2051.h>
+   2          
+   3          /* void main(void) {
+   4                  unsigned char a;
+   5                  a = 10;  a += 5;  a++;  a -= 8;
+   6          
+   7                  char b;
+   8                  b = 25;
+   9          } */
+  10          void main(void) {
+  11   1              unsigned char a;
+  12   1              char b;
+  13   1              a = 10;  a += 5;  a++;  a -= 8;
+  14   1      
+  15   1              b = 25;
+  16   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      4    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstExpr [TokenIdentifier "a",TokenAssign,TokenNumber 1]])]

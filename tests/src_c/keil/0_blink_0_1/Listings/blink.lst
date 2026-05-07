@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.0.0   BLINK                                                             05/04/2026 18:24:11 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE BLINK
+OBJECT MODULE PLACED IN .\Objects\blink.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE blink.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\bli
+                    -nk.lst) OBJECT(.\Objects\blink.obj)
+
+line level    source
+
+   1          #include <reg2051.h>
+   2          
+   3          void wait(void);
+   4          
+   5          
+   6          static void int0(void) interrupt 0 using 1
+   7          {
+   8   1              char count = 6;
+   9   1              char i;
+  10   1              for(i = 0; i < count; i++){
+  11   2                      P1_4 ^= 1;
+  12   2                      wait();
+  13   2              }
+  14   1      }
+  15          
+  16          static void int1(void) interrupt 2 using 2
+  17          {
+  18   1              char count = 6;
+  19   1              char i;
+  20   1              for(i = 0; i < count; i++){
+  21   2                      P1_3 ^= 1;
+  22   2                      wait();
+  23   2              }
+  24   1      }
+  25          
+  26          void wait(void) {
+  27   1              unsigned int a = 1000;
+  28   1              unsigned int i;
+  29   1              
+  30   1              for (i = 0; i < a; i++) { ; }
+  31   1      }
+  32          
+  33          void main(void) {
+  34   1              
+  35   1              EA = 1; /* global enable interrupt */
+  36   1              EX1 = 1;
+  37   1              EX0 = 1;
+  38   1              IT0 = 1;
+  39   1              IT1 = 0;
+  40   1              P1 = 0;
+  41   1              for(;;){
+  42   2                      P1_2 ^= 1;
+  43   2                      wait();
+  44   2              }
+  45   1      
+  46   1              //      for(;;){
+  47   1      //              P3_7 = 1;
+  48   1      //              wait();
+  49   1      //              P3_7 = 0;
+  50   1      //              wait()
+  51   1      //      }
+  52   1      }
+
+
+C51 COMPILER V9.60.0.0   BLINK                                                             05/04/2026 18:24:11 PAGE 2   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    155    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
