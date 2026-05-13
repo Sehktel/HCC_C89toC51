@@ -22,7 +22,7 @@ cabal build all
 cabal run exe:hcc-c89toc51
 ```
 
-## Test Strategy
+## Стратегия тестирование
 
 The repository contains both aggregate and focused test suites:
 

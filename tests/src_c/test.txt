@@ -1,5 +1,6 @@
 Сотенная кодификация тестов (вложенные директории):
 100-199 -- базовый C89 --> AST
+120_parse_negative -- ожидаемый AstUnknown / негативные фикстуры до доработки грамматики
 200-299 -- архитектурно зависимые C51 --> C51 arch
 300-399 -- тесты препроцессора --> Preprocessor
 400-499 -- тесты лексера --> Lexer
@@ -17,6 +18,17 @@
 Примеры заготовок:
 100_ast/test_100_smoke_ast.c
 200_c51/test_200_smoke_c51.c
+200_c51/test_201_c51_sfr_sfr16.c
+200_c51/test_202_c51_memory_classes.c
+200_c51/test_203_c51_interrupt_using.c
+200_c51/test_204_c51_bit_var.c
+200_c51/test_205_c51_sbit_xor.c
+200_c51/test_206_c51_reentrant_fn.c
+120_parse_negative/test_121_switch_body.c
+120_parse_negative/test_122_do_while_body.c
+120_parse_negative/test_123_struct_field_decl.c
+120_parse_negative/test_124_switch_default.c
+120_parse_negative/test_125_case_chain.c
 300_ir/test_300_smoke_ir.c
 400_lexer/test_400_smoke_lexer.c
 500_preprocessor/test_500_smoke_preprocessor.c

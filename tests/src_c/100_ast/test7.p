@@ -1,1 +1,1 @@
-AstProgram [AstFunctionDef "timer0" [TokenVoid] [TokenInterrupt,TokenNumber 1,TokenUsing,TokenNumber 2] (AstCompound [AstReturnExpr []])]
+AstProgram [AstFunctionDef "timer0" [TokenVoid] [TokenInterrupt,TokenNumber 1,TokenUsing,TokenNumber 2] (AstCompound [AstReturn Nothing])]

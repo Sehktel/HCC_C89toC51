@@ -1,54 +1,118 @@
-module Parser (Ast (..), parseTokens) where
+{-# LANGUAGE LambdaCase #-}
 
-import Lexer (Token (..))
+-- | Синтаксический анализатор: подмножество C89 + C51-суффиксы функций.
+-- Выражения разбираются в древовидный 'Expr' с приоритетами по C89.
+module Parser
+  ( Ast (..),
+    Expr (..),
+    BinOp (..),
+    UnaryPre (..),
+    SuffixOp (..),
+    AssignOp (..),
+    parseTokens,
+  )
+where
 
--- Текущее покрытие грамматики парсером (фактически реализованный поднабор):
--- 1) Единица трансляции:
---    - <translation-unit> ::= { <external-declaration> }*
--- 2) Внешние объявления:
---    - <function-definition> в форме:
---      <decl-specifier>+ <identifier> "(" ... ")" [<c51-func-attr>]* <compound-statement>
---      где <c51-func-attr> — это суффиксы Keil C51: interrupt / using с константным выражением
---      (выражение разбирается лишь на уровне потока токенов с балансом скобок).
---    - <declaration> (распознаётся и сохраняется как сырой список токенов; в т.ч. xdata/sfr/_at_).
--- 3) Составной оператор:
---    - <compound-statement> ::= "{" { <statement> }* "}"
--- 4) Операторы:
---    - <return-statement> (как `return;`, так и `return <expr>;`)
---    - <if-statement> с optional `else`
---    - <while-statement>
---    - <for-statement> c тремя секциями заголовка
---    - вложенный блок `{ ... }`
---    - <expression-statement> (`<expr>;`)
--- 5) Выражения:
---    - пока не строится полноценное дерево приоритетов;
---      выражение хранится как "сырой" список токенов в `AstExpr` / `AstReturnExpr`.
---
--- Важно: это намеренно прагматичный этап. Полное соответствие C89-грамматике
--- (включая declarator/initializer/expression precedence tree) пока не завершено.
+import Lexer (IntSuffix (..), Token (..))
 
--- AST пока остаётся компактным: покрываем ключевые синтаксические узлы
--- и сохраняем обратную совместимость с существующими тестами.
+-- | Дерево выражения (бинарные операторы левоассоциативны, кроме присваивания и «?:»).
+data Expr
+  = ExprLitInt Int
+  | ExprLitIntSuff Int IntSuffix
+  | ExprLitChar Char
+  | ExprLitString String
+  | ExprVar String
+  | ExprUnary UnaryPre Expr
+  | ExprPostfix Expr [SuffixOp]
+  | ExprBinary BinOp Expr Expr
+  | ExprTernary Expr Expr Expr
+  | ExprAssign AssignOp Expr Expr
+  | ExprComma Expr Expr
+  deriving (Eq, Show)
+
+data UnaryPre
+  = PrePlus
+  | PreMinus
+  | PreBang
+  | PreTilde
+  | PreStar
+  | PreAmp
+  | PreInc
+  | PreDec
+  | PreSizeof
+  deriving (Eq, Show)
+
+data SuffixOp
+  = SuffInc
+  | SuffDec
+  | SuffCall [Expr]
+  | SuffIndex Expr
+  | SuffMember String
+  | SuffArrow String
+  deriving (Eq, Show)
+
+data BinOp
+  = OpMul
+  | OpDiv
+  | OpMod
+  | OpAdd
+  | OpSub
+  | OpShl
+  | OpShr
+  | OpLt
+  | OpGt
+  | OpLe
+  | OpGe
+  | OpEq
+  | OpNe
+  | OpBitAnd
+  | OpBitXor
+  | OpBitOr
+  | OpAnd
+  | OpOr
+  deriving (Eq, Show)
+
+data AssignOp
+  = AAssign
+  | AAddAssign
+  | ASubAssign
+  | AMulAssign
+  | ADivAssign
+  | AModAssign
+  | AShlAssign
+  | AShrAssign
+  | AAndAssign
+  | AXorAssign
+  | AOrAssign
+  deriving (Eq, Show)
+
+-- | Узлы операторов и деклараций (выражения — строго 'Expr').
 data Ast
   = AstProgram [Ast]
   | AstFunctionDef String [Token] [Token] Ast
   | AstFunction String
   | AstDeclaration [Token]
   | AstCompound [Ast]
-  | AstReturn Int
-  | AstReturnExpr [Token]
-  | AstExpr [Token]
-  | AstIf Ast (Maybe Ast)
-  | AstWhile Ast
-  | AstFor (Maybe Ast) (Maybe Ast) (Maybe Ast) Ast
+  | -- | @return;@ — 'Nothing'; @return expr;@ — 'Just'.
+    AstReturn (Maybe Expr)
+  | -- | Оператор-выражение или пустой @;@ ('Nothing').
+    AstExprStmt (Maybe Expr)
+  | AstIf Expr Ast
+  | -- | Условие и тело; при @else@ тело — 'AstCompound' из двух веток.
+    AstWhile Expr Ast
+  | AstFor (Maybe Expr) (Maybe Expr) (Maybe Expr) Ast
+  | AstSwitch Expr Ast
+  | AstCase Expr Ast
+  | AstDefault Ast
+  | AstDoWhile Ast Expr
+  | -- | @break;@ (выход из switch/цикла).
+    AstBreak
   | AstUnknown [Token]
   deriving (Eq, Show)
 
 type ParseResult a = Either String (a, [Token])
 
--- Точка входа:
--- - успешный полный разбор -> AstProgram ...
--- - любой частичный/ошибочный разбор -> AstUnknown с исходными токенами
+-- | Полный разбор единицы трансляции.
 parseTokens :: [Token] -> Ast
 parseTokens tokens =
   case parseTranslationUnit tokens of
@@ -74,8 +138,6 @@ parseExternalDeclaration ts =
         Right (decl, rest) -> Right (AstDeclaration decl, rest)
         Left err -> Left err
 
--- function-definition: decl-specifier+ identifier '(' ... ')' [interrupt|using const]* compound-stmt
--- Ограничение: декларатор — только простой идентификатор (без указателей на функцию и т.д.).
 parseFunctionDefinition :: [Token] -> ParseResult Ast
 parseFunctionDefinition ts = do
   (specs, rest1) <- parseAtLeastOneTypeToken ts
@@ -84,13 +146,9 @@ parseFunctionDefinition ts = do
       rest3 <- consumeParenthesized rest2
       (c51Attrs, rest4) <- parseC51FuncAttrList rest3
       (body, rest5) <- parseCompoundStatement rest4
-      -- Явный узел function-definition, чтобы не смешивать корень программы
-      -- и структуру отдельной функции в одном AstProgram.
       Right (AstFunctionDef fnName specs c51Attrs body, rest5)
     _ -> Left "not a function definition"
 
--- | Суффиксы C51 после списка параметров: произвольная цепочка interrupt/using + const-выражение.
--- Константу не строим в дерево — сохраняем «сырые» токены (как и прочие выражения в этом парсере).
 parseC51FuncAttrList :: [Token] -> ParseResult [Token]
 parseC51FuncAttrList ts = go [] ts
   where
@@ -110,13 +168,10 @@ parseC51FuncAttrList ts = go [] ts
               | otherwise -> go (acc ++ (TokenUsing : ce)) r2
         _ -> Right (acc, rest)
 
--- | Взять токены константного выражения до границы: следующий interrupt/using/{ при нулевой глубине
--- круглых и квадратных скобок. Так покрываются простые формы вроде @1@, @(1+2)@, @arr[3]@ без вложенных @{@.
 takeC51ConstExp :: [Token] -> Either String ([Token], [Token])
 takeC51ConstExp [] = Left "expected constant expression after interrupt/using"
-takeC51ConstExp ts = go (0, 0) [] ts
+takeC51ConstExp ts = go ((0 :: Int), (0 :: Int)) [] ts
   where
-    go :: (Int, Int) -> [Token] -> [Token] -> Either String ([Token], [Token])
     go _ acc [] = Right (reverse acc, [])
     go (p, b) acc (tok : rest) =
       let (p', b') = case tok of
@@ -151,8 +206,8 @@ parseCompoundStatement (TokenLeftBrace : rest) = go [] rest
   where
     go acc (TokenRightBrace : tailTs) = Right (AstCompound (reverse acc), tailTs)
     go _ [] = Left "unterminated compound statement"
-    go acc ts = do
-      (stmt, restStmt) <- parseStatement ts
+    go acc ts' = do
+      (stmt, restStmt) <- parseStatement ts'
       go (stmt : acc) restStmt
 parseCompoundStatement _ = Left "expected '{'"
 
@@ -167,59 +222,127 @@ parseStatement ts@(tok : _)
         TokenReturn -> parseReturnStatement ts
         TokenIf -> parseIfStatement ts
         TokenWhile -> parseWhileStatement ts
+        TokenDo -> parseDoWhileStatement ts
         TokenFor -> parseForStatement ts
+        TokenSwitch -> parseSwitchStatement ts
+        TokenCase -> parseCaseStatement ts
+        TokenDefault -> parseDefaultStatement ts
+        TokenBreak -> parseBreakStatement ts
         TokenLeftBrace -> parseCompoundStatement ts
         _ -> parseExpressionStatement ts
 parseStatement [] = Left "unexpected EOF in statement"
 
+parseBreakStatement :: [Token] -> ParseResult Ast
+parseBreakStatement (TokenBreak : TokenSemicolon : rest) = Right (AstBreak, rest)
+parseBreakStatement _ = Left "expected 'break;'"
+
 parseReturnStatement :: [Token] -> ParseResult Ast
 parseReturnStatement (TokenReturn : TokenSemicolon : rest) =
-  Right (AstReturnExpr [], rest)
+  Right (AstReturn Nothing, rest)
 parseReturnStatement (TokenReturn : rest) =
-  let (exprTokens, tailTs) = break (== TokenSemicolon) rest
+  let (exprToks, tailTs) = break (== TokenSemicolon) rest
    in case tailTs of
         TokenSemicolon : restAfter ->
-          case exprTokens of
-            [TokenNumber n] -> Right (AstReturn n, restAfter)
-            _ -> Right (AstReturnExpr exprTokens, restAfter)
+          if null exprToks
+            then Left "empty return expression"
+            else do
+              expr <- parseExprTokens exprToks
+              Right (AstReturn (Just expr), restAfter)
         _ -> Left "unterminated return statement"
 parseReturnStatement _ = Left "expected return statement"
 
 parseIfStatement :: [Token] -> ParseResult Ast
 parseIfStatement (TokenIf : TokenLeftParen : rest) = do
-  (condTokens, afterCond) <- collectBalancedParens [] 1 rest
+  (condToks, afterCond) <- collectBalancedParens [] 1 rest
+  cond <- parseExprTokens condToks
   (thenBranch, rest1) <- parseStatement afterCond
   case rest1 of
     TokenElse : rest2 -> do
       (elseBranch, rest3) <- parseStatement rest2
-      Right (AstIf (AstExpr condTokens) (Just (AstCompound [thenBranch, elseBranch])), rest3)
-    _ -> Right (AstIf (AstExpr condTokens) (Just thenBranch), rest1)
+      Right (AstIf cond (AstCompound [thenBranch, elseBranch]), rest3)
+    _ -> Right (AstIf cond thenBranch, rest1)
 parseIfStatement _ = Left "expected if statement"
 
 parseWhileStatement :: [Token] -> ParseResult Ast
 parseWhileStatement (TokenWhile : TokenLeftParen : rest) = do
-  (condTokens, afterCond) <- collectBalancedParens [] 1 rest
+  (condToks, afterCond) <- collectBalancedParens [] 1 rest
+  cond <- parseExprTokens condToks
   (body, rest1) <- parseStatement afterCond
-  Right (AstWhile (AstCompound [AstExpr condTokens, body]), rest1)
+  Right (AstWhile cond body, rest1)
 parseWhileStatement _ = Left "expected while statement"
+
+parseSwitchStatement :: [Token] -> ParseResult Ast
+parseSwitchStatement (TokenSwitch : TokenLeftParen : rest) = do
+  (condToks, afterCond) <- collectBalancedParens [] 1 rest
+  disc <- parseExprTokens condToks
+  (body, rest1) <- parseStatement afterCond
+  Right (AstSwitch disc body, rest1)
+parseSwitchStatement _ = Left "expected switch statement"
+
+-- | Константное выражение в @case@: граница «:» с учётом вложенного «?:».
+parseCaseStatement :: [Token] -> ParseResult Ast
+parseCaseStatement (TokenCase : rest) =
+  case splitAtTernaryColon rest of
+    Left err -> Left err
+    Right (ceToks, TokenColon : rest2)
+      | null ceToks -> Left "empty case expression"
+      | otherwise -> do
+          ce <- parseConditionalExprTokens ceToks
+          (stmt, rest3) <- parseAfterSwitchLabel rest2
+          Right (AstCase ce stmt, rest3)
+    _ -> Left "expected ':' after case expression"
+parseCaseStatement _ = Left "expected case label"
+
+parseDefaultStatement :: [Token] -> ParseResult Ast
+parseDefaultStatement (TokenDefault : rest) =
+  case rest of
+    TokenColon : rest2 -> do
+      (stmt, rest3) <- parseAfterSwitchLabel rest2
+      Right (AstDefault stmt, rest3)
+    _ -> Left "expected ':' after default"
+parseDefaultStatement _ = Left "expected default label"
+
+parseAfterSwitchLabel :: [Token] -> ParseResult Ast
+parseAfterSwitchLabel [] = Left "expected statement after switch label"
+parseAfterSwitchLabel ts'@(TokenCase : _) = parseCaseStatement ts'
+parseAfterSwitchLabel ts'@(TokenDefault : _) = parseDefaultStatement ts'
+parseAfterSwitchLabel ts' = parseStatement ts'
+
+parseDoWhileStatement :: [Token] -> ParseResult Ast
+parseDoWhileStatement (TokenDo : rest) = do
+  (body, restAfterBody) <- parseStatement rest
+  case restAfterBody of
+    TokenWhile : TokenLeftParen : r2 -> do
+      (condToks, afterCond) <- collectBalancedParens [] 1 r2
+      cond <- parseExprTokens condToks
+      case afterCond of
+        TokenSemicolon : r3 -> Right (AstDoWhile body cond, r3)
+        _ -> Left "expected ';' after do-while condition"
+    _ -> Left "expected 'while' after do body"
+parseDoWhileStatement _ = Left "expected do statement"
 
 parseForStatement :: [Token] -> ParseResult Ast
 parseForStatement (TokenFor : TokenLeftParen : rest) = do
-  (initTokens, afterInit) <- takeUntilSemicolon rest
-  (condTokens, afterCond) <- takeUntilSemicolon afterInit
-  (stepTokens, afterStep) <- takeUntilRightParen afterCond
+  (initToks, afterInit) <- takeUntilSemicolon rest
+  (condToks, afterCond) <- takeUntilSemicolon afterInit
+  (stepToks, afterStep) <- takeUntilRightParen afterCond
   (body, restAfterBody) <- parseStatement afterStep
-  let initNode = toMaybeExpr initTokens
-  let condNode = toMaybeExpr condTokens
-  let stepNode = toMaybeExpr stepTokens
-  Right (AstFor initNode condNode stepNode body, restAfterBody)
+  initE <- parseOptionalExprTokens initToks
+  condE <- parseOptionalExprTokens condToks
+  stepE <- parseOptionalExprTokens stepToks
+  Right (AstFor initE condE stepE body, restAfterBody)
 parseForStatement _ = Left "expected for statement"
 
 parseExpressionStatement :: [Token] -> ParseResult Ast
 parseExpressionStatement ts =
-  let (exprTokens, rest) = break (== TokenSemicolon) ts
+  let (exprToks, rest) = break (== TokenSemicolon) ts
    in case rest of
-        TokenSemicolon : restAfter -> Right (AstExpr exprTokens, restAfter)
+        TokenSemicolon : restAfter ->
+          if null exprToks
+            then Right (AstExprStmt Nothing, restAfter)
+            else do
+              expr <- parseExprTokens exprToks
+              Right (AstExprStmt (Just expr), restAfter)
         _ -> Left "unterminated expression statement"
 
 parseAtLeastOneTypeToken :: [Token] -> ParseResult [Token]
@@ -256,10 +379,6 @@ takeUntilRightParen ts =
         TokenRightParen : tailTs -> Right (part, tailTs)
         _ -> Left "expected ')' in for header"
 
-toMaybeExpr :: [Token] -> Maybe Ast
-toMaybeExpr [] = Nothing
-toMaybeExpr tokens = Just (AstExpr tokens)
-
 isTypeToken :: Token -> Bool
 isTypeToken token =
   case token of
@@ -295,3 +414,278 @@ isTypeToken token =
     TokenCode -> True
     TokenReentrant -> True
     _ -> False
+
+-- * Разбор выражений (приоритеты C89; «?:» и присваивание — правая ассоциативность)
+
+-- | Первая «:», завершающая фрагмент при вложенных «?:» (середина тернарного или @case@).
+splitAtTernaryColon :: [Token] -> Either String ([Token], [Token])
+splitAtTernaryColon ts = go (0 :: Int) [] ts
+  where
+    go _ _ [] = Left "expected ':'"
+    go q acc (TokenColon : rest)
+      | q == 0 = Right (reverse acc, TokenColon : rest)
+      | otherwise = go (q - 1) (TokenColon : acc) rest
+    go q acc (TokenQuestion : rest) = go (q + 1) (TokenQuestion : acc) rest
+    go q acc (t : rest) = go q (t : acc) rest
+
+parseExprTokens :: [Token] -> Either String Expr
+parseExprTokens toks = do
+  (e, rest) <- parseComma toks
+  if null rest then Right e else Left "trailing tokens in expression"
+
+parseConditionalExprTokens :: [Token] -> Either String Expr
+parseConditionalExprTokens toks = do
+  (e, rest) <- parseConditional toks
+  if null rest then Right e else Left "trailing tokens in case expression"
+
+parseOptionalExprTokens :: [Token] -> Either String (Maybe Expr)
+parseOptionalExprTokens [] = Right Nothing
+parseOptionalExprTokens toks = Just <$> parseExprTokens toks
+
+parseComma :: [Token] -> ParseResult Expr
+parseComma ts = do
+  (lhs, r1) <- parseAssign ts
+  case r1 of
+    TokenComma : r2 -> do
+      (rhs, r3) <- parseComma r2
+      Right (ExprComma lhs rhs, r3)
+    _ -> Right (lhs, r1)
+
+parseAssign :: [Token] -> ParseResult Expr
+parseAssign ts = do
+  (lhs, r1) <- parseConditional ts
+  case assignOpFromToken r1 of
+    Just (op, r2) -> do
+      (rhs, r3) <- parseAssign r2
+      Right (ExprAssign op lhs rhs, r3)
+    Nothing -> Right (lhs, r1)
+
+assignOpFromToken :: [Token] -> Maybe (AssignOp, [Token])
+assignOpFromToken = \case
+  TokenAssign : r -> Just (AAssign, r)
+  TokenPlusAssign : r -> Just (AAddAssign, r)
+  TokenMinusAssign : r -> Just (ASubAssign, r)
+  TokenMultiplyEqual : r -> Just (AMulAssign, r)
+  TokenDivideEqual : r -> Just (ADivAssign, r)
+  TokenPercentEqual : r -> Just (AModAssign, r)
+  TokenLessLessEqual : r -> Just (AShlAssign, r)
+  TokenGreaterGreaterEqual : r -> Just (AShrAssign, r)
+  TokenAmpersandEqual : r -> Just (AAndAssign, r)
+  TokenCaretEqual : r -> Just (AXorAssign, r)
+  TokenPipeEqual : r -> Just (AOrAssign, r)
+  _ -> Nothing
+
+parseConditional :: [Token] -> ParseResult Expr
+parseConditional ts = do
+  (lhs, r1) <- parseLogicalOr ts
+  case r1 of
+    TokenQuestion : r2 -> do
+      case splitAtTernaryColon r2 of
+        Left err -> Left err
+        Right (midToks, TokenColon : r4)
+          | null midToks -> Left "empty middle of conditional"
+          | otherwise -> do
+              mid <- parseExprTokens midToks
+              (rhs, r5) <- parseConditional r4
+              Right (ExprTernary lhs mid rhs, r5)
+        _ -> Left "malformed conditional"
+    _ -> Right (lhs, r1)
+
+-- | Левоассоциативный разбор цепочки операторов одного приоритета.
+binLeft ::
+  ([Token] -> ParseResult Expr) ->
+  BinOp ->
+  ([Token] -> Maybe [Token]) ->
+  [Token] ->
+  ParseResult Expr
+binLeft sub op chop ts = do
+  (first, r) <- sub ts
+  go first r
+  where
+    go lhs rest =
+      case chop rest of
+        Just r2 -> do
+          (rhs, r3) <- sub r2
+          go (ExprBinary op lhs rhs) r3
+        Nothing -> Right (lhs, rest)
+
+parseLogicalOr :: [Token] -> ParseResult Expr
+parseLogicalOr = binLeft parseLogicalAnd OpOr chop
+  where
+    chop (TokenPipePipe : r) = Just r
+    chop _ = Nothing
+
+parseLogicalAnd :: [Token] -> ParseResult Expr
+parseLogicalAnd = binLeft parseBitOr OpAnd chop
+  where
+    chop (TokenAmpersandAmpersand : r) = Just r
+    chop _ = Nothing
+
+parseBitOr :: [Token] -> ParseResult Expr
+parseBitOr = binLeft parseBitXor OpBitOr chop
+  where
+    chop (TokenPipe : TokenPipe : _) = Nothing
+    chop (TokenPipe : r) = Just r
+    chop _ = Nothing
+
+parseBitXor :: [Token] -> ParseResult Expr
+parseBitXor = binLeft parseBitAnd OpBitXor chop
+  where
+    chop (TokenCaret : TokenAssign : _) = Nothing
+    chop (TokenCaret : r) = Just r
+    chop _ = Nothing
+
+parseBitAnd :: [Token] -> ParseResult Expr
+parseBitAnd = binLeft parseEquality OpBitAnd chop
+  where
+    chop (TokenAmpersand : TokenAmpersand : _) = Nothing
+    chop (TokenAmpersand : TokenAssign : _) = Nothing
+    chop (TokenAmpersand : r) = Just r
+    chop _ = Nothing
+
+parseRelational :: [Token] -> ParseResult Expr
+parseRelational ts = goShift ts >>= goRel
+  where
+    goRel (lhs, r) = case r of
+      TokenLeftAngle : TokenAssign : _ -> Right (lhs, r)
+      TokenLeftAngle : r2 -> do (rhs, r3) <- goShift r2; goRel (ExprBinary OpLt lhs rhs, r3)
+      TokenRightAngle : TokenAssign : _ -> Right (lhs, r)
+      TokenRightAngle : r2 -> do (rhs, r3) <- goShift r2; goRel (ExprBinary OpGt lhs rhs, r3)
+      TokenLessEqual : r2 -> do (rhs, r3) <- goShift r2; goRel (ExprBinary OpLe lhs rhs, r3)
+      TokenGreaterEqual : r2 -> do (rhs, r3) <- goShift r2; goRel (ExprBinary OpGe lhs rhs, r3)
+      _ -> Right (lhs, r)
+    goShift ts' = binLeft parseAdditive OpShl chopShl ts' >>= uncurry goShr
+    chopShl (TokenLessLessEqual : _) = Nothing
+    chopShl (TokenLessLess : r) = Just r
+    chopShl _ = Nothing
+    goShr lhs r@(TokenGreaterGreaterEqual : _) = Right (lhs, r)
+    goShr lhs (TokenGreaterGreater : r2) = do
+      (rhs, r3) <- parseAdditive r2
+      goShr (ExprBinary OpShr lhs rhs) r3
+    goShr lhs r = Right (lhs, r)
+
+parseAdditive :: [Token] -> ParseResult Expr
+parseAdditive ts = binLeft parseMultiplicative OpAdd chopPlus ts >>= goMinus
+  where
+    chopPlus (TokenPlus : TokenPlus : _) = Nothing
+    chopPlus (TokenPlus : TokenAssign : _) = Nothing
+    chopPlus (TokenPlus : r) = Just r
+    chopPlus _ = Nothing
+    goMinus (lhs, r) = case r of
+      TokenMinus : TokenMinus : _ -> Right (lhs, r)
+      TokenMinus : TokenAssign : _ -> Right (lhs, r)
+      TokenMinus : TokenRightAngle : _ -> Right (lhs, r)
+      TokenMinus : r2 -> do
+        (rhs, r3) <- parseMultiplicative r2
+        goMinus (ExprBinary OpSub lhs rhs, r3)
+      _ -> Right (lhs, r)
+
+parseMultiplicative :: [Token] -> ParseResult Expr
+parseMultiplicative ts = binLeft parseUnary OpMul chopStar ts >>= goDivMod
+  where
+    chopStar (TokenMultiply : TokenAssign : _) = Nothing
+    chopStar (TokenMultiply : r) = Just r
+    chopStar _ = Nothing
+    goDivMod (lhs, r) = case r of
+      TokenDivide : TokenAssign : _ -> Right (lhs, r)
+      TokenDivide : r2 -> do
+        (rhs, r3) <- parseUnary r2
+        goDivMod (ExprBinary OpDiv lhs rhs, r3)
+      TokenPercent : TokenAssign : _ -> Right (lhs, r)
+      TokenPercent : r2 -> do
+        (rhs, r3) <- parseUnary r2
+        goDivMod (ExprBinary OpMod lhs rhs, r3)
+      _ -> Right (lhs, r)
+
+parseUnary :: [Token] -> ParseResult Expr
+parseUnary ts =
+  case ts of
+    TokenPlus : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PrePlus e, r2)
+    TokenMinus : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreMinus e, r2)
+    TokenBang : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreBang e, r2)
+    TokenTilde : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreTilde e, r2)
+    TokenMultiply : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreStar e, r2)
+    TokenAmpersand : TokenAmpersand : _ -> parsePostfix ts
+    TokenAmpersand : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreAmp e, r2)
+    TokenPlusPlus : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreInc e, r2)
+    TokenMinusMinus : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreDec e, r2)
+    TokenSizeof : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreSizeof e, r2)
+    _ -> parsePostfix ts
+
+parsePostfix :: [Token] -> ParseResult Expr
+parsePostfix ts = do
+  (atom, r) <- parsePrimary ts
+  parsePostfixChain atom r
+
+parsePrimary :: [Token] -> ParseResult Expr
+parsePrimary ts =
+  case ts of
+    TokenNumber n : r -> Right (ExprLitInt n, r)
+    TokenNumberWithSuffix n s : r -> Right (ExprLitIntSuff n s, r)
+    TokenCharLiteral c : r -> Right (ExprLitChar c, r)
+    TokenStringLiteral s : r -> Right (ExprLitString s, r)
+    TokenIdentifier name : r -> Right (ExprVar name, r)
+    TokenLeftParen : r -> do
+      (inner, afterParen) <- collectBalancedParens [] 1 r
+      e <- parseExprTokens inner
+      Right (e, afterParen)
+    _ -> Left "expected primary expression"
+
+addSuffix :: Expr -> SuffixOp -> Expr
+addSuffix (ExprPostfix e ss) op = ExprPostfix e (ss ++ [op])
+addSuffix e op = ExprPostfix e [op]
+
+collectBalancedBrackets :: [Token] -> Either String ([Token], [Token])
+collectBalancedBrackets ts = go (1 :: Int) [] ts
+  where
+    go _ _ [] = Left "unterminated '['"
+    go 1 acc (TokenRightBracket : rest) = Right (reverse acc, rest)
+    go d acc (TokenRightBracket : rest) = go (d - 1) (TokenRightBracket : acc) rest
+    go d acc (TokenLeftBracket : rest) = go (d + 1) (TokenLeftBracket : acc) rest
+    go d acc (t : rest) = go d (t : acc) rest
+
+parseArgList :: [Token] -> Either String ([Expr], [Token])
+parseArgList ts =
+  case ts of
+    TokenRightParen : rest -> Right ([], rest)
+    _ -> do
+      (e1, r1) <- parseComma ts
+      case r1 of
+        TokenComma : r2 -> do
+          (es, r3) <- parseArgList r2
+          Right (e1 : es, r3)
+        TokenRightParen : rest -> Right ([e1], rest)
+        _ -> Left "expected ',' or ')' in argument list"
+
+parsePostfixChain :: Expr -> [Token] -> ParseResult Expr
+parsePostfixChain e ts =
+  case ts of
+    TokenPlusPlus : r -> parsePostfixChain (addSuffix e SuffInc) r
+    TokenMinusMinus : r -> parsePostfixChain (addSuffix e SuffDec) r
+    TokenLeftParen : r -> do
+      (args, afterArgs) <- parseArgList r
+      case afterArgs of
+        TokenRightParen : r2 -> parsePostfixChain (addSuffix e (SuffCall args)) r2
+        _ -> Left "expected ')' after call"
+    TokenLeftBracket : r -> do
+      (inner, afterIdx) <- collectBalancedBrackets r
+      idx <- parseExprTokens inner
+      parsePostfixChain (addSuffix e (SuffIndex idx)) afterIdx
+    TokenDot : TokenIdentifier fld : r -> parsePostfixChain (addSuffix e (SuffMember fld)) r
+    TokenMinus : TokenRightAngle : TokenIdentifier fld : r ->
+      parsePostfixChain (addSuffix e (SuffArrow fld)) r
+    _ -> Right (e, ts)
+
+-- | Равенство: отдельно из-за двух разных операторов.
+parseEquality :: [Token] -> ParseResult Expr
+parseEquality ts = do
+  (first, r) <- parseRelational ts
+  go first r
+  where
+    go lhs (TokenEqual : r2) = do
+      (rhs, r3) <- parseRelational r2
+      go (ExprBinary OpEq lhs rhs) r3
+    go lhs (TokenBangEqual : r2) = do
+      (rhs, r3) <- parseRelational r2
+      go (ExprBinary OpNe lhs rhs) r3
+    go lhs r = Right (lhs, r)

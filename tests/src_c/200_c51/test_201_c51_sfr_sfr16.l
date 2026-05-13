@@ -1,0 +1,1 @@
+[TokenSfr,TokenIdentifier "P0",TokenAssign,TokenNumber 128,TokenSemicolon,TokenSfr16,TokenIdentifier "TMR0",TokenAssign,TokenNumber 140,TokenSemicolon,TokenVoid,TokenIdentifier "stub",TokenLeftParen,TokenVoid,TokenRightParen,TokenLeftBrace,TokenReturn,TokenSemicolon,TokenRightBrace]

@@ -1,0 +1,1 @@
+[TokenReentrant,TokenVoid,TokenIdentifier "helper",TokenLeftParen,TokenVoid,TokenRightParen,TokenLeftBrace,TokenReturn,TokenSemicolon,TokenRightBrace]

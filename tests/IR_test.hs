@@ -1,7 +1,7 @@
 module IR_test (irSpec) where
 
 import Lexer (lexer)
-import Parser (Ast (..), parseTokens)
+import Parser (Ast (..), Expr (..), parseTokens)
 import Preprocessor (preprocess)
 import Test.Hspec (Spec, describe, it, shouldBe)
 
@@ -15,7 +15,7 @@ data Ir
 toIr :: Ast -> [Ir]
 toIr ast =
   case ast of
-    AstProgram [AstFunctionDef fnName _ _ (AstCompound [AstReturn value])] ->
+    AstProgram [AstFunctionDef fnName _ _ (AstCompound [AstReturn (Just (ExprLitInt value))])] ->
       [IrFunction fnName, IrReturnConst value]
     _ -> [IrUnknown]
 

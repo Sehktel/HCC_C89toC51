@@ -1,0 +1,42 @@
+Тепличные примеры switch / do-while. Фикстуры test_121 и test_122 — позитивный разбор парсера.
+test_123 (struct с полем) по-прежнему AstUnknown до доработки деклараций со скобками.
+
+--- switch (минимальный каркас) ---
+int main(void) {
+  switch (x) {
+    case 0:
+      break;
+    default:
+      break;
+  }
+  return 0;
+}
+
+--- цепочка case (fall-through), см. test_125_case_chain.c ---
+int main(void) {
+  switch (v) {
+    case 0:
+    case 1:
+      x = 2;
+      break;
+  }
+  return 0;
+}
+
+--- do-while (минимальный каркас) ---
+int main(void) {
+  do {
+    x = 1;
+  } while (x);
+  return 0;
+}
+
+--- struct с полями (глобально) — сейчас ломает разбор декларации по первому ';') ---
+struct S {
+  int x;
+};
+int main(void) {
+  return 0;
+}
+
+Порядок развития: сначала разбор таких «теплиц», затем обёртки и диагностика ошибок.

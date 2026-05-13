@@ -4,18 +4,15 @@ module TestManifest
   ( Manifest (..),
     Expectation (..),
     ManifestCase (..),
-    ProcessSpec (..),
     loadManifest,
     loadAllCases,
     loadCasesByPackage,
     loadReportPath,
     matchTextExpectation,
-    matchExitCodeExpectation,
   )
 where
 
 import Data.Aeson (FromJSON (..), eitherDecodeFileStrict', withObject, (.:))
-import qualified Data.Aeson.Types as AesonTypes
 import Data.List (isInfixOf, sort)
 import Data.List (filter)
 import Prelude hiding (filter)
@@ -40,13 +37,6 @@ data Expectation
   | ShouldNotReturn
   | ShouldThrow
   | ExpectationFailure
-  | ExitCodeShouldBe Int
-  deriving (Eq, Show)
-
-data ProcessSpec = ProcessSpec
-  { psCommand :: String,
-    psArgs :: [String]
-  }
   deriving (Eq, Show)
 
 data ManifestCase = ManifestCase
@@ -54,8 +44,7 @@ data ManifestCase = ManifestCase
     mcPackage :: String,
     mcInputFile :: FilePath,
     mcOutputFile :: FilePath,
-    mcExpectation :: Expectation,
-    mcProcess :: Maybe ProcessSpec
+    mcExpectation :: Expectation
   }
   deriving (Eq, Show)
 
@@ -67,40 +56,23 @@ instance FromJSON Manifest where
         <*> obj .: "cases"
 
 instance FromJSON Expectation where
-  parseJSON value =
-    parseFromString value <> parseFromObject value
-    where
-      parseFromString rawValue = do
-        raw <- parseJSON rawValue
-        case raw :: String of
-          "shouldBe" -> pure ShouldBe
-          "shouldSatisfy" -> pure ShouldSatisfy
-          "shouldStartWith" -> pure ShouldStartWith
-          "shouldEndWith" -> pure ShouldEndWith
-          "shouldContain" -> pure ShouldContain
-          "shouldMatchList" -> pure ShouldMatchList
-          "shouldNotBe" -> pure ShouldNotBe
-          "shouldNotSatisfy" -> pure ShouldNotSatisfy
-          "shouldNotContain" -> pure ShouldNotContain
-          "shouldReturn" -> pure ShouldReturn
-          "shouldNotReturn" -> pure ShouldNotReturn
-          "shouldThrow" -> pure ShouldThrow
-          "expectationFailure" -> pure ExpectationFailure
-          other -> fail ("Unsupported expectation in manifest: " ++ other)
-
-      parseFromObject =
-        withObject "Expectation" $ \obj -> do
-          kind <- obj .: "kind" :: AesonTypes.Parser String
-          case kind of
-            "exitCodeShouldBe" -> ExitCodeShouldBe <$> obj .: "value"
-            other -> fail ("Unsupported expectation object kind: " ++ other)
-
-instance FromJSON ProcessSpec where
-  parseJSON =
-    withObject "ProcessSpec" $ \obj ->
-      ProcessSpec
-        <$> obj .: "command"
-        <*> obj .: "args"
+  parseJSON rawValue = do
+    raw <- parseJSON rawValue
+    case raw :: String of
+      "shouldBe" -> pure ShouldBe
+      "shouldSatisfy" -> pure ShouldSatisfy
+      "shouldStartWith" -> pure ShouldStartWith
+      "shouldEndWith" -> pure ShouldEndWith
+      "shouldContain" -> pure ShouldContain
+      "shouldMatchList" -> pure ShouldMatchList
+      "shouldNotBe" -> pure ShouldNotBe
+      "shouldNotSatisfy" -> pure ShouldNotSatisfy
+      "shouldNotContain" -> pure ShouldNotContain
+      "shouldReturn" -> pure ShouldReturn
+      "shouldNotReturn" -> pure ShouldNotReturn
+      "shouldThrow" -> pure ShouldThrow
+      "expectationFailure" -> pure ExpectationFailure
+      other -> fail ("Unsupported expectation in manifest: " ++ other)
 
 instance FromJSON ManifestCase where
   parseJSON =
@@ -111,7 +83,6 @@ instance FromJSON ManifestCase where
         <*> obj .: "inputFile"
         <*> obj .: "outputFile"
         <*> obj .: "expectation"
-        <*> obj .: "process"
 
 loadManifest :: FilePath -> IO Manifest
 loadManifest manifestPath = do
@@ -154,15 +125,6 @@ matchTextExpectation expectation actual expected =
       Left "Expectation shouldThrow поддерживается только в exception-раннерах"
     ExpectationFailure ->
       Left "Expectation expectationFailure требует явного failure-сценария"
-    ExitCodeShouldBe _ ->
-      Left "Expectation exitCodeShouldBe нельзя применять к текстовому сравнению"
-
--- Сравнение кодов завершения для сценариев запуска внешних команд.
-matchExitCodeExpectation :: Expectation -> Int -> Either String Bool
-matchExitCodeExpectation expectation exitCode =
-  case expectation of
-    ExitCodeShouldBe expectedCode -> Right (exitCode == expectedCode)
-    _ -> Left "Текущий expectation не поддерживает сравнение exit code"
 
 isPrefixOfText :: String -> String -> Bool
 isPrefixOfText prefix value = take (length prefix) value == prefix

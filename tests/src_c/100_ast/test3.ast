@@ -1,1 +1,1 @@
-AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstFor Nothing Nothing Nothing (AstExpr [])])]
+AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstFor Nothing Nothing Nothing (AstExprStmt Nothing)])]

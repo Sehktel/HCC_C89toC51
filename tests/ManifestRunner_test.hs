@@ -3,10 +3,8 @@ module ManifestRunner_test (manifestRunnerSpec) where
 import Lexer (lexer)
 import Parser (parseTokens)
 import System.Environment (lookupEnv)
-import System.Exit (ExitCode (..))
-import System.Process (rawSystem)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
-import TestManifest (ManifestCase (..), ProcessSpec (..), loadAllCases, matchExitCodeExpectation, matchTextExpectation)
+import TestManifest (ManifestCase (..), loadAllCases, matchTextExpectation)
 
 manifestRunnerSpec :: Spec
 manifestRunnerSpec = do
@@ -37,8 +35,6 @@ assertManifestCase mc =
       "Parser" -> do
         let actual = show (parseTokens (lexer source))
         assertTextExpectation mc actual expected
-      "Process" ->
-        runProcessCase mc
       other ->
         expectationFailure ("Неизвестный package в манифесте: " ++ other)
 
@@ -56,18 +52,3 @@ dropWhileEndSpace = reverse . dropWhile isSpaceLike . reverse
 
 isSpaceLike :: Char -> Bool
 isSpaceLike ch = ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t'
-
-runProcessCase :: ManifestCase -> IO ()
-runProcessCase mc =
-  case mcProcess mc of
-    Nothing ->
-      expectationFailure "Для package=Process требуется объект process {command,args}"
-    Just ps -> do
-      exitCode <- rawSystem (psCommand ps) (psArgs ps)
-      let actualCode =
-            case exitCode of
-              ExitSuccess -> 0
-              ExitFailure code -> code
-      case matchExitCodeExpectation (mcExpectation mc) actualCode of
-        Right matched -> matched `shouldBe` True
-        Left err -> expectationFailure err

@@ -4,10 +4,11 @@ import Control.Monad (filterM, forM, forM_)
 import Data.Char (isSpace)
 import Data.List (sort)
 import Lexer (Token (..), lexer)
-import Parser (Ast (..), parseTokens)
+import Parser (AssignOp (..), Ast (..), BinOp (..), Expr (..), parseTokens)
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath ((</>), replaceExtension, takeExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
+import Preprocessor (preprocess)
 import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
 
 parserSpec :: Spec
@@ -22,6 +23,119 @@ parserSpec = do
     -- Поддерживается вложенная структура директорий.
     forM_ fixtures assertFixtureByPath
     forM_ manifestCases assertManifestCase
+
+    describe "приоритет операций (дерево Expr)" $ do
+      it "умножение жёстче сложения: a+b*c → a+(b*c)" $
+        parseMainReturn "int main(){ return a+b*c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpAdd
+                (ExprVar "a")
+                (ExprBinary OpMul (ExprVar "b") (ExprVar "c"))
+            )
+
+      it "умножение жёстче сложения слева: a*b+c → (a*b)+c" $
+        parseMainReturn "int main(){ return a*b+c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpAdd
+                (ExprBinary OpMul (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
+
+      it "сложение левоассоциативно: a-b-c → (a-b)-c" $
+        parseMainReturn "int main(){ return a-b-c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpSub
+                (ExprBinary OpSub (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
+
+      it "сдвиг слабее сложения: a<<b+c → a<<(b+c)" $
+        parseMainReturn "int main(){ return a<<b+c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpShl
+                (ExprVar "a")
+                (ExprBinary OpAdd (ExprVar "b") (ExprVar "c"))
+            )
+
+      it "сложение жёстче равенства: a+b==c → (a+b)==c" $
+        parseMainReturn "int main(){ return a+b==c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpEq
+                (ExprBinary OpAdd (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
+
+      it "побитовое И жёстче ИЛИ: a|b&c → a|(b&c)" $
+        parseMainReturn "int main(){ return a|b&c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpBitOr
+                (ExprVar "a")
+                (ExprBinary OpBitAnd (ExprVar "b") (ExprVar "c"))
+            )
+
+      it "побитовое XOR между И и ИЛИ: a^b|c → (a^b)|c" $
+        parseMainReturn "int main(){ return a^b|c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpBitOr
+                (ExprBinary OpBitXor (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
+
+      it "логическое И жёстче ИЛИ: a||b&&c → a||(b&&c)" $
+        parseMainReturn "int main(){ return a||b&&c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpOr
+                (ExprVar "a")
+                (ExprBinary OpAnd (ExprVar "b") (ExprVar "c"))
+            )
+
+      it "скобки переопределяют приоритет: (a+b)*c" $
+        parseMainReturn "int main(){ return (a+b)*c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpMul
+                (ExprBinary OpAdd (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
+
+      it "тернарный оператор правоассоциативен: a?b:c?d:e → a?b:(c?d:e)" $
+        parseMainReturn "int main(){ return a?b:c?d:e; }\n"
+          `shouldBe` Right
+            ( ExprTernary
+                (ExprVar "a")
+                (ExprVar "b")
+                ( ExprTernary
+                    (ExprVar "c")
+                    (ExprVar "d")
+                    (ExprVar "e")
+                )
+            )
+
+      it "присваивание правоассоциативно: a=b=c" $
+        parseMainReturn "int main(){ return a=b=c; }\n"
+          `shouldBe` Right
+            ( ExprAssign
+                AAssign
+                (ExprVar "a")
+                (ExprAssign AAssign (ExprVar "b") (ExprVar "c"))
+            )
+
+      it "композиция: отношение и равенство — a<b==c → (a<b)==c" $
+        parseMainReturn "int main(){ return a<b==c; }\n"
+          `shouldBe` Right
+            ( ExprBinary
+                OpEq
+                (ExprBinary OpLt (ExprVar "a") (ExprVar "b"))
+                (ExprVar "c")
+            )
 
     it "возвращает AstUnknown для неподдерживаемого паттерна токенов" $
       parseTokens [TokenInt, TokenIdentifier "x"] `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x"]
@@ -76,6 +190,14 @@ trim = dropWhileEnd isSpace . dropWhile isSpace
 
 dropWhileEnd :: (Char -> Bool) -> String -> String
 dropWhileEnd predicate = reverse . dropWhile predicate . reverse
+
+-- | Разобрать минимальную программу с одним return и вернуть выражение (для проверки дерева).
+parseMainReturn :: String -> Either String Expr
+parseMainReturn raw =
+  let src = preprocess raw
+   in case parseTokens (lexer src) of
+        AstProgram [AstFunctionDef "main" _ _ (AstCompound [AstReturn (Just e)])] -> Right e
+        x -> Left ("ожидался main с одним return, получено: " ++ show x)
 
 assertManifestCase :: ManifestCase -> Spec
 assertManifestCase mc =

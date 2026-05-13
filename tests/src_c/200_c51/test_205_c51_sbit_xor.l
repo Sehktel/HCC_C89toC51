@@ -1,0 +1,1 @@
+[TokenSbit,TokenIdentifier "LED_PIN",TokenAssign,TokenIdentifier "P1",TokenCaret,TokenNumber 1,TokenSemicolon,TokenVoid,TokenIdentifier "main",TokenLeftParen,TokenVoid,TokenRightParen,TokenLeftBrace,TokenReturn,TokenSemicolon,TokenRightBrace]

@@ -1,7 +1,7 @@
 module AST_test (astSpec) where
 
 import Lexer (Token (..), lexer)
-import Parser (Ast (..), parseTokens)
+import Parser (Ast (..), Expr (..), parseTokens)
 import Preprocessor (preprocess)
 import Test.Hspec (Spec, describe, it, shouldBe)
 
@@ -17,7 +17,7 @@ astSpec =
               "main"
               [TokenInt]
               []
-              (AstCompound [AstReturn 7])
+              (AstCompound [AstReturn (Just (ExprLitInt 7))])
           ]
 
     it "на неподдерживаемом коде возвращает AstUnknown как промежуточный результат" $ do

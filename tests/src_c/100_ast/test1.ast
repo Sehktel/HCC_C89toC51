@@ -1,1 +1,1 @@
-AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstReturn 0])]
+AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstReturn (Just (ExprLitInt 0))])]

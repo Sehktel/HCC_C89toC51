@@ -1,0 +1,1 @@
+AstProgram [AstDeclaration [TokenSfr,TokenIdentifier "P0",TokenAssign,TokenNumber 128,TokenSemicolon],AstDeclaration [TokenSfr16,TokenIdentifier "TMR0",TokenAssign,TokenNumber 140,TokenSemicolon],AstFunctionDef "stub" [TokenVoid] [] (AstCompound [AstReturn Nothing])]

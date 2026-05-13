@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstDoWhile (AstCompound [AstExprStmt (Just (ExprAssign AAssign (ExprVar "x") (ExprLitInt 1)))]) (ExprVar "x"),AstReturn (Just (ExprLitInt 0))])]

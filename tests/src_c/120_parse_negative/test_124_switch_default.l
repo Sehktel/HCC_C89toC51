@@ -1,0 +1,1 @@
+[TokenInt,TokenIdentifier "main",TokenLeftParen,TokenVoid,TokenRightParen,TokenLeftBrace,TokenSwitch,TokenLeftParen,TokenIdentifier "y",TokenRightParen,TokenLeftBrace,TokenDefault,TokenColon,TokenBreak,TokenSemicolon,TokenRightBrace,TokenReturn,TokenNumber 1,TokenSemicolon,TokenRightBrace]

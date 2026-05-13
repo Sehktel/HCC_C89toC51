@@ -6,30 +6,14 @@
       "package": "Lexer",
       "inputFile": "tests/src_c/100_ast/test1.c",
       "outputFile": "tests/src_c/100_ast/test1.l",
-      "expectation": "shouldContain",
-      "process": null
+      "expectation": "shouldContain"
     },
     {
       "name": "parser fixture from manifest",
       "package": "Parser",
       "inputFile": "tests/src_c/100_ast/test1.c",
       "outputFile": "tests/src_c/100_ast/test1.p",
-      "expectation": "shouldBe",
-      "process": null
-    },
-    {
-      "name": "process exit code contract example",
-      "package": "Process",
-      "inputFile": "tests/src_c/100_ast/test1.c",
-      "outputFile": "tests/src_c/100_ast/test1.p",
-      "expectation": {
-        "kind": "exitCodeShouldBe",
-        "value": 0
-      },
-      "process": {
-        "command": "whoami",
-        "args": []
-      }
+      "expectation": "shouldBe"
     }
   ]
 }
