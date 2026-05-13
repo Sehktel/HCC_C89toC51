@@ -1,6 +1,7 @@
 module ManifestRunner_test (manifestRunnerSpec) where
 
 import Lexer (lexer)
+import Logger (silentLogger)
 import Parser (parseTokens)
 import System.Environment (lookupEnv)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
@@ -28,12 +29,16 @@ assertManifestCase mc =
   it ("manifest: " ++ mcName mc ++ " [" ++ mcPackage mc ++ "]") $ do
     source <- readFile (mcInputFile mc)
     expected <- readFile (mcOutputFile mc)
+    let lg = silentLogger
     case mcPackage mc of
       "Lexer" -> do
-        let actual = show (lexer source)
+        toks <- lexer lg source
+        let actual = show toks
         assertTextExpectation mc actual expected
       "Parser" -> do
-        let actual = show (parseTokens (lexer source))
+        toks <- lexer lg source
+        ast <- parseTokens lg toks
+        let actual = show ast
         assertTextExpectation mc actual expected
       other ->
         expectationFailure ("Неизвестный package в манифесте: " ++ other)

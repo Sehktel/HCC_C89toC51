@@ -1,16 +1,18 @@
 module Main (main) where
 
-import Lexer (Token, lexer)
+import Lexer (lexer)
 import Parser (parseTokens)
-import Preprocessor (preprocess)
+import Preprocessor (PreprocessConfig (..), defaultPreprocessConfig, preprocess, stderrLoggerInfo)
 
 main :: IO ()
 main = do
   -- Минимальный демонстрационный вход для пайплайна C89 -> C51.
   let sourceCode = "int main() { return 0; }"
-      preprocessedCode = preprocess sourceCode
-      tokens = lexer preprocessedCode
-      ast = parseTokens tokens
+      pipelineLog = stderrLoggerInfo
+      cfg = defaultPreprocessConfig {pcLogger = pipelineLog}
+  preprocessedCode <- preprocess cfg Nothing sourceCode
+  tokens <- lexer pipelineLog preprocessedCode
+  ast <- parseTokens pipelineLog tokens
   putStrLn "=== PREPROCESSED ==="
   putStrLn preprocessedCode
   putStrLn "=== TOKENS ==="

@@ -1,8 +1,9 @@
 module IR_test (irSpec) where
 
 import Lexer (lexer)
+import Logger (silentLogger)
 import Parser (Ast (..), Expr (..), parseTokens)
-import Preprocessor (preprocess)
+import Preprocessor (defaultPreprocessConfig, preprocess)
 import Test.Hspec (Spec, describe, it, shouldBe)
 
 -- Локальное простое IR для промежуточной проверки конвейера.
@@ -23,9 +24,14 @@ irSpec :: Spec
 irSpec =
   describe "Pipeline AST -> IR" $ do
     it "строит минимальный IR из AST шаблона main/return" $ do
-      let src = preprocess "int main() { return 3; }"
-      toIr (parseTokens (lexer src))
-        `shouldBe` [IrFunction "main", IrReturnConst 3]
+      let lg = silentLogger
+      src <- preprocess defaultPreprocessConfig Nothing "int main() { return 3; }"
+      toks <- lexer lg src
+      ast <- parseTokens lg toks
+      toIr ast `shouldBe` [IrFunction "main", IrReturnConst 3]
 
     it "на неподдерживаемой AST возвращает IrUnknown" $ do
-      toIr (parseTokens (lexer "int x;")) `shouldBe` [IrUnknown]
+      let lg = silentLogger
+      toks <- lexer lg "int x;"
+      ast <- parseTokens lg toks
+      toIr ast `shouldBe` [IrUnknown]

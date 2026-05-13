@@ -1,0 +1,1 @@
+#define ANGLE 40

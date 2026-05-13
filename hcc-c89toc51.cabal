@@ -8,6 +8,7 @@ library
   exposed-modules:
       AST
       HighIR
+      Logger
       Lexer
       LowIR
       MediumIR
@@ -18,7 +19,11 @@ library
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
-      base >=4.14 && <5
+      base >=4.14 && <5,
+      containers >=0.6 && <0.9,
+      directory >=1.3 && <2,
+      filepath >=1.4 && <1.6,
+      transformers >=0.5 && <0.7
 
 executable hcc-c89toc51
   main-is:          Main.hs
@@ -26,6 +31,7 @@ executable hcc-c89toc51
   other-modules:
       AST
       HighIR
+      Logger
       Lexer
       LowIR
       MediumIR
@@ -36,7 +42,11 @@ executable hcc-c89toc51
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
-      base >=4.14 && <5
+      base >=4.14 && <5,
+      containers >=0.6 && <0.9,
+      directory >=1.3 && <2,
+      filepath >=1.4 && <1.6,
+      transformers >=0.5 && <0.7
 
 test-suite hcc-c89toc51-test
   type:             exitcode-stdio-1.0
@@ -57,6 +67,7 @@ test-suite hcc-c89toc51-test
       Parser_test
       Peephole
       Peephole_test
+      Logger
       Preprocessor
       Preprocessor_test
       IR_test
@@ -70,9 +81,11 @@ test-suite hcc-c89toc51-test
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-lexer
   type:             exitcode-stdio-1.0
@@ -81,6 +94,7 @@ test-suite test-lexer
   other-modules:
       Lexer
       Lexer_test
+      Logger
       Preprocessor
       TestManifest
   default-language: Haskell2010
@@ -88,9 +102,11 @@ test-suite test-lexer
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-parser
   type:             exitcode-stdio-1.0
@@ -100,6 +116,7 @@ test-suite test-parser
       Lexer
       Parser
       Parser_test
+      Logger
       Preprocessor
       TestManifest
   default-language: Haskell2010
@@ -107,24 +124,29 @@ test-suite test-parser
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-preprocessor
   type:             exitcode-stdio-1.0
   main-is:          Preprocessor_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
+      Logger
       Preprocessor
       Preprocessor_test
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-ast
   type:             exitcode-stdio-1.0
@@ -134,14 +156,17 @@ test-suite test-ast
       AST_test
       Lexer
       Parser
+      Logger
       Preprocessor
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-ir
   buildable:        True
@@ -152,6 +177,7 @@ test-suite test-ir
       IR_test
       Lexer
       Parser
+      Logger
       Preprocessor
       AST
       
@@ -159,9 +185,11 @@ test-suite test-ir
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-pipeline
   type:             exitcode-stdio-1.0
@@ -173,6 +201,7 @@ test-suite test-pipeline
       Lexer_test
       Parser
       Parser_test
+      Logger
       Preprocessor
       Preprocessor_test
       TestManifest
@@ -181,9 +210,11 @@ test-suite test-pipeline
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-high-ir
   type:             exitcode-stdio-1.0
@@ -193,6 +224,7 @@ test-suite test-high-ir
       AST
       HighIR
       Lexer
+      Logger
       Parser
       HighIR_test
   default-language: Haskell2010
@@ -211,6 +243,7 @@ test-suite test-medium-ir
       AST
       HighIR
       Lexer
+      Logger
       MediumIR
       Parser
       MediumIR_test
@@ -230,6 +263,7 @@ test-suite test-low-ir
       AST
       HighIR
       Lexer
+      Logger
       LowIR
       LowIR_test
       MediumIR
@@ -250,6 +284,7 @@ test-suite test-tree-destroyer
       AST
       HighIR
       Lexer
+      Logger
       LowIR
       MediumIR
       Parser
@@ -271,6 +306,7 @@ test-suite test-peephole
       AST
       HighIR
       Lexer
+      Logger
       LowIR
       MediumIR
       Parser
@@ -281,9 +317,11 @@ test-suite test-peephole
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-system-pipeline
   type:             exitcode-stdio-1.0
@@ -297,6 +335,7 @@ test-suite test-system-pipeline
       MediumIR
       Parser
       Peephole
+      Logger
       Preprocessor
       SystemPipeline_test
       TreeDestroyer
@@ -304,9 +343,11 @@ test-suite test-system-pipeline
   ghc-options:      -Wall
   build-depends:
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
-      hspec >=2.11 && <3
+      hspec >=2.11 && <3,
+      transformers >=0.5 && <0.7
 
 test-suite test-web-report
   type:             exitcode-stdio-1.0
@@ -329,6 +370,7 @@ test-suite test-web-report
       Parser_test
       Peephole
       Peephole_test
+      Logger
       Preprocessor
       Preprocessor_test
       SystemPipeline_test
@@ -340,12 +382,14 @@ test-suite test-web-report
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      containers >=0.6 && <0.9,
       directory,
       filepath,
       hspec >=2.11 && <3,
       tasty >=1.5 && <2,
       tasty-hspec >=1.2 && <2,
-      tasty-html >=0.4 && <1
+      tasty-html >=0.4 && <1,
+      transformers >=0.5 && <0.7
 
 test-suite test-manifest-runner
   type:             exitcode-stdio-1.0
@@ -353,6 +397,7 @@ test-suite test-manifest-runner
   hs-source-dirs:   tests, src
   other-modules:
       Lexer
+      Logger
       ManifestRunner_test
       Parser
       TestManifest

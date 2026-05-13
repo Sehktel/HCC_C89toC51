@@ -9,9 +9,11 @@
 - числовые, строковые и символьные литералы;
 - токены ошибок лексического анализа.
 -}
-module Lexer (IntSuffix (..), Token (..), lexer) where
+module Lexer (IntSuffix (..), Token (..), lexer, lexerPure) where
 
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
+import Data.Foldable (traverse_)
+import Logger (LogLevel (..), Logger, logMsg)
 
 -- | Токены лексического анализа.
 data Token
@@ -187,29 +189,37 @@ keywordToToken _ = Nothing
 
 
 
--- | Основная функция лексического анализа.
---
--- Принимает исходный текст и возвращает список токенов.
--- Для некорректных фрагментов формирует 'TokenLexError' и продолжает разбор.
-lexer :: String -> [Token]
-lexer [] = []
-lexer (c : cs)
-  | isSpace c = lexer cs
+-- | Чистый лексический разбор (без логирования); для пайплайна предпочтительнее 'lexer'.
+lexerPure :: String -> [Token]
+lexerPure [] = []
+lexerPure (c : cs)
+  | isSpace c = lexerPure cs
   | c == '"' =
       let (stringToken, rest) = lexStringLiteral cs
-       in stringToken : lexer rest
+       in stringToken : lexerPure rest
   | c == '\'' =
       let (charToken, rest) = lexCharLiteral cs
-       in charToken : lexer rest
+       in charToken : lexerPure rest
   | isAlpha c || c == '_' =
       let (name, rest) = span (\x -> isAlphaNum x || x == '_') (c : cs)
-       in classifyWord name : lexer rest
+       in classifyWord name : lexerPure rest
   | isDigit c =
       let (numberToken, rest) = lexNumber (c : cs)
-       in numberToken : lexer rest
+       in numberToken : lexerPure rest
   | otherwise =
       let (token, rest) = lexOperator c cs
-       in token : lexer rest
+       in token : lexerPure rest
+
+-- | Лексер с логированием: сводка на @LogDebug@, каждый @TokenLexError@ — на @LogWarn@.
+lexer :: Logger -> String -> IO [Token]
+lexer lg input = do
+  let toks = lexerPure input
+  logMsg lg LogDebug $ "Lexer: токенов: " ++ show (length toks)
+  traverse_ logLexErr toks
+  pure toks
+  where
+    logLexErr (TokenLexError msg) = logMsg lg LogWarn $ "Lexer: " ++ msg
+    logLexErr _ = pure ()
 
 -- Разбор чисел: поддержка десятичных, шестнадцатеричных (0x) и восьмеричных (0...).
 lexNumber :: String -> LexStepResult

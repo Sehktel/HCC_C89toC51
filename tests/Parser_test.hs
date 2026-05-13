@@ -4,29 +4,32 @@ import Control.Monad (filterM, forM, forM_)
 import Data.Char (isSpace)
 import Data.List (sort)
 import Lexer (Token (..), lexer)
+import Logger (Logger, silentLogger)
 import Parser (AssignOp (..), Ast (..), BinOp (..), Expr (..), parseTokens)
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath ((</>), replaceExtension, takeExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
-import Preprocessor (preprocess)
+import Preprocessor (defaultPreprocessConfig, preprocess)
 import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
 
 parserSpec :: Spec
 parserSpec = do
   fixtures <- runIO discoverParserFixtures
   manifestCases <- runIO (loadCasesByPackage "tests/test-manifest.json" "Parser")
+  let lg = silentLogger
   describe "Parser.parseTokens" $ do
     -- Формат fixture:
     -- *.c   -> исходник
     -- *.p   -> ожидаемое дерево парсера (в формате Show, приоритетный формат)
     -- *.ast -> legacy-формат (для обратной совместимости)
     -- Поддерживается вложенная структура директорий.
-    forM_ fixtures assertFixtureByPath
-    forM_ manifestCases assertManifestCase
+    forM_ fixtures (assertFixtureByPath lg)
+    forM_ manifestCases (assertManifestCase lg)
 
     describe "приоритет операций (дерево Expr)" $ do
-      it "умножение жёстче сложения: a+b*c → a+(b*c)" $
-        parseMainReturn "int main(){ return a+b*c; }\n"
+      it "умножение жёстче сложения: a+b*c → a+(b*c)" $ do
+        r <- parseMainReturn lg "int main(){ return a+b*c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpAdd
@@ -34,8 +37,9 @@ parserSpec = do
                 (ExprBinary OpMul (ExprVar "b") (ExprVar "c"))
             )
 
-      it "умножение жёстче сложения слева: a*b+c → (a*b)+c" $
-        parseMainReturn "int main(){ return a*b+c; }\n"
+      it "умножение жёстче сложения слева: a*b+c → (a*b)+c" $ do
+        r <- parseMainReturn lg "int main(){ return a*b+c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpAdd
@@ -43,8 +47,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-      it "сложение левоассоциативно: a-b-c → (a-b)-c" $
-        parseMainReturn "int main(){ return a-b-c; }\n"
+      it "сложение левоассоциативно: a-b-c → (a-b)-c" $ do
+        r <- parseMainReturn lg "int main(){ return a-b-c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpSub
@@ -52,8 +57,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-      it "сдвиг слабее сложения: a<<b+c → a<<(b+c)" $
-        parseMainReturn "int main(){ return a<<b+c; }\n"
+      it "сдвиг слабее сложения: a<<b+c → a<<(b+c)" $ do
+        r <- parseMainReturn lg "int main(){ return a<<b+c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpShl
@@ -61,8 +67,9 @@ parserSpec = do
                 (ExprBinary OpAdd (ExprVar "b") (ExprVar "c"))
             )
 
-      it "сложение жёстче равенства: a+b==c → (a+b)==c" $
-        parseMainReturn "int main(){ return a+b==c; }\n"
+      it "сложение жёстче равенства: a+b==c → (a+b)==c" $ do
+        r <- parseMainReturn lg "int main(){ return a+b==c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpEq
@@ -70,8 +77,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-      it "побитовое И жёстче ИЛИ: a|b&c → a|(b&c)" $
-        parseMainReturn "int main(){ return a|b&c; }\n"
+      it "побитовое И жёстче ИЛИ: a|b&c → a|(b&c)" $ do
+        r <- parseMainReturn lg "int main(){ return a|b&c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpBitOr
@@ -79,8 +87,9 @@ parserSpec = do
                 (ExprBinary OpBitAnd (ExprVar "b") (ExprVar "c"))
             )
 
-      it "побитовое XOR между И и ИЛИ: a^b|c → (a^b)|c" $
-        parseMainReturn "int main(){ return a^b|c; }\n"
+      it "побитовое XOR между И и ИЛИ: a^b|c → (a^b)|c" $ do
+        r <- parseMainReturn lg "int main(){ return a^b|c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpBitOr
@@ -88,8 +97,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-      it "логическое И жёстче ИЛИ: a||b&&c → a||(b&&c)" $
-        parseMainReturn "int main(){ return a||b&&c; }\n"
+      it "логическое И жёстче ИЛИ: a||b&&c → a||(b&&c)" $ do
+        r <- parseMainReturn lg "int main(){ return a||b&&c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpOr
@@ -97,8 +107,9 @@ parserSpec = do
                 (ExprBinary OpAnd (ExprVar "b") (ExprVar "c"))
             )
 
-      it "скобки переопределяют приоритет: (a+b)*c" $
-        parseMainReturn "int main(){ return (a+b)*c; }\n"
+      it "скобки переопределяют приоритет: (a+b)*c" $ do
+        r <- parseMainReturn lg "int main(){ return (a+b)*c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpMul
@@ -106,8 +117,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-      it "тернарный оператор правоассоциативен: a?b:c?d:e → a?b:(c?d:e)" $
-        parseMainReturn "int main(){ return a?b:c?d:e; }\n"
+      it "тернарный оператор правоассоциативен: a?b:c?d:e → a?b:(c?d:e)" $ do
+        r <- parseMainReturn lg "int main(){ return a?b:c?d:e; }\n"
+        r
           `shouldBe` Right
             ( ExprTernary
                 (ExprVar "a")
@@ -119,8 +131,9 @@ parserSpec = do
                 )
             )
 
-      it "присваивание правоассоциативно: a=b=c" $
-        parseMainReturn "int main(){ return a=b=c; }\n"
+      it "присваивание правоассоциативно: a=b=c" $ do
+        r <- parseMainReturn lg "int main(){ return a=b=c; }\n"
+        r
           `shouldBe` Right
             ( ExprAssign
                 AAssign
@@ -128,8 +141,9 @@ parserSpec = do
                 (ExprAssign AAssign (ExprVar "b") (ExprVar "c"))
             )
 
-      it "композиция: отношение и равенство — a<b==c → (a<b)==c" $
-        parseMainReturn "int main(){ return a<b==c; }\n"
+      it "композиция: отношение и равенство — a<b==c → (a<b)==c" $ do
+        r <- parseMainReturn lg "int main(){ return a<b==c; }\n"
+        r
           `shouldBe` Right
             ( ExprBinary
                 OpEq
@@ -137,8 +151,9 @@ parserSpec = do
                 (ExprVar "c")
             )
 
-    it "возвращает AstUnknown для неподдерживаемого паттерна токенов" $
-      parseTokens [TokenInt, TokenIdentifier "x"] `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x"]
+    it "возвращает AstUnknown для неподдерживаемого паттерна токенов" $ do
+      ast <- parseTokens lg [TokenInt, TokenIdentifier "x"]
+      ast `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x"]
 
 discoverParserFixtures :: IO [FilePath]
 discoverParserFixtures = do
@@ -168,13 +183,14 @@ findFilesByExtension root extension = do
           else pure [path | takeExtension path == extension]
       pure (concat nested)
 
-assertFixtureByPath :: FilePath -> Spec
-assertFixtureByPath cFile =
+assertFixtureByPath :: Logger -> FilePath -> Spec
+assertFixtureByPath lg cFile =
   it ("парсит fixture " ++ cFile) $ do
     source <- readFile cFile
     expectationFile <- parserExpectationFile cFile
     expectedAst <- readFile expectationFile
-    let actualAst = parseTokens (lexer source)
+    toks <- lexer lg source
+    actualAst <- parseTokens lg toks
     show actualAst `shouldBe` trim expectedAst
   where
     parserExpectationFile filePath = do
@@ -192,19 +208,23 @@ dropWhileEnd :: (Char -> Bool) -> String -> String
 dropWhileEnd predicate = reverse . dropWhile predicate . reverse
 
 -- | Разобрать минимальную программу с одним return и вернуть выражение (для проверки дерева).
-parseMainReturn :: String -> Either String Expr
-parseMainReturn raw =
-  let src = preprocess raw
-   in case parseTokens (lexer src) of
-        AstProgram [AstFunctionDef "main" _ _ (AstCompound [AstReturn (Just e)])] -> Right e
-        x -> Left ("ожидался main с одним return, получено: " ++ show x)
+parseMainReturn :: Logger -> String -> IO (Either String Expr)
+parseMainReturn lg raw = do
+  src <- preprocess defaultPreprocessConfig Nothing raw
+  toks <- lexer lg src
+  ast <- parseTokens lg toks
+  pure $ case ast of
+    AstProgram [AstFunctionDef "main" _ _ (AstCompound [AstReturn (Just e)])] -> Right e
+    x -> Left ("ожидался main с одним return, получено: " ++ show x)
 
-assertManifestCase :: ManifestCase -> Spec
-assertManifestCase mc =
+assertManifestCase :: Logger -> ManifestCase -> Spec
+assertManifestCase lg mc =
   it ("manifest: " ++ mcName mc) $ do
     source <- readFile (mcInputFile mc)
     expectedAst <- readFile (mcOutputFile mc)
-    let actual = show (parseTokens (lexer source))
+    toks <- lexer lg source
+    ast <- parseTokens lg toks
+    let actual = show ast
     case matchTextExpectation (mcExpectation mc) actual (trim expectedAst) of
       Right matched -> matched `shouldBe` True
       Left err -> expectationFailure err

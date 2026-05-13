@@ -1,7 +1,58 @@
 {-# LANGUAGE LambdaCase #-}
 
 -- | Синтаксический анализатор: подмножество C89 + C51-суффиксы функций.
--- Выражения разбираются в древовидный 'Expr' с приоритетами по C89.
+--
+-- === Выражения (@Expr@) и приоритеты
+--
+-- Иерархия задана __явно__ цепочкой функций: чем /выше/ уровень в таблице ниже,
+-- тем /слабее/ связывание (оператор ближе к корню дерева). Реализация следует
+-- обычной для C89 расстановке уровней; нормативная грамматика — в стандарте C89
+-- (ANSI X3.159-1989; то же по сути, что ISO/IEC 9899:1990 — в литературе часто «C90»).
+-- Ниже — инженерная карта «функция → операторы».
+--
+-- *Узкая ассоциативность:* большинство бинарных операторов — /левоассоциативны/
+-- через 'binLeft'. Исключения: присваивание ('parseAssign') и условный @?:@
+-- ('parseConditional') — /правоассоциативны/. Оператор запятой — левоассоциативен,
+-- но запятая — самый слабый из перечисленных уровней выражения.
+--
+-- +---------------------------+----------------------------------------+----------------------------------+
+-- | Слабее → сильнее (по     | Операторы (идея)                       | Входная точка в коде             |
+-- | связыванию)               |                                        |                                  |
+-- +===========================+========================================+==================================+
+-- | 1. Запятая                | @,@                                    | 'parseComma'                     |
+-- | 2. Присваивание           | @=@ @+=@ …                             | 'parseAssign'                    |
+-- | 3. Условный               | @? :@                                  | 'parseConditional'               |
+-- | 4. Логическое ИЛИ         | @\|\|@                                 | 'parseLogicalOr'                 |
+-- | 5. Логическое И           | @&&@                                   | 'parseLogicalAnd'                |
+-- | 6. Побитовое ИЛИ          | @\|@                                   | 'parseBitOr'                     |
+-- | 7. Побитовое XOR          | @^@                                    | 'parseBitXor'                    |
+-- | 8. Побитовое И            | @&@ (не @&&@)                          | 'parseBitAnd'                    |
+-- | 9. Равенство              | @==@ @!=@                              | 'parseEquality'                  |
+-- | 10. Отношение и сдвиг     | @<@ @>@ @<=@ @>=@ @<<@ @>>@           | 'parseRelational'                |
+-- | 11. Аддитивные            | @+@ @-@ (бинарные)                     | 'parseAdditive'                  |
+-- | 12. Мультипликативные     | @*@ @\/@ @%@                          | 'parseMultiplicative'            |
+-- | 13. Унарные               | @+ - ! ~ * & ++ -- sizeof@ …           | 'parseUnary'                     |
+-- | 14. Постфикс / первичный  | вызов, @[]@, @.@, @->@, литералы, @()@ | 'parsePostfix', 'parsePrimary'   |
+-- +---------------------------+----------------------------------------+----------------------------------+
+--
+-- __Важно:__ уровень 10 (@parseRelational@) в одной функции совмещает цепочки
+-- сдвига (@<<@, @>>@) и операторов отношения; порядок соответствует принятому
+-- для C разделению «сдвиг слабее аддитивных, сильнее равенства» — см. код и
+-- тесты @Parser_test@ на ожидаемую форму дерева.
+--
+-- === Точки входа выражения
+--
+-- * 'parseExprTokens' — полное выражение (включая запятую); используется в
+--   скобках, аргументах, @return@, заголовках @for@ и т.д.
+-- * 'parseConditionalExprTokens' — то же, но без уровня запятой: середина @case@
+--   и тернарного оператора, где запятая должна относиться к внешнему @?:@.
+--
+-- === Не реализовано (подмножество языка)
+--
+-- Явные ограничения, чтобы не считать разбор полным C89 по выражениям:
+-- приведение @(тип)@ как унарное, @sizeof(имя-типа)@ с полным разбором
+-- @type-name@, составные литералы и прочие конструкции новее C89 — отсутствуют
+-- или сведены к заглушкам. При расширении грамматики эту таблицу нужно обновить.
 module Parser
   ( Ast (..),
     Expr (..),
@@ -10,12 +61,18 @@ module Parser
     SuffixOp (..),
     AssignOp (..),
     parseTokens,
+    parseTokensPure,
   )
 where
 
 import Lexer (IntSuffix (..), Token (..))
+import Logger (LogLevel (..), Logger, logMsg)
 
--- | Дерево выражения (бинарные операторы левоассоциативны, кроме присваивания и «?:»).
+-- | Дерево выражения.
+--
+-- По умолчанию бинарные узлы 'ExprBinary' — /левоассоциативны/ на своём уровне
+-- (см. 'binLeft'). Исключения: 'ExprAssign' и 'ExprTernary' строятся с
+-- правой рекурсией в 'parseAssign' и 'parseConditional'.
 data Expr
   = ExprLitInt Int
   | ExprLitIntSuff Int IntSuffix
@@ -112,15 +169,28 @@ data Ast
 
 type ParseResult a = Either String (a, [Token])
 
--- | Полный разбор единицы трансляции.
-parseTokens :: [Token] -> Ast
-parseTokens tokens =
+-- | Разбор без логирования (удобно в свойствах и отладке).
+parseTokensPure :: [Token] -> Ast
+parseTokensPure tokens =
   case parseTranslationUnit tokens of
     Right (nodes, []) ->
       case nodes of
         [AstDeclaration _] -> AstUnknown tokens
         _ -> AstProgram nodes
     _ -> AstUnknown tokens
+
+-- | Разбор с логированием: сводка на @LogDebug@, @AstUnknown@ — предупреждение.
+parseTokens :: Logger -> [Token] -> IO Ast
+parseTokens lg tokens = do
+  logMsg lg LogDebug $ "Parser: токенов на входе: " ++ show (length tokens)
+  let ast = parseTokensPure tokens
+  case ast of
+    AstUnknown ts ->
+      logMsg lg LogWarn $
+        "Parser: единица трансляции не разобрана (AstUnknown), первые токены: "
+          ++ take 200 (show ts)
+    _ -> pure ()
+  pure ast
 
 parseTranslationUnit :: [Token] -> ParseResult [Ast]
 parseTranslationUnit [] = Right ([], [])
@@ -415,7 +485,10 @@ isTypeToken token =
     TokenReentrant -> True
     _ -> False
 
--- * Разбор выражений (приоритеты C89; «?:» и присваивание — правая ассоциативность)
+-- * Разбор выражений
+--
+-- Порядок вызовов и приоритеты — в Haddock модуля (таблица уровней). Здесь —
+-- только локальные детали реализации.
 
 -- | Первая «:», завершающая фрагмент при вложенных «?:» (середина тернарного или @case@).
 splitAtTernaryColon :: [Token] -> Either String ([Token], [Token])
@@ -428,11 +501,13 @@ splitAtTernaryColon ts = go (0 :: Int) [] ts
     go q acc (TokenQuestion : rest) = go (q + 1) (TokenQuestion : acc) rest
     go q acc (t : rest) = go q (t : acc) rest
 
+-- | Полное выражение: самый слабый уровень — запятая ('parseComma').
 parseExprTokens :: [Token] -> Either String Expr
 parseExprTokens toks = do
   (e, rest) <- parseComma toks
   if null rest then Right e else Left "trailing tokens in expression"
 
+-- | Выражение без уровня запятой (середина @?:@, выражение в @case@ до @:@).
 parseConditionalExprTokens :: [Token] -> Either String Expr
 parseConditionalExprTokens toks = do
   (e, rest) <- parseConditional toks
@@ -442,6 +517,7 @@ parseOptionalExprTokens :: [Token] -> Either String (Maybe Expr)
 parseOptionalExprTokens [] = Right Nothing
 parseOptionalExprTokens toks = Just <$> parseExprTokens toks
 
+-- | Оператор запятой: левоассоциативен; операнды — цепочки присваивания.
 parseComma :: [Token] -> ParseResult Expr
 parseComma ts = do
   (lhs, r1) <- parseAssign ts
@@ -451,6 +527,7 @@ parseComma ts = do
       Right (ExprComma lhs rhs, r3)
     _ -> Right (lhs, r1)
 
+-- | Присваивание: правая ассоциативность (@a = b = c@ → @a = (b = c)@).
 parseAssign :: [Token] -> ParseResult Expr
 parseAssign ts = do
   (lhs, r1) <- parseConditional ts
@@ -475,6 +552,7 @@ assignOpFromToken = \case
   TokenPipeEqual : r -> Just (AOrAssign, r)
   _ -> Nothing
 
+-- | Условный @?:@: правая ассоциативность; ветка «иначе» снова 'parseConditional'.
 parseConditional :: [Token] -> ParseResult Expr
 parseConditional ts = do
   (lhs, r1) <- parseLogicalOr ts
@@ -491,7 +569,7 @@ parseConditional ts = do
         _ -> Left "malformed conditional"
     _ -> Right (lhs, r1)
 
--- | Левоассоциативный разбор цепочки операторов одного приоритета.
+-- | Левоассоциативная цепочка одного бинарного оператора @op@ над подвыражениями @sub@.
 binLeft ::
   ([Token] -> ParseResult Expr) ->
   BinOp ->
@@ -509,18 +587,21 @@ binLeft sub op chop ts = do
           go (ExprBinary op lhs rhs) r3
         Nothing -> Right (lhs, rest)
 
+-- | @||@; операнды — уровень логического И.
 parseLogicalOr :: [Token] -> ParseResult Expr
 parseLogicalOr = binLeft parseLogicalAnd OpOr chop
   where
     chop (TokenPipePipe : r) = Just r
     chop _ = Nothing
 
+-- | @&&@; операнды — побитовое ИЛИ.
 parseLogicalAnd :: [Token] -> ParseResult Expr
 parseLogicalAnd = binLeft parseBitOr OpAnd chop
   where
     chop (TokenAmpersandAmpersand : r) = Just r
     chop _ = Nothing
 
+-- | Побитовое @|@ (не @||@); операнды — XOR.
 parseBitOr :: [Token] -> ParseResult Expr
 parseBitOr = binLeft parseBitXor OpBitOr chop
   where
@@ -528,6 +609,7 @@ parseBitOr = binLeft parseBitXor OpBitOr chop
     chop (TokenPipe : r) = Just r
     chop _ = Nothing
 
+-- | Побитовое @^@; операнды — побитовое И.
 parseBitXor :: [Token] -> ParseResult Expr
 parseBitXor = binLeft parseBitAnd OpBitXor chop
   where
@@ -535,6 +617,7 @@ parseBitXor = binLeft parseBitAnd OpBitXor chop
     chop (TokenCaret : r) = Just r
     chop _ = Nothing
 
+-- | Побитовое @&@ (не @&&@); операнды — равенство.
 parseBitAnd :: [Token] -> ParseResult Expr
 parseBitAnd = binLeft parseEquality OpBitAnd chop
   where
@@ -543,6 +626,8 @@ parseBitAnd = binLeft parseEquality OpBitAnd chop
     chop (TokenAmpersand : r) = Just r
     chop _ = Nothing
 
+-- | Отношения (@<@ @>@ @<=@ @>=@) и сдвиги (@<<@ @>>@) относительно аддитивного уровня.
+-- Реализация объединена в одной функции; порядок см. в теле и в тестах приоритета.
 parseRelational :: [Token] -> ParseResult Expr
 parseRelational ts = goShift ts >>= goRel
   where
@@ -564,6 +649,7 @@ parseRelational ts = goShift ts >>= goRel
       goShr (ExprBinary OpShr lhs rhs) r3
     goShr lhs r = Right (lhs, r)
 
+-- | @+@ и бинарный @-@ (унарный @-@ — в 'parseUnary').
 parseAdditive :: [Token] -> ParseResult Expr
 parseAdditive ts = binLeft parseMultiplicative OpAdd chopPlus ts >>= goMinus
   where
@@ -580,6 +666,7 @@ parseAdditive ts = binLeft parseMultiplicative OpAdd chopPlus ts >>= goMinus
         goMinus (ExprBinary OpSub lhs rhs, r3)
       _ -> Right (lhs, r)
 
+-- | @*@ @\/@ @%@; звёздочка различается с разыменованием по контексту ('chopStar').
 parseMultiplicative :: [Token] -> ParseResult Expr
 parseMultiplicative ts = binLeft parseUnary OpMul chopStar ts >>= goDivMod
   where
@@ -597,6 +684,7 @@ parseMultiplicative ts = binLeft parseUnary OpMul chopStar ts >>= goDivMod
         goDivMod (ExprBinary OpMod lhs rhs, r3)
       _ -> Right (lhs, r)
 
+-- | Префиксные операторы; правая ассоциативность цепочки унарных.
 parseUnary :: [Token] -> ParseResult Expr
 parseUnary ts =
   case ts of
@@ -612,11 +700,13 @@ parseUnary ts =
     TokenSizeof : r -> do (e, r2) <- parseUnary r; Right (ExprUnary PreSizeof e, r2)
     _ -> parsePostfix ts
 
+-- | Постфиксная цепочка после атома ('parsePostfixChain').
 parsePostfix :: [Token] -> ParseResult Expr
 parsePostfix ts = do
   (atom, r) <- parsePrimary ts
   parsePostfixChain atom r
 
+-- | Атом: литерал, идентификатор, скобочное подвыражение ('parseExprTokens' внутри).
 parsePrimary :: [Token] -> ParseResult Expr
 parsePrimary ts =
   case ts of
@@ -676,7 +766,7 @@ parsePostfixChain e ts =
       parsePostfixChain (addSuffix e (SuffArrow fld)) r
     _ -> Right (e, ts)
 
--- | Равенство: отдельно из-за двух разных операторов.
+-- | @==@ @!=@; операнды — уровень 'parseRelational' (цепочка левоассоциативна).
 parseEquality :: [Token] -> ParseResult Expr
 parseEquality ts = do
   (first, r) <- parseRelational ts
