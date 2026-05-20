@@ -13,7 +13,7 @@ module Lexer (IntSuffix (..), Token (..), lexer, lexerPure) where
 
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
 import Data.Foldable (traverse_)
-import Logger (LogLevel (..), Logger, logMsg)
+import Logger (LogLevel (..), Logger, logMsg, logMsgLazy)
 
 -- | Токены лексического анализа.
 data Token
@@ -214,7 +214,7 @@ lexerPure (c : cs)
 lexer :: Logger -> String -> IO [Token]
 lexer lg input = do
   let toks = lexerPure input
-  logMsg lg LogDebug $ "Lexer: токенов: " ++ show (length toks)
+  logMsgLazy lg LogDebug $ \_ -> "Lexer: токенов: " ++ show (length toks)
   traverse_ logLexErr toks
   pure toks
   where

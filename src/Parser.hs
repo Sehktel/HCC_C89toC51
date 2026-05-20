@@ -66,7 +66,7 @@ module Parser
 where
 
 import Lexer (IntSuffix (..), Token (..))
-import Logger (LogLevel (..), Logger, logMsg)
+import Logger (LogLevel (..), Logger, logMsg, logMsgLazy)
 
 -- | Дерево выражения.
 --
@@ -182,7 +182,7 @@ parseTokensPure tokens =
 -- | Разбор с логированием: сводка на @LogDebug@, @AstUnknown@ — предупреждение.
 parseTokens :: Logger -> [Token] -> IO Ast
 parseTokens lg tokens = do
-  logMsg lg LogDebug $ "Parser: токенов на входе: " ++ show (length tokens)
+  logMsgLazy lg LogDebug $ \_ -> "Parser: токенов на входе: " ++ show (length tokens)
   let ast = parseTokensPure tokens
   case ast of
     AstUnknown ts ->

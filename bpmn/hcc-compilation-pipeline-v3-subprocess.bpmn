@@ -128,12 +128,6 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_V3">
     <bpmndi:BPMNPlane id="BPMNPlane_V3" bpmnElement="hcc-compilation-v3">
-      <bpmndi:BPMNShape id="Di_Start" bpmnElement="Start">
-        <dc:Bounds x="500" y="80" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="502" y="56" width="31" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_Fail" bpmnElement="Task_Publish_Failure">
         <dc:Bounds x="996" y="255" width="110" height="70" />
       </bpmndi:BPMNShape>
@@ -159,6 +153,12 @@
         <dc:Bounds x="1393" y="432" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1402" y="413" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Start" bpmnElement="Start">
+        <dc:Bounds x="500" y="62" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="502" y="38" width="31" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_SubAnalysis" bpmnElement="Sub_Analysis" isExpanded="true">
@@ -269,7 +269,7 @@
         <di:waypoint x="1051" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_To_Analysis" bpmnElement="Flow_To_Analysis">
-        <di:waypoint x="518" y="116" />
+        <di:waypoint x="518" y="98" />
         <di:waypoint x="518" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_To_Failure" bpmnElement="Flow_To_Failure">
