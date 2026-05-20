@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_HccV2"
+                  targetNamespace="http://hcc.c89toc51.local/bpmn">
+
+  <!--
+    Вариант 2: сбои через инциденты Camunda (без стрелок ошибок).
+    - camunda:asyncBefore="true" на каждой задаче
+    - handleFailure / исключение → incident, процесс стоит на красном блоке
+    - Другой process instance (другой buildId) не затрагивается
+  -->
+  <bpmn:process id="hcc-compilation-v2"
+                name="HCC: компиляция v2 (инциденты)"
+                isExecutable="true"
+                camunda:historyTimeToLive="30">
+
+    <bpmn:documentation>
+      Параллельные дорожки после старта:
+      слева — фронтенд (Init → … → Semantic), справа — IR/Codegen.
+      Worker на правой дорожке должен ждать артефакты левой (semanticReady).
+      Сбой: external task failure / OOM → incident, без BPMN-стрелок fail.
+    </bpmn:documentation>
+
+    <bpmn:startEvent id="Start" name="Старт">
+      <bpmn:outgoing>Flow_Start_Fork</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:parallelGateway id="Gw_Fork" name="Fork">
+      <bpmn:incoming>Flow_Start_Fork</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fork_Front</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Fork_Back</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- Левая колонка: фронтенд -->
+    <bpmn:serviceTask id="Task_Init" name="Init"
+                      camunda:type="external" camunda:topic="hcc-init"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_Fork_Front</bpmn:incoming>
+      <bpmn:outgoing>Flow_Init_PP</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Preprocess" name="Preprocessor"
+                      camunda:type="external" camunda:topic="hcc-stage-preprocess"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_Init_PP</bpmn:incoming>
+      <bpmn:outgoing>Flow_PP_LEX</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Lexer" name="Lexer"
+                      camunda:type="external" camunda:topic="hcc-stage-lexer"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_PP_LEX</bpmn:incoming>
+      <bpmn:outgoing>Flow_LEX_PAR</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Parse" name="Parser"
+                      camunda:type="external" camunda:topic="hcc-stage-parse"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_LEX_PAR</bpmn:incoming>
+      <bpmn:outgoing>Flow_PAR_SEM</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Semantic" name="AST / семантика"
+                      camunda:type="external" camunda:topic="hcc-stage-semantic"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_PAR_SEM</bpmn:incoming>
+      <bpmn:outgoing>Flow_SEM_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Правая колонка: IR + codegen -->
+    <bpmn:serviceTask id="Task_HighIR" name="HighIR"
+                      camunda:type="external" camunda:topic="hcc-stage-highir"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_Fork_Back</bpmn:incoming>
+      <bpmn:outgoing>Flow_HIR_MIR</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_MediumIR" name="MediumIR"
+                      camunda:type="external" camunda:topic="hcc-stage-mediumir"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_HIR_MIR</bpmn:incoming>
+      <bpmn:outgoing>Flow_MIR_LIR</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_LowIR" name="LowIR"
+                      camunda:type="external" camunda:topic="hcc-stage-lowir"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_MIR_LIR</bpmn:incoming>
+      <bpmn:outgoing>Flow_LIR_CG</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Codegen" name="Codegen C51"
+                      camunda:type="external" camunda:topic="hcc-stage-codegen"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_LIR_CG</bpmn:incoming>
+      <bpmn:outgoing>Flow_CG_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:parallelGateway id="Gw_Join" name="Join">
+      <bpmn:incoming>Flow_SEM_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_CG_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_Join_Zig</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:exclusiveGateway id="Gw_Zig" name="Нужен Zig?" default="Flow_No_Zig"/>
+
+    <bpmn:serviceTask id="Task_Zig_Test" name="Zig test (parallel MI)"
+                      camunda:type="external" camunda:topic="hcc-zig-test"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_Yes_Zig</bpmn:incoming>
+      <bpmn:outgoing>Flow_Zig_Success</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="false"
+        camunda:collection="${zigTargets}"
+        camunda:elementVariable="zigTarget"/>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Publish_Success" name="Артефакты OK"
+                      camunda:type="external" camunda:topic="hcc-publish-success"
+                      camunda:asyncBefore="true">
+      <bpmn:incoming>Flow_No_Zig</bpmn:incoming>
+      <bpmn:incoming>Flow_Zig_Success</bpmn:incoming>
+      <bpmn:outgoing>Flow_Success_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_OK" name="OK">
+      <bpmn:incoming>Flow_Success_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- sequence flows (только happy path) -->
+    <bpmn:sequenceFlow id="Flow_Start_Fork" sourceRef="Start" targetRef="Gw_Fork"/>
+    <bpmn:sequenceFlow id="Flow_Fork_Front" sourceRef="Gw_Fork" targetRef="Task_Init"/>
+    <bpmn:sequenceFlow id="Flow_Fork_Back" sourceRef="Gw_Fork" targetRef="Task_HighIR"/>
+
+    <bpmn:sequenceFlow id="Flow_Init_PP" sourceRef="Task_Init" targetRef="Task_Preprocess"/>
+    <bpmn:sequenceFlow id="Flow_PP_LEX" sourceRef="Task_Preprocess" targetRef="Task_Lexer"/>
+    <bpmn:sequenceFlow id="Flow_LEX_PAR" sourceRef="Task_Lexer" targetRef="Task_Parse"/>
+    <bpmn:sequenceFlow id="Flow_PAR_SEM" sourceRef="Task_Parse" targetRef="Task_Semantic"/>
+    <bpmn:sequenceFlow id="Flow_SEM_Join" sourceRef="Task_Semantic" targetRef="Gw_Join"/>
+
+    <bpmn:sequenceFlow id="Flow_HIR_MIR" sourceRef="Task_HighIR" targetRef="Task_MediumIR"/>
+    <bpmn:sequenceFlow id="Flow_MIR_LIR" sourceRef="Task_MediumIR" targetRef="Task_LowIR"/>
+    <bpmn:sequenceFlow id="Flow_LIR_CG" sourceRef="Task_LowIR" targetRef="Task_Codegen"/>
+    <bpmn:sequenceFlow id="Flow_CG_Join" sourceRef="Task_Codegen" targetRef="Gw_Join"/>
+
+    <bpmn:sequenceFlow id="Flow_Join_Zig" sourceRef="Gw_Join" targetRef="Gw_Zig"/>
+    <bpmn:sequenceFlow id="Flow_Yes_Zig" name="Да" sourceRef="Gw_Zig" targetRef="Task_Zig_Test">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${enableZigMatrixTest == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_No_Zig" name="Нет" sourceRef="Gw_Zig" targetRef="Task_Publish_Success"/>
+    <bpmn:sequenceFlow id="Flow_Zig_Success" sourceRef="Task_Zig_Test" targetRef="Task_Publish_Success"/>
+    <bpmn:sequenceFlow id="Flow_Success_End" sourceRef="Task_Publish_Success" targetRef="End_OK"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_V2">
+    <bpmndi:BPMNPlane id="BPMNPlane_V2" bpmnElement="hcc-compilation-v2">
+
+      <bpmndi:BPMNShape id="Di_Start" bpmnElement="Start">
+        <dc:Bounds x="392" y="40" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Fork" bpmnElement="Gw_Fork">
+        <dc:Bounds x="385" y="110" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <!-- левая колонка -->
+      <bpmndi:BPMNShape id="Di_Init" bpmnElement="Task_Init">
+        <dc:Bounds x="80" y="200" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_PP" bpmnElement="Task_Preprocess">
+        <dc:Bounds x="80" y="310" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_LEX" bpmnElement="Task_Lexer">
+        <dc:Bounds x="80" y="420" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_PAR" bpmnElement="Task_Parse">
+        <dc:Bounds x="80" y="530" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_SEM" bpmnElement="Task_Semantic">
+        <dc:Bounds x="80" y="640" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- правая колонка -->
+      <bpmndi:BPMNShape id="Di_HIR" bpmnElement="Task_HighIR">
+        <dc:Bounds x="630" y="200" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_MIR" bpmnElement="Task_MediumIR">
+        <dc:Bounds x="630" y="310" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_LIR" bpmnElement="Task_LowIR">
+        <dc:Bounds x="630" y="420" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_CG" bpmnElement="Task_Codegen">
+        <dc:Bounds x="630" y="530" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Di_Join" bpmnElement="Gw_Join">
+        <dc:Bounds x="385" y="760" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwZig" bpmnElement="Gw_Zig" isMarkerVisible="true">
+        <dc:Bounds x="385" y="850" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Zig" bpmnElement="Task_Zig_Test">
+        <dc:Bounds x="600" y="830" width="130" height="90"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Success" bpmnElement="Task_Publish_Success">
+        <dc:Bounds x="355" y="960" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_End" bpmnElement="End_OK">
+        <dc:Bounds x="392" y="1080" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <!-- edges -->
+      <bpmndi:BPMNEdge id="Edge_Start_Fork" bpmnElement="Flow_Start_Fork">
+        <di:waypoint x="410" y="76"/><di:waypoint x="410" y="110"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Fork_Front" bpmnElement="Flow_Fork_Front">
+        <di:waypoint x="385" y="135"/><di:waypoint x="135" y="135"/><di:waypoint x="135" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Fork_Back" bpmnElement="Flow_Fork_Back">
+        <di:waypoint x="435" y="135"/><di:waypoint x="685" y="135"/><di:waypoint x="685" y="200"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Init_PP" bpmnElement="Flow_Init_PP">
+        <di:waypoint x="135" y="280"/><di:waypoint x="135" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PP_LEX" bpmnElement="Flow_PP_LEX">
+        <di:waypoint x="135" y="390"/><di:waypoint x="135" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LEX_PAR" bpmnElement="Flow_LEX_PAR">
+        <di:waypoint x="135" y="500"/><di:waypoint x="135" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PAR_SEM" bpmnElement="Flow_PAR_SEM">
+        <di:waypoint x="135" y="610"/><di:waypoint x="135" y="640"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SEM_Join" bpmnElement="Flow_SEM_Join">
+        <di:waypoint x="135" y="720"/><di:waypoint x="135" y="785"/><di:waypoint x="385" y="785"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_HIR_MIR" bpmnElement="Flow_HIR_MIR">
+        <di:waypoint x="685" y="280"/><di:waypoint x="685" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_LIR" bpmnElement="Flow_MIR_LIR">
+        <di:waypoint x="685" y="390"/><di:waypoint x="685" y="420"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_CG" bpmnElement="Flow_LIR_CG">
+        <di:waypoint x="685" y="500"/><di:waypoint x="685" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Join" bpmnElement="Flow_CG_Join">
+        <di:waypoint x="685" y="610"/><di:waypoint x="685" y="785"/><di:waypoint x="435" y="785"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Join_Zig" bpmnElement="Flow_Join_Zig">
+        <di:waypoint x="410" y="810"/><di:waypoint x="410" y="850"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_No_Zig" bpmnElement="Flow_No_Zig">
+        <di:waypoint x="410" y="900"/><di:waypoint x="410" y="960"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="418" y="920" width="24" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Yes_Zig" bpmnElement="Flow_Yes_Zig">
+        <di:waypoint x="435" y="875"/><di:waypoint x="600" y="875"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="500" y="857" width="18" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Zig_Success" bpmnElement="Flow_Zig_Success">
+        <di:waypoint x="665" y="920"/><di:waypoint x="665" y="1000"/><di:waypoint x="465" y="1000"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Success_End" bpmnElement="Flow_Success_End">
+        <di:waypoint x="410" y="1040"/><di:waypoint x="410" y="1080"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

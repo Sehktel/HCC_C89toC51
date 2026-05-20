@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_HccCompilation" targetNamespace="http://hcc.c89toc51.local/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1">
+  <bpmn:process id="hcc-compilation-pipeline" name="HCC: конвейер компиляции (1 файл)" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:documentation>
+      Worker после каждой external task: complete(variables: exitCode, stageName, logTail).
+      exitCode != 0 → XOR default → Publish Failure → End FAILED (этот instance).
+      Другой файл = новый process instance (businessKey = buildId).
+      Zig: enableZigMatrixTest=true, zigTargets — parallel multi-instance на Task_Zig_Test.
+      После всех Zig-instances worker выставляет zigMatrixOk (все exitCode==0).
+    </bpmn:documentation>
+    <bpmn:startEvent id="Start_Compile" name="Новая сборка">
+      <bpmn:outgoing>Flow_Start_Init</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_Init" name="Init" camunda:type="external" camunda:topic="hcc-init">
+      <bpmn:incoming>Flow_Start_Init</bpmn:incoming>
+      <bpmn:outgoing>Flow_Init_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Preprocess" name="Preprocessor" camunda:type="external" camunda:topic="hcc-stage-preprocess">
+      <bpmn:incoming>Flow_Init_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_PP_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Lexer" name="Lexer" camunda:type="external" camunda:topic="hcc-stage-lexer">
+      <bpmn:incoming>Flow_PP_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_LEX_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Parse" name="Parser" camunda:type="external" camunda:topic="hcc-stage-parse">
+      <bpmn:incoming>Flow_LEX_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_PAR_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Semantic" name="AST / семантика" camunda:type="external" camunda:topic="hcc-stage-semantic">
+      <bpmn:incoming>Flow_PAR_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_SEM_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_HighIR" name="HighIR" camunda:type="external" camunda:topic="hcc-stage-highir">
+      <bpmn:incoming>Flow_SEM_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_HIR_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_MediumIR" name="MediumIR" camunda:type="external" camunda:topic="hcc-stage-mediumir">
+      <bpmn:incoming>Flow_HIR_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_MIR_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_LowIR" name="LowIR" camunda:type="external" camunda:topic="hcc-stage-lowir">
+      <bpmn:incoming>Flow_MIR_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_LIR_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Codegen" name="Codegen C51" camunda:type="external" camunda:topic="hcc-stage-codegen">
+      <bpmn:incoming>Flow_LIR_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_CG_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gw_After_Init" name="init ok?" default="Flow_Init_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_PP" name="pp ok?" default="Flow_PP_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_LEX" name="lex ok?" default="Flow_LEX_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_PAR" name="parse ok?" default="Flow_PAR_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_SEM" name="sem ok?" default="Flow_SEM_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_HIR" name="hir ok?" default="Flow_HIR_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_MIR" name="mir ok?" default="Flow_MIR_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_LIR" name="lir ok?" default="Flow_LIR_Fail" />
+    <bpmn:exclusiveGateway id="Gw_After_CG" name="codegen ok?" default="Flow_CG_Fail" />
+    <bpmn:exclusiveGateway id="Gw_Zig_Mode" name="Zig matrix?" default="Flow_Skip_Zig" />
+    <bpmn:exclusiveGateway id="Gw_After_Zig" name="zig matrix ok?" default="Flow_Zig_Fail" />
+    <bpmn:serviceTask id="Task_Zig_Test" name="Zig test (parallel MI)" camunda:type="external" camunda:topic="hcc-zig-test">
+      <bpmn:incoming>Flow_To_Zig</bpmn:incoming>
+      <bpmn:outgoing>Flow_Zig_Gw</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${zigTargets}" camunda:elementVariable="zigTarget" />
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Publish_Failure" name="Записать сбой" camunda:type="external" camunda:topic="hcc-publish-failure">
+      <bpmn:incoming>Flow_Init_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_PP_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_LEX_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_PAR_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_SEM_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_HIR_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_MIR_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_LIR_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_CG_Fail</bpmn:incoming>
+      <bpmn:incoming>Flow_Zig_Fail</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fail_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Publish_Success" name="Артефакты OK" camunda:type="external" camunda:topic="hcc-publish-success">
+      <bpmn:incoming>Flow_Skip_Zig</bpmn:incoming>
+      <bpmn:incoming>Flow_Zig_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_Success_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Success" name="OK">
+      <bpmn:incoming>Flow_Success_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Failed" name="FAILED">
+      <bpmn:incoming>Flow_Fail_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_Init" sourceRef="Start_Compile" targetRef="Task_Init" />
+    <bpmn:sequenceFlow id="Flow_Init_Gw" sourceRef="Task_Init" targetRef="Gw_After_Init" />
+    <bpmn:sequenceFlow id="Flow_Init_Ok" name="ok" sourceRef="Gw_After_Init" targetRef="Task_Preprocess">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Init_Fail" sourceRef="Gw_After_Init" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_PP_Gw" sourceRef="Task_Preprocess" targetRef="Gw_After_PP" />
+    <bpmn:sequenceFlow id="Flow_PP_Ok" name="ok" sourceRef="Gw_After_PP" targetRef="Task_Lexer">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PP_Fail" sourceRef="Gw_After_PP" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_LEX_Gw" sourceRef="Task_Lexer" targetRef="Gw_After_LEX" />
+    <bpmn:sequenceFlow id="Flow_LEX_Ok" name="ok" sourceRef="Gw_After_LEX" targetRef="Task_Parse">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_LEX_Fail" sourceRef="Gw_After_LEX" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_PAR_Gw" sourceRef="Task_Parse" targetRef="Gw_After_PAR" />
+    <bpmn:sequenceFlow id="Flow_PAR_Ok" name="ok" sourceRef="Gw_After_PAR" targetRef="Task_Semantic">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PAR_Fail" sourceRef="Gw_After_PAR" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_SEM_Gw" sourceRef="Task_Semantic" targetRef="Gw_After_SEM" />
+    <bpmn:sequenceFlow id="Flow_SEM_Ok" name="ok" sourceRef="Gw_After_SEM" targetRef="Task_HighIR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_SEM_Fail" sourceRef="Gw_After_SEM" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_HIR_Gw" sourceRef="Task_HighIR" targetRef="Gw_After_HIR" />
+    <bpmn:sequenceFlow id="Flow_HIR_Ok" name="ok" sourceRef="Gw_After_HIR" targetRef="Task_MediumIR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_HIR_Fail" sourceRef="Gw_After_HIR" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_MIR_Gw" sourceRef="Task_MediumIR" targetRef="Gw_After_MIR" />
+    <bpmn:sequenceFlow id="Flow_MIR_Ok" name="ok" sourceRef="Gw_After_MIR" targetRef="Task_LowIR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_MIR_Fail" sourceRef="Gw_After_MIR" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_LIR_Gw" sourceRef="Task_LowIR" targetRef="Gw_After_LIR" />
+    <bpmn:sequenceFlow id="Flow_LIR_Ok" name="ok" sourceRef="Gw_After_LIR" targetRef="Task_Codegen">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_LIR_Fail" sourceRef="Gw_After_LIR" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_CG_Gw" sourceRef="Task_Codegen" targetRef="Gw_After_CG" />
+    <bpmn:sequenceFlow id="Flow_CG_Ok" name="ok" sourceRef="Gw_After_CG" targetRef="Gw_Zig_Mode">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${exitCode == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CG_Fail" sourceRef="Gw_After_CG" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_To_Zig" name="matrix on" sourceRef="Gw_Zig_Mode" targetRef="Task_Zig_Test">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${enableZigMatrixTest == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Skip_Zig" name="skip zig" sourceRef="Gw_Zig_Mode" targetRef="Task_Publish_Success" />
+    <bpmn:sequenceFlow id="Flow_Zig_Gw" sourceRef="Task_Zig_Test" targetRef="Gw_After_Zig" />
+    <bpmn:sequenceFlow id="Flow_Zig_Ok" name="ok" sourceRef="Gw_After_Zig" targetRef="Task_Publish_Success">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${zigMatrixOk == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Zig_Fail" sourceRef="Gw_After_Zig" targetRef="Task_Publish_Failure" />
+    <bpmn:sequenceFlow id="Flow_Success_End" sourceRef="Task_Publish_Success" targetRef="End_Success" />
+    <bpmn:sequenceFlow id="Flow_Fail_End" sourceRef="Task_Publish_Failure" targetRef="End_Failed" />
+  </bpmn:process>
+  <bpmn:process id="hcc-batch-coordinator" name="HCC: пакет сборок (N файлов)" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:documentation>
+      Task_Launch_Compile (MI parallel): для каждого sourceFile стартует отдельный
+      hcc-compilation-pipeline с уникальным buildId. Падение одного не блокирует остальные.
+    </bpmn:documentation>
+    <bpmn:startEvent id="Batch_Start" name="Пакет">
+      <bpmn:outgoing>Flow_Batch_Split</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_Batch_Split" name="Подготовить список файлов" camunda:type="external" camunda:topic="hcc-batch-split">
+      <bpmn:incoming>Flow_Batch_Split</bpmn:incoming>
+      <bpmn:outgoing>Flow_Batch_Launch</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Launch_Compile" name="Запуск сборки (1 файл)" camunda:type="external" camunda:topic="hcc-launch-compile">
+      <bpmn:incoming>Flow_Batch_Launch</bpmn:incoming>
+      <bpmn:outgoing>Flow_Batch_Agg</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${sourceFiles}" camunda:elementVariable="sourceFile" />
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Batch_Aggregate" name="Сводка: ok / failed counts" camunda:type="external" camunda:topic="hcc-batch-aggregate">
+      <bpmn:incoming>Flow_Batch_Agg</bpmn:incoming>
+      <bpmn:outgoing>Flow_Batch_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Batch_End" name="Пакет завершён">
+      <bpmn:incoming>Flow_Batch_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Batch_Split" sourceRef="Batch_Start" targetRef="Task_Batch_Split" />
+    <bpmn:sequenceFlow id="Flow_Batch_Launch" sourceRef="Task_Batch_Split" targetRef="Task_Launch_Compile" />
+    <bpmn:sequenceFlow id="Flow_Batch_Agg" sourceRef="Task_Launch_Compile" targetRef="Task_Batch_Aggregate" />
+    <bpmn:sequenceFlow id="Flow_Batch_End" sourceRef="Task_Batch_Aggregate" targetRef="Batch_End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Compile">
+    <bpmndi:BPMNPlane id="BPMNPlane_Compile" bpmnElement="hcc-compilation-pipeline">
+      <bpmndi:BPMNShape id="Di_Start" bpmnElement="Start_Compile">
+        <dc:Bounds x="182" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="165" y="218" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Init" bpmnElement="Task_Init">
+        <dc:Bounds x="260" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_PP" bpmnElement="Task_Preprocess">
+        <dc:Bounds x="500" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_LEX" bpmnElement="Task_Lexer">
+        <dc:Bounds x="740" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_PAR" bpmnElement="Task_Parse">
+        <dc:Bounds x="980" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_SEM" bpmnElement="Task_Semantic">
+        <dc:Bounds x="1220" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwInit" bpmnElement="Gw_After_Init" isMarkerVisible="true">
+        <dc:Bounds x="405" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="412" y="151" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwPP" bpmnElement="Gw_After_PP" isMarkerVisible="true">
+        <dc:Bounds x="645" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="653" y="151" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwLEX" bpmnElement="Gw_After_LEX" isMarkerVisible="true">
+        <dc:Bounds x="885" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="892" y="151" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwPAR" bpmnElement="Gw_After_PAR" isMarkerVisible="true">
+        <dc:Bounds x="1125" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1125" y="151" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwSEM" bpmnElement="Gw_After_SEM" isMarkerVisible="true">
+        <dc:Bounds x="1365" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1425" y="193" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwZigOk" bpmnElement="Gw_After_Zig" isMarkerVisible="true">
+        <dc:Bounds x="1480" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1540" y="363" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Success" bpmnElement="Task_Publish_Success">
+        <dc:Bounds x="1580" y="160" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_EndOk" bpmnElement="End_Success">
+        <dc:Bounds x="1740" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1750" y="218" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_HIR" bpmnElement="Task_HighIR">
+        <dc:Bounds x="250" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_MIR" bpmnElement="Task_MediumIR">
+        <dc:Bounds x="490" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_LIR" bpmnElement="Task_LowIR">
+        <dc:Bounds x="730" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_CG" bpmnElement="Task_Codegen">
+        <dc:Bounds x="970" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwHIR" bpmnElement="Gw_After_HIR" isMarkerVisible="true">
+        <dc:Bounds x="395" y="550" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="403" y="610" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwMIR" bpmnElement="Gw_After_MIR" isMarkerVisible="true">
+        <dc:Bounds x="635" y="550" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="641" y="610" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwLIR" bpmnElement="Gw_After_LIR" isMarkerVisible="true">
+        <dc:Bounds x="875" y="550" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="885" y="610" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwCG" bpmnElement="Gw_After_CG" isMarkerVisible="true">
+        <dc:Bounds x="1115" y="550" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1108" y="610" width="64" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwZig" bpmnElement="Gw_Zig_Mode" isMarkerVisible="true">
+        <dc:Bounds x="1210" y="550" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1207" y="526" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Zig" bpmnElement="Task_Zig_Test">
+        <dc:Bounds x="1335" y="555" width="130" height="90" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Fail" bpmnElement="Task_Publish_Failure">
+        <dc:Bounds x="720" y="310" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_EndFail" bpmnElement="End_Failed">
+        <dc:Bounds x="932" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="931" y="408" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Start_Init" bpmnElement="Flow_Start_Init">
+        <di:waypoint x="218" y="200" />
+        <di:waypoint x="260" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Init_Gw" bpmnElement="Flow_Init_Gw">
+        <di:waypoint x="360" y="200" />
+        <di:waypoint x="405" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Init_Ok" bpmnElement="Flow_Init_Ok">
+        <di:waypoint x="455" y="200" />
+        <di:waypoint x="500" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="472" y="182" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PP_Gw" bpmnElement="Flow_PP_Gw">
+        <di:waypoint x="600" y="200" />
+        <di:waypoint x="645" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PP_Ok" bpmnElement="Flow_PP_Ok">
+        <di:waypoint x="695" y="200" />
+        <di:waypoint x="740" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="712" y="182" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LEX_Gw" bpmnElement="Flow_LEX_Gw">
+        <di:waypoint x="840" y="200" />
+        <di:waypoint x="885" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LEX_Ok" bpmnElement="Flow_LEX_Ok">
+        <di:waypoint x="935" y="200" />
+        <di:waypoint x="980" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="952" y="182" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PAR_Gw" bpmnElement="Flow_PAR_Gw">
+        <di:waypoint x="1080" y="200" />
+        <di:waypoint x="1125" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PAR_Ok" bpmnElement="Flow_PAR_Ok">
+        <di:waypoint x="1175" y="200" />
+        <di:waypoint x="1220" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1192" y="182" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SEM_Gw" bpmnElement="Flow_SEM_Gw">
+        <di:waypoint x="1320" y="200" />
+        <di:waypoint x="1365" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Init_Fail" bpmnElement="Flow_Init_Fail">
+        <di:waypoint x="430" y="225" />
+        <di:waypoint x="430" y="335" />
+        <di:waypoint x="720" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PP_Fail" bpmnElement="Flow_PP_Fail">
+        <di:waypoint x="670" y="225" />
+        <di:waypoint x="670" y="335" />
+        <di:waypoint x="720" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LEX_Fail" bpmnElement="Flow_LEX_Fail">
+        <di:waypoint x="910" y="225" />
+        <di:waypoint x="910" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PAR_Fail" bpmnElement="Flow_PAR_Fail">
+        <di:waypoint x="1150" y="225" />
+        <di:waypoint x="1150" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SEM_Ok" bpmnElement="Flow_SEM_Ok">
+        <di:waypoint x="1390" y="175" />
+        <di:waypoint x="1390" y="80" />
+        <di:waypoint x="160" y="80" />
+        <di:waypoint x="160" y="560" />
+        <di:waypoint x="250" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1364" y="121" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SEM_Fail" bpmnElement="Flow_SEM_Fail">
+        <di:waypoint x="1390" y="225" />
+        <di:waypoint x="1390" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Zig_Gw" bpmnElement="Flow_Zig_Gw">
+        <di:waypoint x="1465" y="576" />
+        <di:waypoint x="1505" y="576" />
+        <di:waypoint x="1505" y="395" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Zig_Ok" bpmnElement="Flow_Zig_Ok">
+        <di:waypoint x="1505" y="345" />
+        <di:waypoint x="1505" y="200" />
+        <di:waypoint x="1580" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1517" y="265" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Zig_Fail" bpmnElement="Flow_Zig_Fail">
+        <di:waypoint x="1480" y="370" />
+        <di:waypoint x="1160" y="370" />
+        <di:waypoint x="1160" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Skip_Zig" bpmnElement="Flow_Skip_Zig">
+        <di:waypoint x="1235" y="600" />
+        <di:waypoint x="1235" y="690" />
+        <di:waypoint x="1635" y="690" />
+        <di:waypoint x="1635" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1595" y="320" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Success_End" bpmnElement="Flow_Success_End">
+        <di:waypoint x="1690" y="200" />
+        <di:waypoint x="1740" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Gw" bpmnElement="Flow_HIR_Gw">
+        <di:waypoint x="350" y="575" />
+        <di:waypoint x="395" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Ok" bpmnElement="Flow_HIR_Ok">
+        <di:waypoint x="445" y="575" />
+        <di:waypoint x="490" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="462" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Gw" bpmnElement="Flow_MIR_Gw">
+        <di:waypoint x="590" y="575" />
+        <di:waypoint x="635" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Ok" bpmnElement="Flow_MIR_Ok">
+        <di:waypoint x="685" y="575" />
+        <di:waypoint x="730" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="702" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Gw" bpmnElement="Flow_LIR_Gw">
+        <di:waypoint x="830" y="575" />
+        <di:waypoint x="875" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Ok" bpmnElement="Flow_LIR_Ok">
+        <di:waypoint x="925" y="575" />
+        <di:waypoint x="970" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="942" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Gw" bpmnElement="Flow_CG_Gw">
+        <di:waypoint x="1070" y="575" />
+        <di:waypoint x="1115" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Fail" bpmnElement="Flow_HIR_Fail">
+        <di:waypoint x="420" y="550" />
+        <di:waypoint x="420" y="335" />
+        <di:waypoint x="720" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Fail" bpmnElement="Flow_MIR_Fail">
+        <di:waypoint x="660" y="550" />
+        <di:waypoint x="660" y="335" />
+        <di:waypoint x="720" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Fail" bpmnElement="Flow_LIR_Fail">
+        <di:waypoint x="900" y="550" />
+        <di:waypoint x="900" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Ok" bpmnElement="Flow_CG_Ok">
+        <di:waypoint x="1165" y="575" />
+        <di:waypoint x="1210" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1182" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Fail" bpmnElement="Flow_CG_Fail">
+        <di:waypoint x="1140" y="550" />
+        <di:waypoint x="1140" y="335" />
+        <di:waypoint x="840" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_To_Zig" bpmnElement="Flow_To_Zig">
+        <di:waypoint x="1260" y="575" />
+        <di:waypoint x="1298" y="575" />
+        <di:waypoint x="1298" y="576" />
+        <di:waypoint x="1335" y="576" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1306" y="567" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Fail_End" bpmnElement="Flow_Fail_End">
+        <di:waypoint x="840" y="350" />
+        <di:waypoint x="880" y="350" />
+        <di:waypoint x="880" y="390" />
+        <di:waypoint x="932" y="390" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Batch">
+    <bpmndi:BPMNPlane id="BPMNPlane_Batch" bpmnElement="hcc-batch-coordinator">
+      <bpmndi:BPMNShape id="Di_BStart" bpmnElement="Batch_Start">
+        <dc:Bounds x="152" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_BSplit" bpmnElement="Task_Batch_Split">
+        <dc:Bounds x="240" y="170" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_BLaunch" bpmnElement="Task_Launch_Compile">
+        <dc:Bounds x="420" y="160" width="150" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_BAgg" bpmnElement="Task_Batch_Aggregate">
+        <dc:Bounds x="620" y="170" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_BEnd" bpmnElement="Batch_End">
+        <dc:Bounds x="800" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Batch_Split" bpmnElement="Flow_Batch_Split">
+        <di:waypoint x="188" y="210" />
+        <di:waypoint x="240" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Batch_Launch" bpmnElement="Flow_Batch_Launch">
+        <di:waypoint x="370" y="210" />
+        <di:waypoint x="420" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Batch_Agg" bpmnElement="Flow_Batch_Agg">
+        <di:waypoint x="570" y="210" />
+        <di:waypoint x="620" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Batch_End" bpmnElement="Flow_Batch_End">
+        <di:waypoint x="750" y="210" />
+        <di:waypoint x="800" y="210" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
