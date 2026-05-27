@@ -1,0 +1,8 @@
+[
+  { "relDir": "main_test", "stem": "main_test", "prefix": "common-prefix" },
+  { "relDir": "test_bit_operations", "stem": "test_bit_operations", "prefix": "common-prefix" },
+  { "relDir": "test_memory_types", "stem": "test_memory_types", "prefix": "common-prefix" },
+  { "relDir": "test_timer_operations", "stem": "test_timer_operations", "prefix": "common-prefix" },
+  { "relDir": "test_port_operations", "stem": "test_port_operations", "prefix": "common-prefix" },
+  { "relDir": "test_interrupt_setup", "stem": "test_interrupt_setup", "prefix": "common-prefix" }
+]

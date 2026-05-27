@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "main" [TokenVoid] [] (AstCompound [AstDeclaration [TokenChar,TokenIdentifier "a",TokenSemicolon],AstExprStmt (Just (ExprAssign AAssign (ExprVar "a") (ExprLitInt 5))),AstIf (ExprBinary OpGt (ExprVar "a") (ExprLitInt 3)) (AstCompound [AstExprStmt (Just (ExprAssign AAssign (ExprVar "a") (ExprLitInt 10)))])])]

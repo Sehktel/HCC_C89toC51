@@ -1,0 +1,12 @@
+[
+  { "relDir": "test1", "stem": "test1", "prefix": "none" },
+  { "relDir": "test2", "stem": "test2", "prefix": "reg2051" },
+  { "relDir": "0_blink_0", "stem": "blink", "prefix": "reg2051" },
+  { "relDir": "0_blink_0_1", "stem": "blink", "prefix": "reg2051" },
+  { "relDir": "0_declare_0", "stem": "declare", "prefix": "reg2051" },
+  { "relDir": "0_int0_0", "stem": "int0", "prefix": "reg2051" },
+  { "relDir": "0_int_0", "stem": "0_interrupt_0", "prefix": "reg2051" },
+  { "relDir": "0_int_0_1", "stem": "0_int_0", "prefix": "reg2051" },
+  { "relDir": "0_int_f_0", "stem": "int_f", "prefix": "reg2051" },
+  { "relDir": "0_test_0", "stem": "test", "prefix": "reg51" }
+]

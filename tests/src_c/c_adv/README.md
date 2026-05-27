@@ -69,60 +69,32 @@
 
 ## Компиляция и тестирование
 
-### Автоматическое тестирование нашего компилятора
-```powershell
-.\compile_tests.ps1
+### Эталоны компилятора (Haskell)
+
+Из корня репозитория:
+
+```bash
+just test-toolchain
+# или точечно:
+just test-preprocessor
+just test-lexer
+just test-parser
+just test-ir
 ```
 
-### Использование альтернативных конфигураций
-```powershell
-# Быстрая проверка синтаксиса
-Copy-Item "syntax_check_only.json" "compiler_options.json"
-.\compile_tests.ps1
+См. также [GOLDENS.md](GOLDENS.md) — ручные `.pp`/`.l`/`.ir` рядом с `.c`.
 
-# Отладочный режим
-Copy-Item "debug_verbose.json" "compiler_options.json"
-.\compile_tests.ps1
-```
+### Keil / наш C51 exe (вручную)
 
-### Настройка конфигурации
+Проекты Keil — в подпапках (`*.uvproj`). `compiler_options.json` — **только справочник** параметров; автоматического раннера нет (PowerShell убран).
 
-Отредактируйте `compiler_options.json` для изменения:
-
-#### Параметры компилятора:
-```json
-{
-  "compiler": {
-    "executable": "..\\..\\app\\c51_compiler.exe",
-    "timeout_seconds": 30
-  },
-  "compilation": {
-    "target": "at89s4051",
-    "optimize": "speed",
-    "memory_model": "small",
-    "debug": true
-  }
-}
-```
-
-#### Настройки тестирования:
-```json
-{
-  "testing": {
-    "syntax_check_only": false,
-    "verbose_output": true,
-    "stop_on_first_error": false,
-    "generate_report": true
-  }
-}
-```
+Сборка hcc из корня: `just build` · `just test`.
 
 ## Требования
 
-- Наш компилятор C51 (собирается автоматически)
-- PowerShell 5.0+
-- Микроконтроллер AT89S4051
-- Файлы reg2051.h (должны быть скопированы в директорию)
+- GHC / Cabal (`just build`, `just test`)
+- Для Keil-проектов: µVision, AT89S4051
+- Заголовки: `tests/src_c/c_adv/_headers/` (`common.h`, `reg2051.h`)
 
 ## Особенности реализации
 
@@ -138,19 +110,9 @@ Copy-Item "debug_verbose.json" "compiler_options.json"
 - Битовые переменные для экономии памяти
 - Оптимизированные алгоритмы для 8-битной архитектуры
 
-### Тестирование нашего компилятора
-Скрипт автоматически:
-- Проверяет наличие компилятора
-- Собирает его при необходимости (`stack build`)
-- Тестирует синтаксический анализ
-- Компилирует тестовые файлы
-- Генерирует отчеты о результатах
+### Тестирование компилятора (Haskell)
 
-### Результаты тестирования
-- Консольный вывод с цветовой индикацией
-- Подробные отчеты в текстовых файлах
-- Созданные HEX файлы для загрузки в микроконтроллер
-- Логи ошибок компилятора
+`just test-toolchain` / `cabal test` — golden-фикстуры в `tests/src_c/`. Отчёт: `just audit-src-c`.
 
 ## Альтернативные решения
 
@@ -197,12 +159,16 @@ void debug_output(unsigned char value) {
 ## Структура файлов
 
 ```
-test/c_adv/
-├── common.h                     # Общие определения
-├── test_*.c                     # Тестовые модули
-├── main_test.c                  # Главный тест
-├── compile_tests.ps1            # Скрипт тестирования
-├── compiler_options.json        # Основная конфигурация
-├── compiler_options_examples.md # Примеры конфигураций
-└── README.md                    # Документация
-``` 
+tests/src_c/c_adv/
+├── _headers/                    # common.h, reg2051.h
+├── _prefix/                     # common-prefix.{pp,l} — post-PP эталон заголовков
+├── golden-manifest.json
+├── GOLDENS.md                   # workflow ручных эталонов
+├── main_test/
+│   └── main_test.c + эталоны
+├── test_*/                      # по одной папке на модуль
+├── compiler_options.json        # справочник Keil (без раннера)
+└── README.md
+```
+
+Эталоны: см. [GOLDENS.md](GOLDENS.md). 

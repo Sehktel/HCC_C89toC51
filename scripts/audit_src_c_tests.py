@@ -23,6 +23,9 @@ GOLDEN = {
     "parser": ".p",
     "parser_legacy": ".ast",
     "ir": ".ir",
+    "hir": ".hir",
+    "mir": ".mir",
+    "lir": ".lir",
 }
 
 NUMBERED_DIRS = (
@@ -35,10 +38,13 @@ NUMBERED_DIRS = (
 )
 
 RUNNERS = {
-    "preprocessor": {"wired": False, "ext": ".pp", "note": "Preprocessor_test — inline; src_c по .pp не подключён"},
+    "preprocessor": {"wired": True, "ext": ".pp", "note": "Preprocessor_test.discoverPreprocessorFixtures"},
     "lexer": {"wired": True, "ext": ".l", "note": "Lexer_test.discoverLexerFixtures"},
     "parser": {"wired": True, "ext": ".p/.ast", "note": "Parser_test.discoverParserFixtures"},
-    "ir": {"wired": False, "ext": ".ir", "note": "IR_test — inline; src_c по .ir не подключён"},
+    "ir": {"wired": True, "ext": ".ir", "note": "IR_test.discoverIrFixtures"},
+    "hir": {"wired": False, "ext": ".hir", "note": "HighIR_test.discoverHirFixtures (pending)"},
+    "mir": {"wired": False, "ext": ".mir", "note": "MediumIR_test.discoverMirFixtures (pending)"},
+    "lir": {"wired": False, "ext": ".lir", "note": "LowIR_test.discoverLirFixtures (pending)"},
 }
 
 

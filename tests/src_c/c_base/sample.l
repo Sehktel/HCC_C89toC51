@@ -1,0 +1,1 @@
+[TokenVoid,TokenIdentifier "P14",TokenLeftParen,TokenVoid,TokenRightParen,TokenInterrupt,TokenNumber 0,TokenLeftBrace,TokenWhile,TokenLeftParen,TokenNumber 1,TokenRightParen,TokenLeftBrace,TokenIdentifier "P1",TokenAssign,TokenNumber 4,TokenSemicolon,TokenRightBrace,TokenRightBrace]

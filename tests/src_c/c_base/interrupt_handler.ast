@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "Timer0_ISR" [TokenVoid] [TokenInterrupt,TokenNumber 1] (AstCompound [AstWhile (ExprLitInt 1) (AstCompound [AstExprStmt (Just (ExprAssign AAssign (ExprVar "P1") (ExprLitInt 85))),AstExprStmt (Just (ExprAssign AAssign (ExprVar "P2") (ExprLitInt 170)))])])]

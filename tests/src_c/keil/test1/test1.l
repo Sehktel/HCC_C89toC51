@@ -1,0 +1,1 @@
+[TokenVoid,TokenIdentifier "main",TokenLeftParen,TokenVoid,TokenRightParen,TokenLeftBrace,TokenChar,TokenIdentifier "a",TokenAssign,TokenNumber 5,TokenSemicolon,TokenChar,TokenIdentifier "b",TokenAssign,TokenNumber 10,TokenSemicolon,TokenIdentifier "a",TokenPlusEqual,TokenNumber 10,TokenSemicolon,TokenSemicolon,TokenRightBrace]

@@ -1,0 +1,62 @@
+[
+  {
+    "bodyId": "test1",
+    "prefix": "none",
+    "sourceC": "tests/src_c/keil/test1/test1.c",
+    "outputStem": "tests/src_c/keil/test1/test1"
+  },
+  {
+    "bodyId": "test2",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/test2/test2.c",
+    "outputStem": "tests/src_c/keil/test2/test2"
+  },
+  {
+    "bodyId": "0_blink_0__blink",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_blink_0/blink.c",
+    "outputStem": "tests/src_c/keil/0_blink_0/blink"
+  },
+  {
+    "bodyId": "0_blink_0_1__blink",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_blink_0_1/blink.c",
+    "outputStem": "tests/src_c/keil/0_blink_0_1/blink"
+  },
+  {
+    "bodyId": "0_declare_0__declare",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_declare_0/declare.c",
+    "outputStem": "tests/src_c/keil/0_declare_0/declare"
+  },
+  {
+    "bodyId": "0_int0_0__int0",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_int0_0/int0.c",
+    "outputStem": "tests/src_c/keil/0_int0_0/int0"
+  },
+  {
+    "bodyId": "0_int_0__0_interrupt_0",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_int_0/0_interrupt_0.c",
+    "outputStem": "tests/src_c/keil/0_int_0/0_interrupt_0"
+  },
+  {
+    "bodyId": "0_int_0_1__0_int_0",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_int_0_1/0_int_0.c",
+    "outputStem": "tests/src_c/keil/0_int_0_1/0_int_0"
+  },
+  {
+    "bodyId": "0_int_f_0__int_f",
+    "prefix": "reg2051",
+    "sourceC": "tests/src_c/keil/0_int_f_0/int_f.c",
+    "outputStem": "tests/src_c/keil/0_int_f_0/int_f"
+  },
+  {
+    "bodyId": "0_test_0__test",
+    "prefix": "reg51",
+    "sourceC": "tests/src_c/keil/0_test_0/test.c",
+    "outputStem": "tests/src_c/keil/0_test_0/test"
+  }
+]

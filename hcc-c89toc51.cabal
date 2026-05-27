@@ -56,7 +56,9 @@ test-suite hcc-c89toc51-test
       AST
       AST_test
       HighIR
-      High      IR_test
+      HighIR_test
+      IrGolden
+      IR_test
       Lexer
       Lexer_test
       LowIR
@@ -147,6 +149,7 @@ test-suite test-preprocessor
       Logger
       Preprocessor
       Preprocessor_test
+      SrcCFixtures
       TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
@@ -192,10 +195,12 @@ test-suite test-ir
   hs-source-dirs:   tests, src
   other-modules:
       IR_test
+      IrGolden
       Lexer
       Parser
       Logger
       Preprocessor
+      SrcCFixtures
       AST
       TestMatrix
   default-language: Haskell2010
@@ -247,6 +252,8 @@ test-suite test-high-ir
       Logger
       Parser
       HighIR_test
+      SrcCFixtures
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
@@ -267,6 +274,8 @@ test-suite test-medium-ir
       MediumIR
       Parser
       MediumIR_test
+      SrcCFixtures
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
@@ -288,6 +297,8 @@ test-suite test-low-ir
       LowIR_test
       MediumIR
       Parser
+      SrcCFixtures
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:

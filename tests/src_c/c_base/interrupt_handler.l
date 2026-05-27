@@ -1,0 +1,1 @@
+[TokenVoid,TokenIdentifier "Timer0_ISR",TokenLeftParen,TokenVoid,TokenRightParen,TokenInterrupt,TokenNumber 1,TokenLeftBrace,TokenWhile,TokenLeftParen,TokenNumber 1,TokenRightParen,TokenLeftBrace,TokenIdentifier "P1",TokenAssign,TokenNumber 85,TokenSemicolon,TokenIdentifier "P2",TokenAssign,TokenNumber 170,TokenSemicolon,TokenRightBrace,TokenRightBrace]

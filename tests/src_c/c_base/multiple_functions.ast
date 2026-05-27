@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "init" [TokenVoid] [] (AstCompound [AstExprStmt (Just (ExprAssign AAssign (ExprVar "P1") (ExprLitInt 0)))]),AstFunctionDef "main" [TokenVoid] [] (AstCompound [AstWhile (ExprLitInt 1) (AstCompound [AstExprStmt (Just (ExprPostfix (ExprVar "init") [SuffCall []]))])])]

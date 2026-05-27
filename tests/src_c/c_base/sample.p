@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "P14" [TokenVoid] [TokenInterrupt,TokenNumber 0] (AstCompound [AstWhile (ExprLitInt 1) (AstCompound [AstExprStmt (Just (ExprAssign AAssign (ExprVar "P1") (ExprLitInt 4)))])])]

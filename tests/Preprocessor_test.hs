@@ -1,12 +1,14 @@
 module Preprocessor_test (preprocessorSpec) where
 
+import Control.Monad (forM_)
 import Preprocessor (PreprocessConfig (..), defaultPreprocessConfig, preprocess)
-import System.FilePath ((</>))
-import Test.Hspec (Spec, describe, it)
-import TestMatrix (shouldBeTextRecorded)
+import SrcCFixtures (discoverPreprocessorFixtures, goldenPreprocessorExt, srcCPreprocessConfig, trim)
+import System.FilePath ((</>), replaceExtension)
+import Test.Hspec (Spec, describe, it, runIO, shouldBe)
+import TestMatrix (recordCompare, shouldBeTextRecorded)
 
 preprocessorSpec :: Spec
-preprocessorSpec =
+preprocessorSpec = do
   describe "Preprocessor.preprocess" $ do
     it "убирает пустые строки и пробелы по краям" $ do
       let inp = "  int main() {  \n\n return 0; \n}\n"
@@ -63,3 +65,18 @@ preprocessorSpec =
               ++ "#include \"quoted.h\"\n"
               ++ "int v = ANGLE + QUOTED;\n"
       shouldBeTextRecorded "Preprocessor" "#include <> и quoted" inp "int v = 40 + 2;\n" (preprocess cfg (Just mainPath) inp)
+
+  preprocessorFixtureSpec
+
+preprocessorFixtureSpec :: Spec
+preprocessorFixtureSpec = do
+  fixtures <- runIO discoverPreprocessorFixtures
+  describe "Preprocessor fixtures (.pp)" $ do
+    forM_ fixtures $ \cFile ->
+      it ("препроцессирует fixture " ++ cFile) $ do
+        source <- readFile cFile
+        expected <- readFile (replaceExtension cFile goldenPreprocessorExt)
+        actual <- preprocess srcCPreprocessConfig (Just cFile) source
+        let expTrim = trim expected
+        recordCompare "Preprocessor fixture" cFile source expTrim actual
+        actual `shouldBe` expTrim

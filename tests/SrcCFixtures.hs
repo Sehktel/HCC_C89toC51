@@ -8,12 +8,20 @@ module SrcCFixtures
     goldenParserLegacyExt,
     goldenPreprocessorExt,
     goldenIrExt,
+    goldenHirExt,
+    goldenMirExt,
+    goldenLirExt,
+    srcCPreprocessConfig,
     findCFiles,
+    findCFilesUnder,
     discoverWithGolden,
     discoverLexerFixtures,
     discoverParserFixtures,
     discoverPreprocessorFixtures,
     discoverIrFixtures,
+    discoverHirFixtures,
+    discoverMirFixtures,
+    discoverLirFixtures,
     trim,
     dropWhileEnd,
   )
@@ -21,22 +29,52 @@ where
 
 import Control.Monad (filterM)
 import Data.Char (isSpace)
-import Data.List (nub, sort)
+import Data.List (isPrefixOf, nub, sort)
+import Preprocessor (PreprocessConfig (..), defaultPreprocessConfig)
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
-import System.FilePath ((</>), replaceExtension, takeExtension)
+import System.FilePath ((</>), normalise, replaceExtension, takeExtension, addTrailingPathSeparator)
 
 srcCRoot :: FilePath
 srcCRoot = "tests/src_c"
 
-goldenLexerExt, goldenParserExt, goldenParserLegacyExt, goldenPreprocessorExt, goldenIrExt :: String
+goldenLexerExt, goldenParserExt, goldenParserLegacyExt, goldenPreprocessorExt, goldenIrExt, goldenHirExt, goldenMirExt, goldenLirExt :: String
 goldenLexerExt = ".l"
 goldenParserExt = ".p"
 goldenParserLegacyExt = ".ast"
 goldenPreprocessorExt = ".pp"
 goldenIrExt = ".ir"
+goldenHirExt = ".hir"
+goldenMirExt = ".mir"
+goldenLirExt = ".lir"
+
+-- | Каталоги для @#include \<...\>@ в фикстурах src_c.
+srcCPreprocessConfig :: PreprocessConfig
+srcCPreprocessConfig =
+  defaultPreprocessConfig
+    { pcAngleIncludeDirs =
+        [ srcCRoot </> "c_base",
+          srcCRoot </> "c_code",
+          srcCRoot </> "c_adv" </> "_headers",
+          srcCRoot </> "examples" </> "include"
+        ],
+      pcQuoteIncludeDirs = [srcCRoot </> "c_adv" </> "_headers"]
+    }
 
 findCFiles :: IO [FilePath]
 findCFiles = sort <$> findFilesByExtension srcCRoot ".c"
+
+findCFilesUnder :: [FilePath] -> IO [FilePath]
+findCFilesUnder prefixes = do
+  allC <- findCFiles
+  let normPrefixes = map (normalise . (srcCRoot </>)) prefixes
+  pure (sort (filter (anyUnder normPrefixes) allC))
+  where
+    anyUnder ps path =
+      let np = normalise path
+       in any (isUnder np) ps
+    isUnder file prefix =
+      let p = addTrailingPathSeparator (normalise prefix)
+       in p `isPrefixOf` file || normalise prefix == file
 
 discoverWithGolden :: String -> IO [FilePath]
 discoverWithGolden ext = do
@@ -63,6 +101,15 @@ discoverPreprocessorFixtures = discoverWithGolden goldenPreprocessorExt
 
 discoverIrFixtures :: IO [FilePath]
 discoverIrFixtures = discoverWithGolden goldenIrExt
+
+discoverHirFixtures :: IO [FilePath]
+discoverHirFixtures = discoverWithGolden goldenHirExt
+
+discoverMirFixtures :: IO [FilePath]
+discoverMirFixtures = discoverWithGolden goldenMirExt
+
+discoverLirFixtures :: IO [FilePath]
+discoverLirFixtures = discoverWithGolden goldenLirExt
 
 findFilesByExtension :: FilePath -> String -> IO [FilePath]
 findFilesByExtension root extension = do

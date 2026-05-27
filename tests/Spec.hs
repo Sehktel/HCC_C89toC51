@@ -11,7 +11,7 @@ import TreeDestroyer_test (treeDestroyerSpec)
 import Peephole_test (peepholeSpec)
 import SystemPipeline_test (systemPipelineSpec)
 -- import Pipeline_test (pipelineSpec)
--- import IR_test (irSpec)
+import IR_test (irSpec)
 
 
 import Test.Hspec (hspec)
@@ -29,6 +29,7 @@ main = hspec $ do
   highIrSpec
   mediumIrSpec
   lowIrSpec
+  irSpec
   treeDestroyerSpec
   peepholeSpec
   systemPipelineSpec

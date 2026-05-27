@@ -152,17 +152,9 @@
 
 ## Использование различных конфигураций
 
-### Запуск с альтернативной конфигурацией:
-```powershell
-# Копирование нужной конфигурации
-Copy-Item "syntax_check_only.json" "compiler_options.json"
-.\compile_tests.ps1
+`compiler_options.json` и примеры ниже — **справочник** для ручной сборки в Keil или будущего не-PowerShell раннера. Автозапуска нет.
 
-# Или создание скрипта-обертки
-.\compile_tests.ps1 -ConfigFile "debug_verbose.json"
-```
-
-### Параметры конфигурации:
+Скопируйте нужный фрагмент в свой `compiler_options.json` или в настройки µVision вручную.
 
 #### Секция `compiler`:
 - `executable` - путь к исполняемому файлу компилятора

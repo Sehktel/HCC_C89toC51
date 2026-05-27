@@ -29,32 +29,32 @@
   "files": {
     "test_files": [
       {
-        "source": "test_memory_types.c",
+        "source": "test_memory_types/test_memory_types.c",
         "output": "test_memory",
         "description": "Типы памяти C51"
       },
       {
-        "source": "test_bit_operations.c",
+        "source": "test_bit_operations/test_bit_operations.c",
         "output": "test_bits",
         "description": "Битовые операции"
       },
       {
-        "source": "test_timer_operations.c",
+        "source": "test_timer_operations/test_timer_operations.c",
         "output": "test_timers",
         "description": "Работа с таймерами"
       },
       {
-        "source": "test_port_operations.c",
+        "source": "test_port_operations/test_port_operations.c",
         "output": "test_ports",
         "description": "Операции с портами"
       },
       {
-        "source": "test_interrupt_setup.c",
+        "source": "test_interrupt_setup/test_interrupt_setup.c",
         "output": "test_interrupts",
         "description": "Настройка прерываний"
       },
       {
-        "source": "main_test.c",
+        "source": "main_test/main_test.c",
         "output": "main_test",
         "description": "Главный тестовый файл"
       }
@@ -73,4 +73,4 @@
     "build_args": ["build"],
     "build_timeout_seconds": 300
   }
-} 
+}
