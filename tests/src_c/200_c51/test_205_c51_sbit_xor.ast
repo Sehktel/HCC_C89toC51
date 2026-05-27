@@ -1,0 +1,1 @@
+AstProgram [AstDeclaration [TokenSbit,TokenIdentifier "LED_PIN",TokenAssign,TokenIdentifier "P1",TokenCaret,TokenNumber 1,TokenSemicolon],AstFunctionDef "main" [TokenVoid] [] (AstCompound [AstReturn Nothing])]

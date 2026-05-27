@@ -1,6 +1,8 @@
 # keil/ — ручные эталоны (рядом с `.c`)
 
-**Всё здесь**, в `tests/src_c/keil/`. Без PowerShell, без `artifacts/keil-bodies/`.
+**Полный workflow:** [`artifacts/src-c-golden-workflow.md`](../../../artifacts/src-c-golden-workflow.md)
+
+**Всё здесь**, в `tests/src_c/keil/`. Без PowerShell, без dump lexer/parser в эталоны.
 
 ## Дерево
 

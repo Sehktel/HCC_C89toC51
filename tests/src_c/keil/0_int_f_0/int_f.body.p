@@ -1,0 +1,1 @@
+AstFunctionDef "foo" [TokenInt] [] (AstCompound [AstReturn (Just (ExprBinary OpAdd (ExprVar "a") (ExprLitInt 1)))]),AstFunctionDef "main" [TokenVoid] [] (AstCompound [AstDeclaration [TokenInt,TokenIdentifier "a",TokenAssign,TokenNumber 5,TokenSemicolon],AstWhile (ExprLitInt 1) (AstCompound [AstExprStmt (Just (ExprPostfix (ExprVar "foo") [SuffCall [ExprVar "a"]]))])])

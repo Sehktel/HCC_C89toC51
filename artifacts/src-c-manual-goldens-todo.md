@@ -47,20 +47,15 @@
 | 37 | `test_26_12345bop.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 38 | `test_all_constructs.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-## c_adv/ (6) — ⏸ отложено
+## c_adv/ (6) — ⏸ `.p`/`.ast` вручную
 
-Workflow: [`tests/src_c/c_adv/GOLDENS.md`](../tests/src_c/c_adv/GOLDENS.md) · манифест: `golden-manifest.json` · префикс: `_prefix/common-prefix.*` · заголовки: `_headers/` · **без glue/PS1**
+Workflow: [`GOLDENS.md`](../tests/src_c/c_adv/GOLDENS.md) · канон: [`src-c-golden-workflow.md`](src-c-golden-workflow.md)
 
-| # | каталог | prefix | pp | l | p | ast | ir | ▶ |
-|---|---------|--------|:-:|:-:|:-:|:-:|:-:|:-:|
-| 1 | `main_test/main_test.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
-| 2 | `test_bit_operations/test_bit_operations.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
-| 3 | `test_interrupt_setup/test_interrupt_setup.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
-| 4 | `test_memory_types/test_memory_types.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
-| 5 | `test_port_operations/test_port_operations.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
-| 6 | `test_timer_operations/test_timer_operations.c` | common-prefix | ✓ | ✓ | | | ✓ | ⏸ |
+| # | каталог | pp | l | p | ast | ir | ▶ |
+|---|---------|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1–6 | `*/<stem>.c` | ✓ | ✓ | | | ✓ | ⏸ |
 
-**Вернуться и разобраться вручную:** не хватает `.p`/`.ast`. Префикс: `_prefix/common-prefix.{pp,l}` ✓, `.p` — **нет**. Тела: `<stem>.body.{pp,l}` в каждой папке ✓.
+**Запрещено:** `parseTokensPure` → `.p` (попытка агента удалена). **Нужно:** `_prefix/common-prefix.p` + 6× `<stem>.body.p` вручную.
 
 ## keil/ (10) — эталоны в `tests/src_c/keil/`
 
@@ -70,16 +65,70 @@ Workflow: [`tests/src_c/keil/README.md`](../tests/src_c/keil/README.md) · ма�
 |---|---------|--------|:-:|:-:|:-:|:-:|:-:|:-:|
 | 1 | `test1/test1.c` | none | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 | 2 | `test2/test2.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
-| 3 | `0_blink_0/blink.c` | reg2051 | | | | | | |
-| 4 | `0_blink_0_1/blink.c` | reg2051 | | | | | | |
-| 5 | `0_declare_0/declare.c` | reg2051 | | | | | | |
-| 6 | `0_int0_0/int0.c` | reg2051 | | | | | | |
-| 7 | `0_int_0/0_interrupt_0.c` | reg2051 | | | | | | |
-| 8 | `0_int_0_1/0_int_0.c` | reg2051 | | | | | | |
-| 9 | `0_int_f_0/int_f.c` | reg2051 | | | | | | |
-| 10 | `0_test_0/test.c` | reg51 | | | | | | |
+| 3 | `0_blink_0/blink.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 4 | `0_blink_0_1/blink.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 5 | `0_declare_0/declare.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 6 | `0_int0_0/int0.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 7 | `0_int_0/0_interrupt_0.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 8 | `0_int_0_1/0_int_0.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 9 | `0_int_f_0/int_f.c` | reg2051 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 10 | `0_test_0/test.c` | reg51 | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 
-**TODO (keil/):** удалить устаревшие `artifacts/keil-*-canonical-*` (дубликаты; рабочие префиксы — `tests/src_c/keil/_prefix/`).
+**TODO (keil/):** перепроверить `.p` у фикстур, где склейка делалась скриптом (см. [`src-c-golden-workflow.md`](src-c-golden-workflow.md)).
+
+## Нумерованные каталоги (23 `.c`)
+
+Каталоги: `100_ast`, `120_parse_negative`, `200_c51`, `300_ir`, `400_lexer`, `500_preprocessor`.  
+**Статус ▶:** ◐ = эталоны **написаны**, прогон `cabal test` **не делали** (только ручная запись).
+
+### `200_c51/` (7)
+
+| # | `.c` | pp | l | p | ast | ir | ▶ |
+|---|------|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1 | `test_200_smoke_c51.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 2 | `test_201_c51_sfr_sfr16.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 3 | `test_202_c51_memory_classes.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 4 | `test_203_c51_interrupt_using.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 5 | `test_204_c51_bit_var.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 6 | `test_205_c51_sbit_xor.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 7 | `test_206_c51_reentrant_fn.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+
+Дописано: `.pp`, `.ir`; `.ast` ≡ копия `.p`.
+
+### `120_parse_negative/` (5)
+
+| # | `.c` | pp | l | p | ast | ir | ▶ |
+|---|------|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1 | `test_121_switch_body.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 2 | `test_122_do_while_body.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 3 | `test_123_struct_field_decl.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 4 | `test_124_switch_default.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 5 | `test_125_case_chain.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+
+Дописано: `.pp`, `.ir`; `.ast` ≡ копия `.p`.
+
+### `100_ast/` (8)
+
+| # | `.c` | pp | l | p | ast | ir | ▶ |
+|---|------|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1 | `test1.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 2 | `test2.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 3 | `test3.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 4 | `test4.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 5 | `test5.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 6 | `test6.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 7 | `test7.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 8 | `test_100_smoke_ast.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+
+Дописано: у всех — `.pp`, `.ir`; у test2–6 — `.l`; у test7 — `.pp`, `.l`, `.ir`, `.ast`; smoke — полный набор 5 файлов.
+
+### Smoke (`300_ir`, `400_lexer`, `500_preprocessor`)
+
+| каталог | `.c` | pp | l | p | ast | ir | ▶ |
+|---------|------|:-:|:-:|:-:|:-:|:-:|:-:|
+| `300_ir/` | `test_300_smoke_ir.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| `400_lexer/` | `test_400_smoke_lexer.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| `500_preprocessor/` | `test_500_smoke_preprocessor.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 
 ---
 
@@ -116,10 +165,8 @@ Workflow: [`tests/src_c/keil/README.md`](../tests/src_c/keil/README.md) · ма�
 
 ---
 
-**Итого:** 46 / 54 частично (c_base: 38/38 кроме test_25; c_adv: 6× `.pp`+`.ir`+`.l` ⏸; keil: 2/10) · отложено: `test_25`, **`c_adv/`** · **TODO:** keil/ — убрать `artifacts/keil-*` дубликаты · pipeline PP→Lex→Parse→AST→IR
+**Итого:** нумерованные 23/23 ◐ (эталоны написаны, прогон не делали) · c_base 37/38 (кроме test_25) · c_adv 6× `.pp`+`.l`+`.ir` ⏸ · keil 10/10 ◐ · отложено: `test_25`, **`c_adv/`** `.p`/`.ast` · pipeline PP→Lex→Parse→AST→IR
 
 **`reg2051.h` в `.pp`:** полный inline из `tests/src_c/c_adv/_headers/reg2051.h` (не сокращённая выдержка).
 
-**`c_adv/` workflow:** [`tests/src_c/c_adv/GOLDENS.md`](../tests/src_c/c_adv/GOLDENS.md) — всё в дереве `tests/src_c/c_adv/`.
-
-**`keil/` workflow:** [`tests/src_c/keil/README.md`](../tests/src_c/keil/README.md) — всё в дереве `tests/src_c/keil/`.
+**`c_adv/` / `keil/` workflow:** [`src-c-golden-workflow.md`](src-c-golden-workflow.md)

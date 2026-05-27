@@ -1,0 +1,1 @@
+AstProgram [AstFunctionDef "main" [TokenInt] [] (AstCompound [AstSwitch (ExprVar "v") (AstCompound [AstCase (ExprLitInt 0) (AstCase (ExprLitInt 1) (AstExprStmt (Just (ExprAssign AAssign (ExprVar "x") (ExprLitInt 2))))),AstBreak]),AstReturn (Just (ExprLitInt 0))])]
