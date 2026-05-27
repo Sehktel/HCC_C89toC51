@@ -1,5 +1,6 @@
 {
   "reportPath": "artifacts/test-report.html",
+  "matrixPath": "artifacts/test-matrix.json",
   "cases": [
     {
       "name": "lexer fixture from manifest",

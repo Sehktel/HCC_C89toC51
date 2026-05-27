@@ -1,15 +1,19 @@
 module Lexer_test (lexerAllTokensSpec, lexerABSpec, lexerTodoSpec, lexerMinimalSpec, lexerFixtureSpec) where
 
-import Control.Monad (filterM, forM, forM_)
-import Data.Char (isSpace)
-import Data.List (nub, sort)
+import Control.Monad (forM_)
 import Lexer (IntSuffix (..), Token (..), lexer, lexerPure)
 import Logger (silentLogger)
 import Preprocessor (defaultPreprocessConfig, preprocess)
-import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
-import System.FilePath ((</>), replaceExtension, takeExtension)
+import SrcCFixtures (discoverLexerFixtures, trim)
+import System.FilePath (replaceExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
 import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
+import TestMatrix (recordCompare, shouldBeRecorded, shouldBeTextRecorded)
+
+-- | Лексер + запись в test-matrix.json (только при initMatrix в test-web-report).
+lexShouldBe :: String -> String -> [Token] -> IO ()
+lexShouldBe name inp expected =
+  shouldBeRecorded "Lexer" name inp expected (lexerPure inp)
 
 lexerMinimalSpec :: Spec
 lexerMinimalSpec =
@@ -17,17 +21,19 @@ lexerMinimalSpec =
     describe "Preprocessor.preprocess" $ do
       it "удаляет пустые строки и обрезает края" $ do
         let input = "  int main() {  \n\n return 0; \n}\n"
-        out <- preprocess defaultPreprocessConfig Nothing input
-        out `shouldBe` "int main() {\nreturn 0;\n}\n"
+        shouldBeTextRecorded "Preprocessor" "удаляет пустые строки и обрезает края" input "int main() {\nreturn 0;\n}\n" (preprocess defaultPreprocessConfig Nothing input)
 
     describe "Lexer.lexer (базовая функция main)" $ do
       it "lexer silentLogger совпадает с lexerPure (обёртка с логом)" $ do
         let sample = "int x; void f() {}\n"
         got <- lexer silentLogger sample
-        got `shouldBe` lexerPure sample
+        let expected = lexerPure sample
+        recordCompare "Lexer" "lexer silentLogger ≡ lexerPure" sample (show expected) (show got)
+        got `shouldBe` expected
       it "токенизирует базовую функцию main" $ do
-        lexerPure "int main() { return 0; }"
-          `shouldBe` [ TokenInt,
+        let inp = "int main() { return 0; }"
+        let expected =
+              [ TokenInt,
                        TokenIdentifier "main",
                        TokenLeftParen,
                        TokenRightParen,
@@ -37,9 +43,11 @@ lexerMinimalSpec =
                        TokenSemicolon,
                        TokenRightBrace
                      ]
+        shouldBeRecorded "Lexer" "токенизирует базовую функцию main" inp expected (lexerPure inp)
       it "токенизирует базовые операторы" $ do
-        lexerPure "a==b; a!=b; a+=1; a-=2; a+b-c*d;"
-          `shouldBe` [ TokenIdentifier "a",
+        let inp = "a==b; a!=b; a+=1; a-=2; a+b-c*d;"
+        let expected =
+              [ TokenIdentifier "a",
                        TokenEqual,
                        TokenIdentifier "b",
                        TokenSemicolon,
@@ -64,36 +72,42 @@ lexerMinimalSpec =
                        TokenIdentifier "d",
                        TokenSemicolon
                      ]
+        shouldBeRecorded "Lexer" "токенизирует базовые операторы" inp expected (lexerPure inp)
 
     describe "Lexer.lexer (минимальный идентификатор)" $ do
       it "разбирает один идентификатор" $ do
-        lexerPure "a" `shouldBe` [TokenIdentifier "a"]
+        lexShouldBe "разбирает один идентификатор" "a" [TokenIdentifier "a"]
       it "разбирает одно число" $ do
-        lexerPure "42" `shouldBe` [TokenNumber 42]
+        lexShouldBe "разбирает одно число" "42" [TokenNumber 42]
       it "разбирает 0x и 0-формы чисел" $ do
-        lexerPure "0 077 0x1f 0X2A"
-          `shouldBe` [ TokenNumber 0,
+        let inp = "0 077 0x1f 0X2A"
+        let expected =
+              [ TokenNumber 0,
                        TokenNumber 63,
                        TokenNumber 31,
                        TokenNumber 42
                      ]
+        shouldBeRecorded "Lexer" "разбирает 0x и 0-формы чисел" inp expected (lexerPure inp)
       it "разбирает 010 как восьмеричное число 8" $ do
-        lexerPure "010" `shouldBe` [TokenNumber 8]
+        lexShouldBe "разбирает 010 как восьмеричное 8" "010" [TokenNumber 8]
       it "возвращает ошибку на невалидное восьмеричное число 08" $ do
-        lexerPure "08" `shouldBe` [TokenLexError "Invalid octal literal: 08"]
+        lexShouldBe "ошибка: восьмеричное 08" "08" [TokenLexError "Invalid octal literal: 08"]
       it "возвращает ошибку на пустой шестнадцатеричный литерал 0x" $ do
-        lexerPure "0x" `shouldBe` [TokenLexError "Invalid hexadecimal literal: 0x"]
+        lexShouldBe "ошибка: пустой hex 0x" "0x" [TokenLexError "Invalid hexadecimal literal: 0x"]
       it "поддерживает суффиксы U/L/UL у целочисленных литералов" $ do
-        lexerPure "10U 10l 10UL 0xFFu 077L"
-          `shouldBe` [ TokenNumberWithSuffix 10 SufU,
+        let inp = "10U 10l 10UL 0xFFu 077L"
+        let expected =
+              [ TokenNumberWithSuffix 10 SufU,
                        TokenNumberWithSuffix 10 SufL,
                        TokenNumberWithSuffix 10 SufUL,
                        TokenNumberWithSuffix 255 SufU,
                        TokenNumberWithSuffix 63 SufL
                      ]
+        shouldBeRecorded "Lexer" "суффиксы U/L/UL" inp expected (lexerPure inp)
       it "разбирает согласованный набор числовых литералов" $ do
-        lexerPure "0 00 075 09 0x1F 0X1f 123u 077L"
-          `shouldBe` [ TokenNumber 0,
+        let inp = "0 00 075 09 0x1F 0X1f 123u 077L"
+        let expected =
+              [ TokenNumber 0,
                        TokenNumber 0,
                        TokenNumber 61,
                        TokenLexError "Invalid octal literal: 09",
@@ -102,11 +116,13 @@ lexerMinimalSpec =
                        TokenNumberWithSuffix 123 SufU,
                        TokenNumberWithSuffix 63 SufL
                      ]
+        shouldBeRecorded "Lexer" "согласованный набор числовых литералов" inp expected (lexerPure inp)
       it "возвращает ошибку на невалидный суффикс числа" $ do
-        lexerPure "10UU" `shouldBe` [TokenLexError "Invalid integer suffix: UU"]
+        lexShouldBe "ошибка: суффикс 10UU" "10UU" [TokenLexError "Invalid integer suffix: UU"]
       it "корректно токенизирует переносы строк" $ do
-        lexerPure "int main()\n{\nreturn 0x10;\n}\n"
-          `shouldBe` [ TokenInt,
+        let inp = "int main()\n{\nreturn 0x10;\n}\n"
+        let expected =
+              [ TokenInt,
                        TokenIdentifier "main",
                        TokenLeftParen,
                        TokenRightParen,
@@ -116,34 +132,34 @@ lexerMinimalSpec =
                        TokenSemicolon,
                        TokenRightBrace
                      ]
+        shouldBeRecorded "Lexer" "переносы строк" inp expected (lexerPure inp)
       it "разбирает строковый литерал с escape-последовательностями" $ do
-        lexerPure "\"line\\n\\\"ok\\\"\""
-          `shouldBe` [TokenStringLiteral "line\n\"ok\""]
+        lexShouldBe "строковый литерал с escape" "\"line\\n\\\"ok\\\"\"" [TokenStringLiteral "line\n\"ok\""]
       it "разбирает символьный литерал с escape-последовательностью" $ do
-        lexerPure "'\\n'" `shouldBe` [TokenCharLiteral '\n']
+        lexShouldBe "символьный литерал" "'\\n'" [TokenCharLiteral '\n']
       it "возвращает ошибку на незакрытый строковый литерал" $ do
-        lexerPure "\"abc" `shouldBe` [TokenLexError "Unterminated literal"]
+        lexShouldBe "незакрытый строковый литерал" "\"abc" [TokenLexError "Unterminated literal"]
       it "возвращает ошибку на пустой символьный литерал" $ do
-        lexerPure "''" `shouldBe` [TokenLexError "Invalid char literal: empty"]
+        lexShouldBe "пустой char" "''" [TokenLexError "Invalid char literal: empty"]
       it "в strict C89 проекта запрещает многосимвольные char-константы" $ do
-        lexerPure "'ab'" `shouldBe` [TokenLexError "Invalid char literal: expected exactly one character"]
+        lexShouldBe "многосимвольный char" "'ab'" [TokenLexError "Invalid char literal: expected exactly one character"]
       it "возвращает ошибку на невалидный escape в строке" $ do
-        lexerPure "\"\\q\"" `shouldBe` [TokenLexError "Invalid escape sequence: \\q"]
+        lexShouldBe "невалидный escape" "\"\\q\"" [TokenLexError "Invalid escape sequence: \\q"]
 
 lexerAllTokensSpec :: Spec
 lexerAllTokensSpec =
   do
     describe "Lexer.lexer (одна большая строка со всеми токенами)" $ do
       it "разбирает большую строку в ожидаемую последовательность токенов" $ do
-        lexerPure input `shouldBe` expected
+        shouldBeRecorded "Lexer" "большая строка (all tokens)" input expected (lexerPure input)
 
     describe "Lexer.lexer (минимальный идентификатор)" $ do
       it "разбирает один идентификатор" $ do
-        lexerPure smallInput `shouldBe` smallExpected
+        lexShouldBe "all-tokens: идентификатор a" smallInput smallExpected
 
     describe "Lexer.lexer (минимальное число)" $ do
       it "разбирает одно число" $ do
-        lexerPure "42" `shouldBe` [TokenNumber 42]
+        lexShouldBe "all-tokens: число 42" "42" [TokenNumber 42]
 
   where
     -- Одна большая строка: ключевые слова, идентификатор/число, операторы и разделители.
@@ -173,7 +189,7 @@ lexerABSpec =
   describe "Lexer.lexer (короткие идентификаторы)" $
     forM_ cases $ \(input, expected) ->
       it ("разбирает " ++ show input) $
-        shouldBe (lexerPure input) [TokenIdentifier expected]
+        lexShouldBe ("lexerAB: " ++ input) input [TokenIdentifier expected]
   where
     cases =
       [ ("a", "a"),
@@ -185,7 +201,7 @@ lexerTodoSpec :: Spec
 lexerTodoSpec =
   describe "Lexer TODO" $ do
     it "строковые и символьные литералы покрыты тестами" $ do
-      lexerPure "\"ok\" 'a'" `shouldBe` [TokenStringLiteral "ok", TokenCharLiteral 'a']
+      lexShouldBe "lexerTodo: строка и char" "\"ok\" 'a'" [TokenStringLiteral "ok", TokenCharLiteral 'a']
 
 lexerFixtureSpec :: Spec
 lexerFixtureSpec = do
@@ -196,39 +212,10 @@ lexerFixtureSpec = do
       it ("токенизирует fixture " ++ cFile) $ do
         source <- readFile cFile
         expected <- readFile (replaceExtension cFile ".l")
-        show (lexerPure source) `shouldBe` trim expected
+        let actual = show (lexerPure source)
+        recordCompare "Lexer fixture" cFile source (trim expected) actual
+        actual `shouldBe` trim expected
     forM_ manifestCases assertLexerManifestCase
-
-discoverLexerFixtures :: IO [FilePath]
-discoverLexerFixtures = do
-  cFiles <- findFilesByExtension "tests/src_c" ".c"
-  paired <- filterM hasLexerExpectation cFiles
-  pure (sort (nub paired))
-  where
-    hasLexerExpectation cFile = doesFileExist (replaceExtension cFile ".l")
-
-findFilesByExtension :: FilePath -> String -> IO [FilePath]
-findFilesByExtension root extension = do
-  exists <- doesDirectoryExist root
-  if not exists
-    then pure []
-    else go root
-  where
-    go dir = do
-      names <- listDirectory dir
-      nested <- forM names $ \name -> do
-        let path = dir </> name
-        isDir <- doesDirectoryExist path
-        if isDir
-          then go path
-          else pure [path | takeExtension path == extension]
-      pure (concat nested)
-
-trim :: String -> String
-trim = dropWhileEnd isSpace . dropWhile isSpace
-
-dropWhileEnd :: (Char -> Bool) -> String -> String
-dropWhileEnd predicate = reverse . dropWhile predicate . reverse
 
 assertLexerManifestCase :: ManifestCase -> Spec
 assertLexerManifestCase mc =
@@ -236,6 +223,9 @@ assertLexerManifestCase mc =
     source <- readFile (mcInputFile mc)
     expected <- readFile (mcOutputFile mc)
     let actual = show (lexerPure source)
-    case matchTextExpectation (mcExpectation mc) actual (trim expected) of
-      Right matched -> matched `shouldBe` True
+    let expTrim = trim expected
+    case matchTextExpectation (mcExpectation mc) actual expTrim of
+      Right matched -> do
+        recordCompare ("Manifest [" ++ mcPackage mc ++ "]") (mcName mc) source expTrim actual
+        matched `shouldBe` True
       Left err -> expectationFailure err

@@ -8,17 +8,19 @@ module TestManifest
     loadAllCases,
     loadCasesByPackage,
     loadReportPath,
+    loadMatrixPath,
     matchTextExpectation,
   )
 where
 
-import Data.Aeson (FromJSON (..), eitherDecodeFileStrict', withObject, (.:))
+import Data.Aeson (FromJSON (..), eitherDecodeFileStrict', withObject, (.:), (.:?))
 import Data.List (isInfixOf, sort)
 import Data.List (filter)
 import Prelude hiding (filter)
 
 data Manifest = Manifest
   { mReportPath :: FilePath,
+    mMatrixPath :: FilePath,
     mCases :: [ManifestCase]
   }
   deriving (Eq, Show)
@@ -50,10 +52,15 @@ data ManifestCase = ManifestCase
 
 instance FromJSON Manifest where
   parseJSON =
-    withObject "Manifest" $ \obj ->
-      Manifest
-        <$> obj .: "reportPath"
-        <*> obj .: "cases"
+    withObject "Manifest" $ \obj -> do
+      reportPath <- obj .: "reportPath"
+      mMatrix <- obj .:? "matrixPath"
+      let matrixPath =
+            case mMatrix of
+              Just p -> p
+              Nothing -> "artifacts/test-matrix.json"
+      cases <- obj .: "cases"
+      pure (Manifest reportPath matrixPath cases)
 
 instance FromJSON Expectation where
   parseJSON rawValue = do
@@ -103,6 +110,9 @@ loadAllCases manifestPath = mCases <$> loadManifest manifestPath
 
 loadReportPath :: FilePath -> IO FilePath
 loadReportPath manifestPath = mReportPath <$> loadManifest manifestPath
+
+loadMatrixPath :: FilePath -> IO FilePath
+loadMatrixPath manifestPath = mMatrixPath <$> loadManifest manifestPath
 
 -- Сравнение текстовых результатов (show-выводы, содержимое файлов и т.д.).
 matchTextExpectation :: Expectation -> String -> String -> Either String Bool

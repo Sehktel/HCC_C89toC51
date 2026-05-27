@@ -62,6 +62,7 @@ test-toolchain:
   cabal test test-lexer
   cabal test test-parser
   cabal test test-ast
+  cabal test test-ir
   cabal test test-high-ir
   cabal test test-medium-ir
   cabal test test-low-ir
@@ -69,9 +70,12 @@ test-toolchain:
   cabal test test-peephole
   cabal test test-system-pipeline
 
+audit-src-c:
+  python scripts/audit_src_c_tests.py
+
 test-web-report:
   New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-  $manifest = if ($env:TEST_MANIFEST) { $env:TEST_MANIFEST } else { "tests/test-manifest.json" }; $reportPath = (Get-Content $manifest -Raw | ConvertFrom-Json).reportPath; if (-not $reportPath) { $reportPath = "artifacts/test-report.html" }; cabal test test-web-report --test-options="--html=$reportPath"; if ($LASTEXITCODE -ne 0) { Write-Output "test-web-report finished with failing/pending tests. HTML report was still generated." }; Write-Output "Web report: $reportPath"
+  $manifest = if ($env:TEST_MANIFEST) { $env:TEST_MANIFEST } else { "tests/test-manifest.json" }; $j = Get-Content $manifest -Raw | ConvertFrom-Json; $reportPath = if ($j.reportPath) { $j.reportPath } else { "artifacts/test-report.html" }; $matrixPath = if ($j.matrixPath) { $j.matrixPath } else { "artifacts/test-matrix.json" }; cabal test test-web-report --test-options="--html=$reportPath"; if ($LASTEXITCODE -ne 0) { Write-Output "test-web-report finished with failing/pending tests. HTML report was still generated." }; Write-Output "Web report: $reportPath"; Write-Output "Test matrix: $matrixPath"; python scripts/gen_test_table.py $matrixPath
 
 test-web-report-file manifest:
   $env:TEST_MANIFEST="{{manifest}}"; just test-web-report

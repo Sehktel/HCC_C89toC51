@@ -62,6 +62,7 @@ module Parser
     AssignOp (..),
     parseTokens,
     parseTokensPure,
+    parseExprTokensRest,
   )
 where
 
@@ -173,10 +174,7 @@ type ParseResult a = Either String (a, [Token])
 parseTokensPure :: [Token] -> Ast
 parseTokensPure tokens =
   case parseTranslationUnit tokens of
-    Right (nodes, []) ->
-      case nodes of
-        [AstDeclaration _] -> AstUnknown tokens
-        _ -> AstProgram nodes
+    Right (nodes, []) -> AstProgram nodes
     _ -> AstUnknown tokens
 
 -- | Разбор с логированием: сводка на @LogDebug@, @AstUnknown@ — предупреждение.
@@ -265,11 +263,30 @@ takeC51ConstExp ts = go ((0 :: Int), (0 :: Int)) [] ts
 
 parseDeclaration :: [Token] -> ParseResult [Token]
 parseDeclaration ts = do
-  (_, rest1) <- parseAtLeastOneTypeToken ts
-  let (_, rest2) = break (== TokenSemicolon) rest1
-  case rest2 of
-    TokenSemicolon : rest3 -> Right (take (length ts - length rest3) ts, rest3)
-    _ -> Left "unterminated declaration"
+  (specs, rest1) <- parseAtLeastOneTypeToken ts
+  (declBody, rest2) <- splitAtDeclSemicolon rest1
+  Right (specs ++ declBody ++ [TokenSemicolon], rest2)
+
+-- | Первая @;@ на нулевой глубине (), [], {} — конец декларации.
+--
+-- Нужна для @struct S { int x; };@ и других форм, где @;@ встречается
+-- внутри фигурных скобок до завершающей точки с запятой.
+splitAtDeclSemicolon :: [Token] -> Either String ([Token], [Token])
+splitAtDeclSemicolon ts = go ((0 :: Int), (0 :: Int), (0 :: Int)) [] ts
+  where
+    go _ _ [] = Left "unterminated declaration"
+    go (p, b, c) acc (tok : rest) =
+      let (p', b', c') = case tok of
+            TokenLeftParen -> (p + 1, b, c)
+            TokenRightParen -> (max 0 (p - 1), b, c)
+            TokenLeftBracket -> (p, b + 1, c)
+            TokenRightBracket -> (p, max 0 (b - 1), c)
+            TokenLeftBrace -> (p, b, c + 1)
+            TokenRightBrace -> (p, b, max 0 (c - 1))
+            _ -> (p, b, c)
+       in if tok == TokenSemicolon && p == 0 && b == 0 && c == 0
+            then Right (reverse acc, rest)
+            else go (p', b', c') (tok : acc) rest
 
 parseCompoundStatement :: [Token] -> ParseResult Ast
 parseCompoundStatement (TokenLeftBrace : rest) = go [] rest
@@ -500,6 +517,10 @@ splitAtTernaryColon ts = go (0 :: Int) [] ts
       | otherwise = go (q - 1) (TokenColon : acc) rest
     go q acc (TokenQuestion : rest) = go (q + 1) (TokenQuestion : acc) rest
     go q acc (t : rest) = go q (t : acc) rest
+
+-- | Разбор выражения с остатком токенов (для инициализаторов в декларациях).
+parseExprTokensRest :: [Token] -> Either String (Expr, [Token])
+parseExprTokensRest = parseComma
 
 -- | Полное выражение: самый слабый уровень — запятая ('parseComma').
 parseExprTokens :: [Token] -> Either String Expr

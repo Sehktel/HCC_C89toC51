@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HCC test-matrix",
+  "description": "Точка правды после cabal test test-web-report (модуль TestMatrix)",
+  "type": "object",
+  "required": ["matrixPath", "generatedAt", "entries"],
+  "properties": {
+    "matrixPath": { "type": "string" },
+    "manifestPath": { "type": ["string", "null"] },
+    "generatedAt": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["suite", "name", "input", "expected", "actual", "status"],
+        "properties": {
+          "suite": { "type": "string" },
+          "name": { "type": "string" },
+          "input": { "type": "string" },
+          "expected": { "type": "string" },
+          "actual": { "type": "string" },
+          "status": { "enum": ["pass", "fail", "pending"] },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

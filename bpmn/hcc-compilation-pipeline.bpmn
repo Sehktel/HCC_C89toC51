@@ -197,6 +197,18 @@
       <bpmndi:BPMNShape id="Di_SEM" bpmnElement="Task_Semantic">
         <dc:Bounds x="1220" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_HIR" bpmnElement="Task_HighIR">
+        <dc:Bounds x="250" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_MIR" bpmnElement="Task_MediumIR">
+        <dc:Bounds x="490" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_LIR" bpmnElement="Task_LowIR">
+        <dc:Bounds x="730" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_CG" bpmnElement="Task_Codegen">
+        <dc:Bounds x="970" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_GwInit" bpmnElement="Gw_After_Init" isMarkerVisible="true">
         <dc:Bounds x="405" y="175" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -226,33 +238,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1425" y="193" width="42" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_GwZigOk" bpmnElement="Gw_After_Zig" isMarkerVisible="true">
-        <dc:Bounds x="1480" y="345" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1540" y="363" width="69" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_Success" bpmnElement="Task_Publish_Success">
-        <dc:Bounds x="1580" y="160" width="110" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_EndOk" bpmnElement="End_Success">
-        <dc:Bounds x="1740" y="182" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1750" y="218" width="17" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_HIR" bpmnElement="Task_HighIR">
-        <dc:Bounds x="250" y="535" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_MIR" bpmnElement="Task_MediumIR">
-        <dc:Bounds x="490" y="535" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_LIR" bpmnElement="Task_LowIR">
-        <dc:Bounds x="730" y="535" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_CG" bpmnElement="Task_Codegen">
-        <dc:Bounds x="970" y="535" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_GwHIR" bpmnElement="Gw_After_HIR" isMarkerVisible="true">
         <dc:Bounds x="395" y="550" width="50" height="50" />
@@ -284,17 +269,32 @@
           <dc:Bounds x="1207" y="526" width="55" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_GwZigOk" bpmnElement="Gw_After_Zig" isMarkerVisible="true">
+        <dc:Bounds x="1480" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1540" y="363" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_Zig" bpmnElement="Task_Zig_Test">
         <dc:Bounds x="1335" y="555" width="130" height="90" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Di_Fail" bpmnElement="Task_Publish_Failure">
-        <dc:Bounds x="720" y="310" width="120" height="80" />
+      <bpmndi:BPMNShape id="Di_Success" bpmnElement="Task_Publish_Success">
+        <dc:Bounds x="1580" y="160" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_EndOk" bpmnElement="End_Success">
+        <dc:Bounds x="1740" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1750" y="218" width="17" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Di_EndFail" bpmnElement="End_Failed">
         <dc:Bounds x="932" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="931" y="408" width="38" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Di_Fail" bpmnElement="Task_Publish_Failure">
+        <dc:Bounds x="760" y="350" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_Start_Init" bpmnElement="Flow_Start_Init">
         <di:waypoint x="218" y="200" />
@@ -311,6 +311,11 @@
           <dc:Bounds x="472" y="182" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Init_Fail" bpmnElement="Flow_Init_Fail">
+        <di:waypoint x="430" y="225" />
+        <di:waypoint x="430" y="375" />
+        <di:waypoint x="760" y="375" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_PP_Gw" bpmnElement="Flow_PP_Gw">
         <di:waypoint x="600" y="200" />
         <di:waypoint x="645" y="200" />
@@ -321,6 +326,11 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="712" y="182" width="13" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PP_Fail" bpmnElement="Flow_PP_Fail">
+        <di:waypoint x="670" y="225" />
+        <di:waypoint x="670" y="375" />
+        <di:waypoint x="760" y="375" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_LEX_Gw" bpmnElement="Flow_LEX_Gw">
         <di:waypoint x="840" y="200" />
@@ -333,6 +343,11 @@
           <dc:Bounds x="952" y="182" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LEX_Fail" bpmnElement="Flow_LEX_Fail">
+        <di:waypoint x="910" y="225" />
+        <di:waypoint x="910" y="375" />
+        <di:waypoint x="880" y="375" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_PAR_Gw" bpmnElement="Flow_PAR_Gw">
         <di:waypoint x="1080" y="200" />
         <di:waypoint x="1125" y="200" />
@@ -344,29 +359,14 @@
           <dc:Bounds x="1192" y="182" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_PAR_Fail" bpmnElement="Flow_PAR_Fail">
+        <di:waypoint x="1150" y="225" />
+        <di:waypoint x="1150" y="375" />
+        <di:waypoint x="880" y="375" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_SEM_Gw" bpmnElement="Flow_SEM_Gw">
         <di:waypoint x="1320" y="200" />
         <di:waypoint x="1365" y="200" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Init_Fail" bpmnElement="Flow_Init_Fail">
-        <di:waypoint x="430" y="225" />
-        <di:waypoint x="430" y="335" />
-        <di:waypoint x="720" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_PP_Fail" bpmnElement="Flow_PP_Fail">
-        <di:waypoint x="670" y="225" />
-        <di:waypoint x="670" y="335" />
-        <di:waypoint x="720" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_LEX_Fail" bpmnElement="Flow_LEX_Fail">
-        <di:waypoint x="910" y="225" />
-        <di:waypoint x="910" y="335" />
-        <di:waypoint x="840" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_PAR_Fail" bpmnElement="Flow_PAR_Fail">
-        <di:waypoint x="1150" y="225" />
-        <di:waypoint x="1150" y="335" />
-        <di:waypoint x="840" y="335" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_SEM_Ok" bpmnElement="Flow_SEM_Ok">
         <di:waypoint x="1390" y="175" />
@@ -380,8 +380,91 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_SEM_Fail" bpmnElement="Flow_SEM_Fail">
         <di:waypoint x="1390" y="225" />
-        <di:waypoint x="1390" y="335" />
-        <di:waypoint x="840" y="335" />
+        <di:waypoint x="1390" y="420" />
+        <di:waypoint x="880" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Gw" bpmnElement="Flow_HIR_Gw">
+        <di:waypoint x="350" y="575" />
+        <di:waypoint x="395" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Ok" bpmnElement="Flow_HIR_Ok">
+        <di:waypoint x="445" y="575" />
+        <di:waypoint x="490" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="462" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_HIR_Fail" bpmnElement="Flow_HIR_Fail">
+        <di:waypoint x="420" y="550" />
+        <di:waypoint x="420" y="375" />
+        <di:waypoint x="760" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Gw" bpmnElement="Flow_MIR_Gw">
+        <di:waypoint x="590" y="575" />
+        <di:waypoint x="635" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Ok" bpmnElement="Flow_MIR_Ok">
+        <di:waypoint x="685" y="575" />
+        <di:waypoint x="730" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="702" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MIR_Fail" bpmnElement="Flow_MIR_Fail">
+        <di:waypoint x="660" y="550" />
+        <di:waypoint x="660" y="375" />
+        <di:waypoint x="760" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Gw" bpmnElement="Flow_LIR_Gw">
+        <di:waypoint x="830" y="575" />
+        <di:waypoint x="875" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Ok" bpmnElement="Flow_LIR_Ok">
+        <di:waypoint x="925" y="575" />
+        <di:waypoint x="970" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="942" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_LIR_Fail" bpmnElement="Flow_LIR_Fail">
+        <di:waypoint x="900" y="550" />
+        <di:waypoint x="900" y="375" />
+        <di:waypoint x="880" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Gw" bpmnElement="Flow_CG_Gw">
+        <di:waypoint x="1070" y="575" />
+        <di:waypoint x="1115" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Ok" bpmnElement="Flow_CG_Ok">
+        <di:waypoint x="1165" y="575" />
+        <di:waypoint x="1210" y="575" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1182" y="557" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CG_Fail" bpmnElement="Flow_CG_Fail">
+        <di:waypoint x="1140" y="550" />
+        <di:waypoint x="1140" y="340" />
+        <di:waypoint x="820" y="340" />
+        <di:waypoint x="820" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_To_Zig" bpmnElement="Flow_To_Zig">
+        <di:waypoint x="1260" y="575" />
+        <di:waypoint x="1298" y="575" />
+        <di:waypoint x="1298" y="576" />
+        <di:waypoint x="1335" y="576" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1306" y="567" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Skip_Zig" bpmnElement="Flow_Skip_Zig">
+        <di:waypoint x="1235" y="600" />
+        <di:waypoint x="1235" y="690" />
+        <di:waypoint x="1635" y="690" />
+        <di:waypoint x="1635" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1595" y="320" width="37" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Zig_Gw" bpmnElement="Flow_Zig_Gw">
         <di:waypoint x="1465" y="576" />
@@ -397,100 +480,16 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Zig_Fail" bpmnElement="Flow_Zig_Fail">
-        <di:waypoint x="1480" y="370" />
-        <di:waypoint x="1160" y="370" />
-        <di:waypoint x="1160" y="335" />
-        <di:waypoint x="840" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Skip_Zig" bpmnElement="Flow_Skip_Zig">
-        <di:waypoint x="1235" y="600" />
-        <di:waypoint x="1235" y="690" />
-        <di:waypoint x="1635" y="690" />
-        <di:waypoint x="1635" y="240" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1595" y="320" width="37" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1505" y="345" />
+        <di:waypoint x="1505" y="300" />
+        <di:waypoint x="820" y="300" />
+        <di:waypoint x="820" y="350" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Success_End" bpmnElement="Flow_Success_End">
         <di:waypoint x="1690" y="200" />
         <di:waypoint x="1740" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_HIR_Gw" bpmnElement="Flow_HIR_Gw">
-        <di:waypoint x="350" y="575" />
-        <di:waypoint x="395" y="575" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_HIR_Ok" bpmnElement="Flow_HIR_Ok">
-        <di:waypoint x="445" y="575" />
-        <di:waypoint x="490" y="575" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="462" y="557" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MIR_Gw" bpmnElement="Flow_MIR_Gw">
-        <di:waypoint x="590" y="575" />
-        <di:waypoint x="635" y="575" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MIR_Ok" bpmnElement="Flow_MIR_Ok">
-        <di:waypoint x="685" y="575" />
-        <di:waypoint x="730" y="575" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="702" y="557" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_LIR_Gw" bpmnElement="Flow_LIR_Gw">
-        <di:waypoint x="830" y="575" />
-        <di:waypoint x="875" y="575" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_LIR_Ok" bpmnElement="Flow_LIR_Ok">
-        <di:waypoint x="925" y="575" />
-        <di:waypoint x="970" y="575" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="942" y="557" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_CG_Gw" bpmnElement="Flow_CG_Gw">
-        <di:waypoint x="1070" y="575" />
-        <di:waypoint x="1115" y="575" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_HIR_Fail" bpmnElement="Flow_HIR_Fail">
-        <di:waypoint x="420" y="550" />
-        <di:waypoint x="420" y="335" />
-        <di:waypoint x="720" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MIR_Fail" bpmnElement="Flow_MIR_Fail">
-        <di:waypoint x="660" y="550" />
-        <di:waypoint x="660" y="335" />
-        <di:waypoint x="720" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_LIR_Fail" bpmnElement="Flow_LIR_Fail">
-        <di:waypoint x="900" y="550" />
-        <di:waypoint x="900" y="335" />
-        <di:waypoint x="840" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_CG_Ok" bpmnElement="Flow_CG_Ok">
-        <di:waypoint x="1165" y="575" />
-        <di:waypoint x="1210" y="575" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1182" y="557" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_CG_Fail" bpmnElement="Flow_CG_Fail">
-        <di:waypoint x="1140" y="550" />
-        <di:waypoint x="1140" y="335" />
-        <di:waypoint x="840" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_To_Zig" bpmnElement="Flow_To_Zig">
-        <di:waypoint x="1260" y="575" />
-        <di:waypoint x="1298" y="575" />
-        <di:waypoint x="1298" y="576" />
-        <di:waypoint x="1335" y="576" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1306" y="567" width="46" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Fail_End" bpmnElement="Flow_Fail_End">
-        <di:waypoint x="840" y="350" />
-        <di:waypoint x="880" y="350" />
         <di:waypoint x="880" y="390" />
         <di:waypoint x="932" y="390" />
       </bpmndi:BPMNEdge>

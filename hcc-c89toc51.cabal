@@ -56,11 +56,12 @@ test-suite hcc-c89toc51-test
       AST
       AST_test
       HighIR
-      HighIR_test
+      High      IR_test
       Lexer
       Lexer_test
       LowIR
       LowIR_test
+      ManifestRunner_test
       MediumIR
       MediumIR_test
       Parser
@@ -70,9 +71,10 @@ test-suite hcc-c89toc51-test
       Logger
       Preprocessor
       Preprocessor_test
-      IR_test
+      SrcCFixtures
       SystemPipeline_test
       TestManifest
+      TestMatrix
       TreeDestroyer
       TreeDestroyer_test
 
@@ -81,6 +83,7 @@ test-suite hcc-c89toc51-test
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -96,12 +99,15 @@ test-suite test-lexer
       Lexer_test
       Logger
       Preprocessor
+      SrcCFixtures
       TestManifest
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -118,12 +124,15 @@ test-suite test-parser
       Parser_test
       Logger
       Preprocessor
+      SrcCFixtures
       TestManifest
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -138,10 +147,13 @@ test-suite test-preprocessor
       Logger
       Preprocessor
       Preprocessor_test
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -153,15 +165,20 @@ test-suite test-ast
   main-is:          AST_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
+      AST
       AST_test
       Lexer
       Parser
       Logger
       Preprocessor
+      TestManifest
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -180,11 +197,13 @@ test-suite test-ir
       Logger
       Preprocessor
       AST
-      
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
+      aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -196,6 +215,7 @@ test-suite test-pipeline
   main-is:          Pipeline_spec.hs
   hs-source-dirs:   tests, src
   other-modules:
+      AST
       AST_test
       Lexer
       Lexer_test
@@ -373,8 +393,10 @@ test-suite test-web-report
       Logger
       Preprocessor
       Preprocessor_test
+      SrcCFixtures
       SystemPipeline_test
       TestManifest
+      TestMatrix
       TreeDestroyer
       TreeDestroyer_test
   default-language: Haskell2010
@@ -382,6 +404,7 @@ test-suite test-web-report
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       containers >=0.6 && <0.9,
       directory,
       filepath,
@@ -401,10 +424,12 @@ test-suite test-manifest-runner
       ManifestRunner_test
       Parser
       TestManifest
+      TestMatrix
   default-language: Haskell2010
   ghc-options:      -Wall
   build-depends:
       aeson >=2.2 && <3,
       base >=4.14 && <5,
+      bytestring >=0.11 && <0.13,
       hspec >=2.11 && <3
 

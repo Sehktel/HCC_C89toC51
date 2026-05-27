@@ -1,16 +1,16 @@
 module Parser_test (parserSpec) where
 
-import Control.Monad (filterM, forM, forM_)
-import Data.Char (isSpace)
-import Data.List (sort)
+import Control.Monad (forM_)
 import Lexer (Token (..), lexer)
 import Logger (Logger, silentLogger)
 import Parser (AssignOp (..), Ast (..), BinOp (..), Expr (..), parseTokens)
-import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
-import System.FilePath ((</>), replaceExtension, takeExtension)
+import SrcCFixtures (discoverParserFixtures, goldenParserExt, goldenParserLegacyExt, trim)
+import System.Directory (doesFileExist)
+import System.FilePath (replaceExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
 import Preprocessor (defaultPreprocessConfig, preprocess)
 import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
+import TestMatrix (recordCompare, shouldBeRecorded)
 
 parserSpec :: Spec
 parserSpec = do
@@ -28,160 +28,47 @@ parserSpec = do
 
     describe "приоритет операций (дерево Expr)" $ do
       it "умножение жёстче сложения: a+b*c → a+(b*c)" $ do
-        r <- parseMainReturn lg "int main(){ return a+b*c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpAdd
-                (ExprVar "a")
-                (ExprBinary OpMul (ExprVar "b") (ExprVar "c"))
-            )
+        checkParseMainReturn lg "умножение: a+b*c" "int main(){ return a+b*c; }\n" (ExprBinary OpAdd (ExprVar "a") (ExprBinary OpMul (ExprVar "b") (ExprVar "c")))
 
       it "умножение жёстче сложения слева: a*b+c → (a*b)+c" $ do
-        r <- parseMainReturn lg "int main(){ return a*b+c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpAdd
-                (ExprBinary OpMul (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "умножение слева: a*b+c" "int main(){ return a*b+c; }\n" (ExprBinary OpAdd (ExprBinary OpMul (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
       it "сложение левоассоциативно: a-b-c → (a-b)-c" $ do
-        r <- parseMainReturn lg "int main(){ return a-b-c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpSub
-                (ExprBinary OpSub (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "сложение: a-b-c" "int main(){ return a-b-c; }\n" (ExprBinary OpSub (ExprBinary OpSub (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
       it "сдвиг слабее сложения: a<<b+c → a<<(b+c)" $ do
-        r <- parseMainReturn lg "int main(){ return a<<b+c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpShl
-                (ExprVar "a")
-                (ExprBinary OpAdd (ExprVar "b") (ExprVar "c"))
-            )
+        checkParseMainReturn lg "сдвиг: a<<b+c" "int main(){ return a<<b+c; }\n" (ExprBinary OpShl (ExprVar "a") (ExprBinary OpAdd (ExprVar "b") (ExprVar "c")))
 
       it "сложение жёстче равенства: a+b==c → (a+b)==c" $ do
-        r <- parseMainReturn lg "int main(){ return a+b==c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpEq
-                (ExprBinary OpAdd (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "сложение и ==: a+b==c" "int main(){ return a+b==c; }\n" (ExprBinary OpEq (ExprBinary OpAdd (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
       it "побитовое И жёстче ИЛИ: a|b&c → a|(b&c)" $ do
-        r <- parseMainReturn lg "int main(){ return a|b&c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpBitOr
-                (ExprVar "a")
-                (ExprBinary OpBitAnd (ExprVar "b") (ExprVar "c"))
-            )
+        checkParseMainReturn lg "побитовое: a|b&c" "int main(){ return a|b&c; }\n" (ExprBinary OpBitOr (ExprVar "a") (ExprBinary OpBitAnd (ExprVar "b") (ExprVar "c")))
 
       it "побитовое XOR между И и ИЛИ: a^b|c → (a^b)|c" $ do
-        r <- parseMainReturn lg "int main(){ return a^b|c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpBitOr
-                (ExprBinary OpBitXor (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "XOR: a^b|c" "int main(){ return a^b|c; }\n" (ExprBinary OpBitOr (ExprBinary OpBitXor (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
       it "логическое И жёстче ИЛИ: a||b&&c → a||(b&&c)" $ do
-        r <- parseMainReturn lg "int main(){ return a||b&&c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpOr
-                (ExprVar "a")
-                (ExprBinary OpAnd (ExprVar "b") (ExprVar "c"))
-            )
+        checkParseMainReturn lg "логическое: a||b&&c" "int main(){ return a||b&&c; }\n" (ExprBinary OpOr (ExprVar "a") (ExprBinary OpAnd (ExprVar "b") (ExprVar "c")))
 
       it "скобки переопределяют приоритет: (a+b)*c" $ do
-        r <- parseMainReturn lg "int main(){ return (a+b)*c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpMul
-                (ExprBinary OpAdd (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "скобки: (a+b)*c" "int main(){ return (a+b)*c; }\n" (ExprBinary OpMul (ExprBinary OpAdd (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
       it "тернарный оператор правоассоциативен: a?b:c?d:e → a?b:(c?d:e)" $ do
-        r <- parseMainReturn lg "int main(){ return a?b:c?d:e; }\n"
-        r
-          `shouldBe` Right
-            ( ExprTernary
-                (ExprVar "a")
-                (ExprVar "b")
-                ( ExprTernary
-                    (ExprVar "c")
-                    (ExprVar "d")
-                    (ExprVar "e")
-                )
-            )
+        checkParseMainReturn lg "тернарный: a?b:c?d:e" "int main(){ return a?b:c?d:e; }\n" (ExprTernary (ExprVar "a") (ExprVar "b") (ExprTernary (ExprVar "c") (ExprVar "d") (ExprVar "e")))
 
       it "присваивание правоассоциативно: a=b=c" $ do
-        r <- parseMainReturn lg "int main(){ return a=b=c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprAssign
-                AAssign
-                (ExprVar "a")
-                (ExprAssign AAssign (ExprVar "b") (ExprVar "c"))
-            )
+        checkParseMainReturn lg "присваивание: a=b=c" "int main(){ return a=b=c; }\n" (ExprAssign AAssign (ExprVar "a") (ExprAssign AAssign (ExprVar "b") (ExprVar "c")))
 
       it "композиция: отношение и равенство — a<b==c → (a<b)==c" $ do
-        r <- parseMainReturn lg "int main(){ return a<b==c; }\n"
-        r
-          `shouldBe` Right
-            ( ExprBinary
-                OpEq
-                (ExprBinary OpLt (ExprVar "a") (ExprVar "b"))
-                (ExprVar "c")
-            )
+        checkParseMainReturn lg "отношение и ==: a<b==c" "int main(){ return a<b==c; }\n" (ExprBinary OpEq (ExprBinary OpLt (ExprVar "a") (ExprVar "b")) (ExprVar "c"))
 
     it "возвращает AstUnknown для неподдерживаемого паттерна токенов" $ do
-      ast <- parseTokens lg [TokenInt, TokenIdentifier "x"]
-      ast `shouldBe` AstUnknown [TokenInt, TokenIdentifier "x"]
-
-discoverParserFixtures :: IO [FilePath]
-discoverParserFixtures = do
-  cFiles <- findFilesByExtension "tests/src_c" ".c"
-  paired <- filterM hasParserExpectation cFiles
-  pure (sort paired)
-  where
-    hasParserExpectation cFile = do
-      hasP <- doesFileExist (replaceExtension cFile ".p")
-      hasAst <- doesFileExist (replaceExtension cFile ".ast")
-      pure (hasP || hasAst)
-
-findFilesByExtension :: FilePath -> String -> IO [FilePath]
-findFilesByExtension root extension = do
-  exists <- doesDirectoryExist root
-  if not exists
-    then pure []
-    else go root
-  where
-    go dir = do
-      names <- listDirectory dir
-      nested <- forM names $ \name -> do
-        let path = dir </> name
-        isDir <- doesDirectoryExist path
-        if isDir
-          then go path
-          else pure [path | takeExtension path == extension]
-      pure (concat nested)
+      let toks = [TokenInt, TokenIdentifier "x"]
+      ast <- parseTokens lg toks
+      let expected = AstUnknown toks
+      recordCompare "Parser" "AstUnknown" (show toks) (show expected) (show ast)
+      ast `shouldBe` expected
 
 assertFixtureByPath :: Logger -> FilePath -> Spec
 assertFixtureByPath lg cFile =
@@ -191,23 +78,27 @@ assertFixtureByPath lg cFile =
     expectedAst <- readFile expectationFile
     toks <- lexer lg source
     actualAst <- parseTokens lg toks
-    show actualAst `shouldBe` trim expectedAst
+    let actual = show actualAst
+    let expTrim = trim expectedAst
+    recordCompare "Parser fixture" cFile source expTrim actual
+    actual `shouldBe` expTrim
   where
     parserExpectationFile filePath = do
-      let pFile = replaceExtension filePath ".p"
+      let pFile = replaceExtension filePath goldenParserExt
       hasP <- doesFileExist pFile
       pure $
         if hasP
           then pFile
-          else replaceExtension filePath ".ast"
-
-trim :: String -> String
-trim = dropWhileEnd isSpace . dropWhile isSpace
-
-dropWhileEnd :: (Char -> Bool) -> String -> String
-dropWhileEnd predicate = reverse . dropWhile predicate . reverse
+          else replaceExtension filePath goldenParserLegacyExt
 
 -- | Разобрать минимальную программу с одним return и вернуть выражение (для проверки дерева).
+checkParseMainReturn :: Logger -> String -> String -> Expr -> IO ()
+checkParseMainReturn lg name inp expected = do
+  r <- parseMainReturn lg inp
+  case r of
+    Right expr -> shouldBeRecorded "Parser (приоритет)" name inp expected expr
+    Left err -> expectationFailure err
+
 parseMainReturn :: Logger -> String -> IO (Either String Expr)
 parseMainReturn lg raw = do
   src <- preprocess defaultPreprocessConfig Nothing raw
@@ -225,6 +116,9 @@ assertManifestCase lg mc =
     toks <- lexer lg source
     ast <- parseTokens lg toks
     let actual = show ast
-    case matchTextExpectation (mcExpectation mc) actual (trim expectedAst) of
-      Right matched -> matched `shouldBe` True
+    let expTrim = trim expectedAst
+    case matchTextExpectation (mcExpectation mc) actual expTrim of
+      Right matched -> do
+        recordCompare ("Manifest [" ++ mcPackage mc ++ "]") (mcName mc) source expTrim actual
+        matched `shouldBe` True
       Left err -> expectationFailure err

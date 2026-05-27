@@ -6,6 +6,7 @@ import Parser (parseTokens)
 import System.Environment (lookupEnv)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
 import TestManifest (ManifestCase (..), loadAllCases, matchTextExpectation)
+import TestMatrix (recordCompare)
 
 manifestRunnerSpec :: Spec
 manifestRunnerSpec = do
@@ -34,19 +35,22 @@ assertManifestCase mc =
       "Lexer" -> do
         toks <- lexer lg source
         let actual = show toks
-        assertTextExpectation mc actual expected
+        assertTextExpectation mc source actual expected
       "Parser" -> do
         toks <- lexer lg source
         ast <- parseTokens lg toks
         let actual = show ast
-        assertTextExpectation mc actual expected
+        assertTextExpectation mc source actual expected
       other ->
         expectationFailure ("Неизвестный package в манифесте: " ++ other)
 
-assertTextExpectation :: ManifestCase -> String -> String -> IO ()
-assertTextExpectation mc actual expected =
-  case matchTextExpectation (mcExpectation mc) actual (trim expected) of
-    Right matched -> matched `shouldBe` True
+assertTextExpectation :: ManifestCase -> String -> String -> String -> IO ()
+assertTextExpectation mc source actual expected = do
+  let expTrim = trim expected
+  case matchTextExpectation (mcExpectation mc) actual expTrim of
+    Right matched -> do
+      recordCompare ("ManifestRunner [" ++ mcPackage mc ++ "]") (mcName mc) source expTrim actual
+      matched `shouldBe` True
     Left err -> expectationFailure err
 
 trim :: String -> String

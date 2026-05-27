@@ -19,6 +19,7 @@ import Preprocessor_test (preprocessorSpec)
 import Test.Tasty (TestTree, defaultIngredients, defaultMainWithIngredients, localOption, testGroup)
 import Test.Tasty.Hspec (TreatPendingAs (..), testSpec)
 import Test.Tasty.Runners.Html (htmlRunner)
+import TestMatrix (initMatrix)
 import TreeDestroyer_test (treeDestroyerSpec)
 import SystemPipeline_test (systemPipelineSpec)
 
@@ -28,6 +29,7 @@ main = do
   setFileSystemEncoding utf8
   hSetEncoding stdout utf8
   hSetEncoding stderr utf8
+  initMatrix
   tree <- allTests
   -- tasty-hspec по умолчанию мапит Hspec.pending/pendingWith в FAIL; для web-отчёта и cabal test all
   -- каркасные спеки должны оставаться «зелёными», иначе весь конвейер CI падает без реальной ошибки.
