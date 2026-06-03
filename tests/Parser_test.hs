@@ -4,7 +4,7 @@ import Control.Monad (forM_)
 import Lexer (Token (..), lexer)
 import Logger (Logger, silentLogger)
 import Parser (AssignOp (..), Ast (..), BinOp (..), Expr (..), parseTokens)
-import SrcCFixtures (discoverParserFixtures, goldenParserExt, goldenParserLegacyExt, trim)
+import SrcCFixtures (discoverParserFixtures, goldenParserExt, goldenParserLegacyExt, goldenPreprocessorExt, srcCPreprocessConfig, trim)
 import System.Directory (doesFileExist)
 import System.FilePath (replaceExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
@@ -76,7 +76,12 @@ assertFixtureByPath lg cFile =
     source <- readFile cFile
     expectationFile <- parserExpectationFile cFile
     expectedAst <- readFile expectationFile
-    toks <- lexer lg source
+    let ppFile = replaceExtension cFile goldenPreprocessorExt
+    -- Эталон .p/.ast — post-PP; вход: .pp → lexer → parse
+    src <- do
+      hasPp <- doesFileExist ppFile
+      if hasPp then readFile ppFile else preprocess srcCPreprocessConfig (Just cFile) source
+    toks <- lexer lg src
     actualAst <- parseTokens lg toks
     let actual = show actualAst
     let expTrim = trim expectedAst

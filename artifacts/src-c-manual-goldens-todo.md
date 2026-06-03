@@ -112,15 +112,15 @@ Workflow: [`tests/src_c/keil/README.md`](../tests/src_c/keil/README.md) · ма�
 | # | `.c` | pp | l | p | ast | ir | ▶ |
 |---|------|:-:|:-:|:-:|:-:|:-:|:-:|
 | 1 | `test1.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
-| 2 | `test2.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
-| 3 | `test3.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
-| 4 | `test4.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
-| 5 | `test5.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
-| 6 | `test6.c` | ✓ | ✓ | — | ✓ | ✓ | ◐ |
+| 2 | `test2.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 3 | `test3.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 4 | `test4.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 5 | `test5.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
+| 6 | `test6.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 | 7 | `test7.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 | 8 | `test_100_smoke_ast.c` | ✓ | ✓ | ✓ | ✓ | ✓ | ◐ |
 
-Дописано: у всех — `.pp`, `.ir`; у test2–6 — `.l`; у test7 — `.pp`, `.l`, `.ir`, `.ast`; smoke — полный набор 5 файлов.
+Дописано: у всех 8 — полный набор `.pp`/`.l`/`.p`/`.ast`/`.ir` (test2–6: `.p` ≡ `.ast`, по `Parser.hs`).
 
 ### Smoke (`300_ir`, `400_lexer`, `500_preprocessor`)
 
@@ -165,7 +165,7 @@ Workflow: [`tests/src_c/keil/README.md`](../tests/src_c/keil/README.md) · ма�
 
 ---
 
-**Итого:** нумерованные 23/23 ◐ (эталоны написаны, прогон не делали) · c_base 37/38 (кроме test_25) · c_adv 6× `.pp`+`.l`+`.ir` ⏸ · keil 10/10 ◐ · отложено: `test_25`, **`c_adv/`** `.p`/`.ast` · pipeline PP→Lex→Parse→AST→IR
+**Итого:** нумерованные **23/23** ◐ (полный набор 5 файлов на `.c`, прогон не делали) · c_base 37/38 (кроме test_25) · c_adv 6× `.pp`+`.l`+`.ir` ⏸ · keil 10/10 ◐ · отложено: `test_25`, **`c_adv/`** `.p`/`.ast` · pipeline PP→Lex→Parse→AST→IR
 
 **`reg2051.h` в `.pp`:** полный inline из `tests/src_c/c_adv/_headers/reg2051.h` (не сокращённая выдержка).
 

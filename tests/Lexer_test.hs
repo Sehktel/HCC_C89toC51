@@ -4,7 +4,8 @@ import Control.Monad (forM_)
 import Lexer (IntSuffix (..), Token (..), lexer, lexerPure)
 import Logger (silentLogger)
 import Preprocessor (defaultPreprocessConfig, preprocess)
-import SrcCFixtures (discoverLexerFixtures, trim)
+import SrcCFixtures (discoverLexerFixtures, goldenPreprocessorExt, srcCPreprocessConfig, trim)
+import System.Directory (doesFileExist)
 import System.FilePath (replaceExtension)
 import Test.Hspec (Spec, describe, expectationFailure, it, runIO, shouldBe)
 import TestManifest (ManifestCase (..), loadCasesByPackage, matchTextExpectation)
@@ -212,7 +213,12 @@ lexerFixtureSpec = do
       it ("токенизирует fixture " ++ cFile) $ do
         source <- readFile cFile
         expected <- readFile (replaceExtension cFile ".l")
-        let actual = show (lexerPure source)
+        let ppFile = replaceExtension cFile goldenPreprocessorExt
+        -- Эталон .l — post-PP; вход лексера — .pp (выход PP), не preprocess(.c)
+        src <- do
+          hasPp <- doesFileExist ppFile
+          if hasPp then readFile ppFile else preprocess srcCPreprocessConfig (Just cFile) source
+        let actual = show (lexerPure src)
         recordCompare "Lexer fixture" cFile source (trim expected) actual
         actual `shouldBe` trim expected
     forM_ manifestCases assertLexerManifestCase
