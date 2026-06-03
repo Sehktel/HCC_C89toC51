@@ -1,52 +1,43 @@
 # HCC C89 to C51
 
-Minimal experimental compiler pipeline for translating a C89-like subset toward C51-oriented tooling.
+Экспериментальный компилятор подмножества C89 с ориентацией на toolchain C51 (8051).
 
-## Project Structure
+**Документация:** [`docs/README.md`](docs/README.md) — оглавление.  
+**Архитектура:** [`docs/10-obshchaya-arhitektura.md`](docs/10-obshchaya-arhitektura.md).
 
-- `src/Lexer.hs` - tokenization for keywords, operators, literals, and integer suffixes.
-- `src/Preprocessor.hs` - basic source normalization stage.
-- `src/Parser.hs` - simplified AST construction for the current supported pattern.
-- `app/Main.hs` - demo pipeline entrypoint (`preprocess -> lexer -> parseTokens`).
-- `tests/` - component and pipeline test suites.
+## Конвейер (кратко)
 
-## Build
+Preprocessor → Lexer → Parser → AST → High IR → Medium IR → Low IR → Tree Destroyer → Peephole → Codegen
+
+Схема и контракты стадий: [`docs/11-konveer-kompilyacii.md`](docs/11-konveer-kompilyacii.md).  
+Система тестирования: [`docs/testing/00-obzor-sistemy-testirovaniya.md`](docs/testing/00-obzor-sistemy-testirovaniya.md).
+
+## Быстрый старт
 
 ```powershell
-cabal build all
+just build          # cabal build all
+just test           # все test-suite
+just test-web-report # HTML-отчёт
 ```
 
-## Run Demo Executable
+Демо-исполняемый файл:
 
 ```powershell
 cabal run exe:hcc-c89toc51
 ```
 
-## Стратегия тестирование
+## Структура репозитория
 
-The repository contains both aggregate and focused test suites:
+| Каталог | Назначение |
+|---------|------------|
+| `src/` | модули конвейера |
+| `app/` | точка входа |
+| `tests/` | hspec suite + `tests/src_c/` golden |
+| `docs/` | официальная документация |
+| `artifacts/` | отчёты, матрицы, рабочие черновики |
+| `bpmn/` | диаграммы оркестрации |
+| `justfile` | команды сборки и тестов |
 
-- `hcc-c89toc51-test` - aggregate test suite.
-- `test-lexer` - lexer-focused checks.
-- `test-parser` - parser-focused checks.
-- `test-preprocessor` - preprocessor-focused checks.
-- `test-ast` - intermediate AST pipeline checks.
-- `test-ir` - intermediate IR pipeline checks.
-- `test-pipeline` - end-to-end staged pipeline checks.
+## Ограничения
 
-Run all suites:
-
-```powershell
-cabal test all
-```
-
-Run one suite:
-
-```powershell
-cabal test test-lexer
-```
-
-**Пока не реализованы:**
-
-- Типы данных с плавающей запятой — `float`, `double`.  
-  Эти типы распознаются синтаксически и считаются допустимыми, однако поддержка операций с ними запланирована на будущие версии компилятора.
+- `float`, `double` — синтаксически допустимы, операции не реализованы.
